@@ -29,6 +29,7 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
 
     private final JButton logIn;
     private final JButton cancel;
+    private final JButton toSignup;
     private LoginController loginController = null;
 
     public LoginView(LoginViewModel loginViewModel) {
@@ -49,6 +50,8 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
         buttons.add(logIn);
         cancel = new JButton("cancel");
         buttons.add(cancel);
+        toSignup = new JButton("Go to signup");
+        buttons.add(toSignup);
 
         logIn.addActionListener(
                 new ActionListener() {
@@ -66,6 +69,12 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
         );
 
         cancel.addActionListener(this);
+
+        toSignup.addActionListener(
+                new ActionListener() {
+                    public void actionPerformed(ActionEvent evt) { loginController.switchToSignupView();}
+                }
+        );
 
         usernameInputField.getDocument().addDocumentListener(new DocumentListener() {
 
