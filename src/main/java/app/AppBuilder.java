@@ -3,6 +3,7 @@ package app;
 import data_access.FileUserDataAccessObject;
 import entity.UserFactory;
 import interface_adapter.ViewManagerModel;
+import interface_adapter.dashboard.DashboardViewModel;
 import interface_adapter.logged_in.ChangePasswordController;
 import interface_adapter.logged_in.ChangePasswordPresenter;
 import interface_adapter.logged_in.LoggedInViewModel;
@@ -26,10 +27,7 @@ import use_case.logout.LogoutOutputBoundary;
 import use_case.signup.SignupInputBoundary;
 import use_case.signup.SignupInteractor;
 import use_case.signup.SignupOutputBoundary;
-import view.LoggedInView;
-import view.LoginView;
-import view.SignupView;
-import view.ViewManager;
+import view.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -40,6 +38,8 @@ public class AppBuilder {
     final UserFactory userFactory = new UserFactory();
     final ViewManagerModel viewManagerModel = new ViewManagerModel();
     ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
+
+    private final java.util.Map<String, Dimension> viewSizes = new java.util.HashMap<>();
 
     // set which data access implementation to use, can be any
     // of the classes from the data_access package
@@ -54,8 +54,10 @@ public class AppBuilder {
     private SignupViewModel signupViewModel;
     private LoginViewModel loginViewModel;
     private LoggedInViewModel loggedInViewModel;
+    private DashboardViewModel dashboardViewModel;
     private LoggedInView loggedInView;
     private LoginView loginView;
+    private DashboardView dashboardView;
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
@@ -65,6 +67,7 @@ public class AppBuilder {
         signupViewModel = new SignupViewModel();
         signupView = new SignupView(signupViewModel);
         cardPanel.add(signupView, signupView.getViewName());
+        viewSizes.put(signupView.getViewName(), new Dimension(420, 320));
         return this;
     }
 
@@ -72,6 +75,7 @@ public class AppBuilder {
         loginViewModel = new LoginViewModel();
         loginView = new LoginView(loginViewModel);
         cardPanel.add(loginView, loginView.getViewName());
+        viewSizes.put(loginView.getViewName(), new Dimension(420, 320));
         return this;
     }
 
@@ -79,6 +83,14 @@ public class AppBuilder {
         loggedInViewModel = new LoggedInViewModel();
         loggedInView = new LoggedInView(loggedInViewModel);
         cardPanel.add(loggedInView, loggedInView.getViewName());
+        return this;
+    }
+
+    public AppBuilder addDashboardView() {
+        dashboardViewModel = new DashboardViewModel();
+        dashboardView = new DashboardView(dashboardViewModel);
+        cardPanel.add(dashboardView, dashboardView.getViewName());
+        viewSizes.put(dashboardView.getViewName(), new Dimension(1000, 600));
         return this;
     }
 
@@ -95,7 +107,7 @@ public class AppBuilder {
 
     public AppBuilder addLoginUseCase() {
         final LoginOutputBoundary loginOutputBoundary = new LoginPresenter(viewManagerModel,
-                loggedInViewModel, loginViewModel, signupViewModel);
+                dashboardViewModel, loginViewModel, signupViewModel);
         final LoginInputBoundary loginInteractor = new LoginInteractor(
                 userDataAccessObject, loginOutputBoundary);
 
@@ -133,16 +145,44 @@ public class AppBuilder {
     }
 
     public JFrame build() {
-        final JFrame application = new JFrame("User Login Example");
+        final JFrame application = new JFrame("Dashboard");
         application.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        application.setContentPane(cardPanel);
 
-        application.add(cardPanel);
+        // when view changes, set preferred size for that view and pack
+        viewManagerModel.addPropertyChangeListener(evt -> {
+            if ("state".equals(evt.getPropertyName())) {
+                String viewName = (String) evt.getNewValue();
+                Dimension d = viewSizes.get(viewName);
+                if (d != null) {
+                    application.setPreferredSize(d);
+                } else {
+                    application.setPreferredSize(null); // fallback to view’s own preferred size
+                }
+                cardLayout.show(cardPanel, viewName);
+                application.pack();
+                application.setLocationRelativeTo(null);
+            }
+        });
 
-        viewManagerModel.setState(signupView.getViewName());
+        // initial state
+        String initial = signupView.getViewName();
+        viewManagerModel.setState(initial);
         viewManagerModel.firePropertyChange();
+
+        // initial preferred size and pack BEFORE showing
+        Dimension initSize = viewSizes.get(initial);
+        if (initSize != null) application.setPreferredSize(initSize);
+        cardLayout.show(cardPanel, initial);
+        application.pack();
+        application.setLocationRelativeTo(null);
+
+        // minimum size so tiny views don’t collapse
+        application.setMinimumSize(new Dimension(400, 300));
 
         return application;
     }
+
 
 
 }
