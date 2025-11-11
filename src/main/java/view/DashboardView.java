@@ -30,9 +30,12 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     private final String viewName = "dashboard";
     private final DashboardViewModel dashboardViewModel;
 
+    // Controllers
+    private LogoutController logoutController;
+
     // Header widgets
     private final JLabel usernameLabel = new JLabel();
-    private final JButton logoutButton = new JButton("Log Out");
+    private JButton logoutButton;
 
     // Main layout pieces
     private final DefaultListModel<String> groupsModel = new DefaultListModel<>();
@@ -49,6 +52,8 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
 
         // Header
         add(buildHeader(), BorderLayout.NORTH);
+
+        logoutButton.addActionListener(this);
 
         // Body: sidebar + workspace
         add(buildBody(), BorderLayout.CENTER);
@@ -81,8 +86,9 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
         right.add(new JLabel("User: "));
         right.add(usernameLabel);
 
-        logoutButton.addActionListener(this);
+        logoutButton = new JButton("Log Out");
         right.add(logoutButton);
+
 
         header.add(right, BorderLayout.EAST);
         return header;
@@ -223,8 +229,8 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     /** Logout button */
     @Override
     public void actionPerformed(ActionEvent evt) {
-        // TODO: add logout button
-//        if (logoutController != null) logoutController.execute();
+        System.out.println("Click " + evt.getActionCommand());
+        logoutController.execute();
     }
 
     /** React to presenter updates */
@@ -242,5 +248,9 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
                 JOptionPane.showMessageDialog(this, st.getPasswordError());
             }
         }
+    }
+
+    public void setLogoutController(LogoutController logoutController) {
+        this.logoutController = logoutController;
     }
 }
