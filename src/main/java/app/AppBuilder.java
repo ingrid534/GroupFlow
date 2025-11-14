@@ -1,7 +1,7 @@
 package app;
 
 import data_access.FileUserDataAccessObject;
-import entity.UserFactory;
+import entity.User.UserFactory;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.dashboard.DashboardViewModel;
 import interface_adapter.logged_in.ChangePasswordController;
@@ -48,7 +48,8 @@ public class AppBuilder {
     final FileUserDataAccessObject userDataAccessObject = new FileUserDataAccessObject("users.csv", userFactory);
 
     // DAO version using a shared external database
-    // final DBUserDataAccessObject userDataAccessObject = new DBUserDataAccessObject(userFactory);
+    // final DBUserDataAccessObject userDataAccessObject = new
+    // DBUserDataAccessObject(userFactory);
 
     private SignupView signupView;
     private SignupViewModel signupViewModel;
@@ -120,8 +121,8 @@ public class AppBuilder {
         final ChangePasswordOutputBoundary changePasswordOutputBoundary = new ChangePasswordPresenter(viewManagerModel,
                 loggedInViewModel);
 
-        final ChangePasswordInputBoundary changePasswordInteractor =
-                new ChangePasswordInteractor(userDataAccessObject, changePasswordOutputBoundary, userFactory);
+        final ChangePasswordInputBoundary changePasswordInteractor = new ChangePasswordInteractor(userDataAccessObject,
+                changePasswordOutputBoundary, userFactory);
 
         ChangePasswordController changePasswordController = new ChangePasswordController(changePasswordInteractor);
         loggedInView.setChangePasswordController(changePasswordController);
@@ -130,14 +131,14 @@ public class AppBuilder {
 
     /**
      * Adds the Logout Use Case to the application.
+     * 
      * @return this builder
      */
     public AppBuilder addLogoutUseCase() {
         final LogoutOutputBoundary logoutOutputBoundary = new LogoutPresenter(viewManagerModel,
                 loggedInViewModel, loginViewModel);
 
-        final LogoutInputBoundary logoutInteractor =
-                new LogoutInteractor(userDataAccessObject, logoutOutputBoundary);
+        final LogoutInputBoundary logoutInteractor = new LogoutInteractor(userDataAccessObject, logoutOutputBoundary);
 
         final LogoutController logoutController = new LogoutController(logoutInteractor);
         loggedInView.setLogoutController(logoutController);
@@ -172,7 +173,8 @@ public class AppBuilder {
 
         // initial preferred size and pack BEFORE showing
         Dimension initSize = viewSizes.get(initial);
-        if (initSize != null) application.setPreferredSize(initSize);
+        if (initSize != null)
+            application.setPreferredSize(initSize);
         cardLayout.show(cardPanel, initial);
         application.pack();
         application.setLocationRelativeTo(null);
@@ -182,7 +184,5 @@ public class AppBuilder {
 
         return application;
     }
-
-
 
 }
