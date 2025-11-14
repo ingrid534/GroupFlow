@@ -11,7 +11,7 @@ public class Main {
                 .addDashboardView()
                 .addSignupUseCase()
                 .addLoginUseCase()
-//                .addLogoutUseCase()
+                .addLogoutUseCase()
 //                .addChangePasswordUseCase()
                 .build();
 

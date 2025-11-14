@@ -1,8 +1,8 @@
 package interface_adapter.logout;
 
 import interface_adapter.ViewManagerModel;
-import interface_adapter.logged_in.LoggedInState;
-import interface_adapter.logged_in.LoggedInViewModel;
+import interface_adapter.dashboard.LoggedInState;
+import interface_adapter.dashboard.DashboardViewModel;
 import interface_adapter.login.LoginState;
 import interface_adapter.login.LoginViewModel;
 import use_case.logout.LogoutOutputBoundary;
@@ -13,16 +13,16 @@ import use_case.logout.LogoutOutputData;
  */
 public class LogoutPresenter implements LogoutOutputBoundary {
 
-    private LoggedInViewModel loggedInViewModel;
+    private DashboardViewModel dashboardViewModel;
     private ViewManagerModel viewManagerModel;
     private LoginViewModel loginViewModel;
 
     public LogoutPresenter(ViewManagerModel viewManagerModel,
-            LoggedInViewModel loggedInViewModel,
+            DashboardViewModel loggedInViewModel,
             LoginViewModel loginViewModel) {
 
         this.viewManagerModel = viewManagerModel;
-        this.loggedInViewModel = loggedInViewModel;
+        this.dashboardViewModel = loggedInViewModel;
         this.loginViewModel = loginViewModel;
     }
 
@@ -34,9 +34,9 @@ public class LogoutPresenter implements LogoutOutputBoundary {
         // We also need to set the username in the LoggedInState to
         // the empty string.
 
-        final LoggedInState loggedInState = loggedInViewModel.getState();
+        final LoggedInState loggedInState = dashboardViewModel.getState();
         loggedInState.setUsername("");
-        loggedInViewModel.firePropertyChange();
+        dashboardViewModel.firePropertyChange();
 
         final LoginState loginState = loginViewModel.getState();
         loginState.setUsername(response.getUsername());
