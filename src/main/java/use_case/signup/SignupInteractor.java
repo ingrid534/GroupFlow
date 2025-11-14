@@ -1,7 +1,7 @@
 package use_case.signup;
 
-import entity.User;
-import entity.UserFactory;
+import entity.User.User;
+import entity.User.UserFactory;
 
 /**
  * The Signup Interactor.
@@ -12,8 +12,8 @@ public class SignupInteractor implements SignupInputBoundary {
     private final UserFactory userFactory;
 
     public SignupInteractor(SignupUserDataAccessInterface signupDataAccessInterface,
-                            SignupOutputBoundary signupOutputBoundary,
-                            UserFactory userFactory) {
+            SignupOutputBoundary signupOutputBoundary,
+            UserFactory userFactory) {
         this.userDataAccessObject = signupDataAccessInterface;
         this.userPresenter = signupOutputBoundary;
         this.userFactory = userFactory;
@@ -23,17 +23,13 @@ public class SignupInteractor implements SignupInputBoundary {
     public void execute(SignupInputData signupInputData) {
         if (userDataAccessObject.existsByName(signupInputData.getUsername())) {
             userPresenter.prepareFailView("User already exists.");
-        }
-        else if (!signupInputData.getPassword().equals(signupInputData.getRepeatPassword())) {
+        } else if (!signupInputData.getPassword().equals(signupInputData.getRepeatPassword())) {
             userPresenter.prepareFailView("Passwords don't match.");
-        }
-        else if ("".equals(signupInputData.getPassword())) {
+        } else if ("".equals(signupInputData.getPassword())) {
             userPresenter.prepareFailView("New password cannot be empty");
-        }
-        else if ("".equals(signupInputData.getUsername())) {
+        } else if ("".equals(signupInputData.getUsername())) {
             userPresenter.prepareFailView("Username cannot be empty");
-        }
-        else {
+        } else {
             final User user = userFactory.create(signupInputData.getUsername(), signupInputData.getPassword());
             userDataAccessObject.save(user);
 
