@@ -158,7 +158,8 @@ public class AppBuilder {
                 if (d != null) {
                     application.setPreferredSize(d);
                 } else {
-                    application.setPreferredSize(null); // fallback to view’s own preferred size
+                    application.setPreferredSize(null);
+                    // fallback to view’s own preferred size
                 }
                 cardLayout.show(cardPanel, viewName);
                 application.pack();
