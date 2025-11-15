@@ -1,7 +1,7 @@
 package data_access;
 
-import entity.User.User;
-import entity.User.UserFactory;
+import entity.user.User;
+import entity.user.UserFactory;
 import use_case.change_password.ChangePasswordUserDataAccessInterface;
 import use_case.login.LoginUserDataAccessInterface;
 import use_case.logout.LogoutUserDataAccessInterface;

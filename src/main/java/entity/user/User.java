@@ -1,4 +1,4 @@
-package entity.User;
+package entity.user;
 
 /**
  * A simple entity representing a user. Users have a username and password..

@@ -1,9 +1,9 @@
-package entity.Membership;
+package entity.membership;
 
 import javax.swing.GroupLayout.Group;
 
-import entity.User.User;
-import entity.User.UserRole;
+import entity.user.User;
+import entity.user.UserRole;
 
 public class Membership {
 
