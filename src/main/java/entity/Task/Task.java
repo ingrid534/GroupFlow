@@ -1,4 +1,5 @@
 package entity.Task;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,7 @@ public class Task {
      * @param group       The group to which this task belongs
      */
     public Task(String description, LocalDateTime dueDate/*, Group group*/) {
-        this.id = java.util.UUID.randomUUID().toString();
+        this.id = UUID.randomUUID().toString();
         this.description = description;
         this.dueDate = dueDate;
         // this.group = group;
@@ -35,36 +36,6 @@ public class Task {
      */
     public String getDescription() {
         return description;
-    }
-
-    /**
-     * Updates the description of this task.
-     *
-     * @param description The new description text
-     */
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    /**
-     * @return {@code true} if the task is marked as completed, otherwise {@code false}.
-     */
-    public boolean isCompleted() {
-        return completed;
-    }
-
-    /**
-     * Marks this task as completed.
-     */
-    public void markCompleted() {
-        this.completed = true;
-    }
-
-    /**
-     * Marks this task as incomplete.
-     */
-    public void markIncomplete() {
-        this.completed = false;
     }
 
     /**
@@ -88,6 +59,36 @@ public class Task {
         return dueDate;
     }
 
+    /**
+     * @return {@code true} if the task is marked as completed, otherwise {@code false}.
+     */
+    public boolean isCompleted() {
+        return completed;
+    }
+    
+    /**
+     * Updates the description of this task.
+     *
+     * @param description The new description text
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    /**
+     * Marks this task as completed.
+     */
+    public void markCompleted() {
+        this.completed = true;
+    }
+
+    /**
+     * Marks this task as incomplete.
+     */
+    public void markIncomplete() {
+        this.completed = false;
+    }
+    
     /**
      * Sets the due date of the task.
      *
