@@ -1,12 +1,12 @@
-package entity.Task;
+package entity.task;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-// import entity.Group.Group;
-// import entity.User.User;
+// import entity.group.Group;
+// import entity.user.User;
 
 public class Task {
     private String id;
