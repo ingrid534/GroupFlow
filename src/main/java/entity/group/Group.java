@@ -99,4 +99,17 @@ public class Group {
         this.groupType = groupType;
     }
 
+    @Override
+    public int hashCode() {
+        return groupID.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Group)) return false;
+        Group other = (Group) o;
+        return groupID.equals(other.groupID);
+    }
+
 }
