@@ -8,7 +8,7 @@ import use_case.signup.SignupUserDataAccessInterface;
 import java.util.HashMap;
 import java.util.Map;
 
-import entity.User.User;
+import entity.user.User;
 
 /**
  * In-memory implementation of the DAO for storing user data. This

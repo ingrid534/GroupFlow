@@ -1,4 +1,4 @@
-package entity.Membership;
+package entity.membership;
 
 public class MembershipFactory {
 
