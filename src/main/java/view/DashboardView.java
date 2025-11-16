@@ -32,10 +32,12 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
 
     // Controllers
     private LogoutController logoutController;
+    private ChangePasswordController changePasswordController;
 
     // Header widgets
     private final JLabel usernameLabel = new JLabel();
     private JButton logoutButton;
+    private JButton createGroup;
 
     // Main layout pieces
     private final DefaultListModel<String> groupsModel = new DefaultListModel<>();
@@ -118,6 +120,15 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(new EmptyBorder(12, 12, 12, 12));
         p.add(new JLabel("Welcome! Select a group to view its workspace."), BorderLayout.NORTH);
+        createGroup = new JButton("Create Group");
+        p.add(createGroup);
+        createGroup.addActionListener(
+                evt -> {
+                    if (evt.getSource().equals(createGroup)) {
+                        changePasswordController.switchToCreateGroupView(usernameLabel.getName());
+                    }
+                }
+        );
         return p;
     }
 
@@ -252,5 +263,9 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
 
     public void setLogoutController(LogoutController logoutController) {
         this.logoutController = logoutController;
+    }
+
+    public void setChangePasswordController(ChangePasswordController changePasswordController) {
+        this.changePasswordController = changePasswordController;
     }
 }

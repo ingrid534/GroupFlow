@@ -1,8 +1,12 @@
 package app;
 
 import data_access.FileUserDataAccessObject;
+import entity.group.GroupFactory;
 import entity.user.UserFactory;
 import interface_adapter.ViewManagerModel;
+import interface_adapter.create_group.CreateGroupController;
+import interface_adapter.create_group.CreateGroupPresenter;
+import interface_adapter.create_group.CreateGroupViewModel;
 import interface_adapter.dashboard.DashboardViewModel;
 import interface_adapter.logged_in.ChangePasswordController;
 import interface_adapter.logged_in.ChangePasswordPresenter;
@@ -18,6 +22,9 @@ import interface_adapter.signup.SignupViewModel;
 import use_case.change_password.ChangePasswordInputBoundary;
 import use_case.change_password.ChangePasswordInteractor;
 import use_case.change_password.ChangePasswordOutputBoundary;
+import use_case.create_group.CreateGroupInputBoundary;
+import use_case.create_group.CreateGroupInteractor;
+import use_case.create_group.CreateGroupOutputBoundary;
 import use_case.login.LoginInputBoundary;
 import use_case.login.LoginInteractor;
 import use_case.login.LoginOutputBoundary;
@@ -36,6 +43,7 @@ public class AppBuilder {
     private final JPanel cardPanel = new JPanel();
     private final CardLayout cardLayout = new CardLayout();
     final UserFactory userFactory = new UserFactory();
+    final GroupFactory groupFactory = new GroupFactory();
     final ViewManagerModel viewManagerModel = new ViewManagerModel();
     ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
 
@@ -56,9 +64,11 @@ public class AppBuilder {
     private LoginViewModel loginViewModel;
     private LoggedInViewModel loggedInViewModel;
     private DashboardViewModel dashboardViewModel;
+    private CreateGroupViewModel createGroupViewModel;
     private LoggedInView loggedInView;
     private LoginView loginView;
     private DashboardView dashboardView;
+    private CreateGroupView createGroupView;
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
@@ -95,6 +105,34 @@ public class AppBuilder {
         return this;
     }
 
+    public AppBuilder addCreateGroupView() {
+        createGroupViewModel = new CreateGroupViewModel();
+        createGroupView = new CreateGroupView(createGroupViewModel);
+        cardPanel.add(createGroupView, createGroupView.getViewName());
+        return this;
+    }
+
+    public AppBuilder addCreateGroupUseCase() {
+        final CreateGroupOutputBoundary createGroupOutputBoundary = new CreateGroupPresenter(viewManagerModel,
+                dashboardViewModel, createGroupViewModel);
+        final CreateGroupInputBoundary createGroupInteractor = new CreateGroupInteractor(
+                userDataAccessObject, createGroupOutputBoundary, groupFactory);
+
+        CreateGroupController createGroupController = new CreateGroupController(createGroupInteractor);
+        createGroupView.setLoginController(createGroupController);
+
+        final ChangePasswordOutputBoundary changePasswordOutputBoundary = new ChangePasswordPresenter(viewManagerModel,
+                loggedInViewModel, createGroupViewModel);
+
+        final ChangePasswordInputBoundary changePasswordInteractor = new ChangePasswordInteractor(userDataAccessObject,
+                changePasswordOutputBoundary, userFactory);
+
+        ChangePasswordController changePasswordController = new ChangePasswordController(changePasswordInteractor);
+        dashboardView.setChangePasswordController(changePasswordController);
+
+        return this;
+    }
+
     public AppBuilder addSignupUseCase() {
         final SignupOutputBoundary signupOutputBoundary = new SignupPresenter(viewManagerModel,
                 signupViewModel, loginViewModel);
@@ -119,13 +157,14 @@ public class AppBuilder {
 
     public AppBuilder addChangePasswordUseCase() {
         final ChangePasswordOutputBoundary changePasswordOutputBoundary = new ChangePasswordPresenter(viewManagerModel,
-                loggedInViewModel);
+                loggedInViewModel, createGroupViewModel);
 
         final ChangePasswordInputBoundary changePasswordInteractor = new ChangePasswordInteractor(userDataAccessObject,
                 changePasswordOutputBoundary, userFactory);
 
         ChangePasswordController changePasswordController = new ChangePasswordController(changePasswordInteractor);
         loggedInView.setChangePasswordController(changePasswordController);
+        dashboardView.setChangePasswordController(changePasswordController);
         return this;
     }
 

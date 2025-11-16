@@ -10,5 +10,5 @@ public interface CreateGroupOutputBoundary {
 
     void prepareFailView(String errorMessage);
 
-    void switchToGroupView();
+    void switchToDashboardView();
 }

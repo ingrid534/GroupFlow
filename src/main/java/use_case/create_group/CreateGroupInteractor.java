@@ -1,7 +1,8 @@
 package use_case.create_group;
 
-import entity.Group;
-import entity.GroupFactory;
+import entity.group.Group;
+import entity.group.GroupFactory;
+import entity.user.User;
 
 /**
  * The CreateGroup Interactor
@@ -24,8 +25,11 @@ public class CreateGroupInteractor implements CreateGroupInputBoundary{
     public void execute(CreateGroupInputData createGroupInputData) {
         final String groupName = createGroupInputData.getGroupName();
         final String groupType = createGroupInputData.getGroupType();
+        System.out.println(createGroupInputData.getGroupCreatorUsername());
+        final User groupCreator = dataAccessObject.get(dataAccessObject.getCurrentUsername());
+        System.out.println(groupCreator.getName());
 
-        final Group group = groupFactory.create(groupName, groupType);
+        final Group group = groupFactory.create(groupName, groupType, groupCreator);
         dataAccessObject.save(group);
 
         final CreateGroupOutputData createGroupOutputData = new CreateGroupOutputData(group.getGroupID());
@@ -34,7 +38,7 @@ public class CreateGroupInteractor implements CreateGroupInputBoundary{
     }
 
     @Override
-    public void switchToGroupView() {
-        createGroupPresenter.switchToGroupView();
+    public void switchToDashboardView() {
+        createGroupPresenter.switchToDashboardView();
     }
 }

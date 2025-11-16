@@ -19,17 +19,17 @@ public class CreateGroupController {
      * @param groupType the type of group being created
      */
 
-    public void execute(String groupName, String groupType) {
-        final CreateGroupInputData createGroupInputData = new CreateGroupInputData(groupName, groupType);
+    public void execute(String groupName, String groupType, String groupCreator) {
+        final CreateGroupInputData createGroupInputData = new CreateGroupInputData(groupName, groupType, groupCreator);
 
         createGroupInteractor.execute(createGroupInputData);
     }
 
     /**
-     * Executes the "switch to View Group" Use Case.
+     * Executes the "switch to Dashboard" Use Case.
      */
-    public void switchToGroupView() {
-        createGroupInteractor.switchToGroupView();
+    public void switchToDashboard() {
+        createGroupInteractor.switchToDashboardView();
     }
 
 

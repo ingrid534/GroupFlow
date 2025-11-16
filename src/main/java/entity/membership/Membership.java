@@ -1,9 +1,8 @@
 package entity.membership;
 
-import javax.swing.GroupLayout.Group;
-
 import entity.user.User;
 import entity.user.UserRole;
+import entity.group.Group;
 
 public class Membership {
 

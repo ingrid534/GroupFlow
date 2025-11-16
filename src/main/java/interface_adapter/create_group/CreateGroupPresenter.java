@@ -24,10 +24,10 @@ public class CreateGroupPresenter implements CreateGroupOutputBoundary {
 
     @Override
     public void prepareSuccessView(CreateGroupOutputData response) {
-        // and clear everything from the  state
+        // clear everything from the  state
         createGroupViewModel.setState(new CreateGroupState());
 
-        // switch to the logged in view
+        // switch to the dashboard view
         this.viewManagerModel.setState(dashboardViewModel.getViewName());
         this.viewManagerModel.firePropertyChange();
     }
@@ -38,7 +38,7 @@ public class CreateGroupPresenter implements CreateGroupOutputBoundary {
     }
 
     @Override
-    public void switchToGroupView() {
+    public void switchToDashboardView() {
         viewManagerModel.setState(dashboardViewModel.getViewName());
         viewManagerModel.firePropertyChange();
     }

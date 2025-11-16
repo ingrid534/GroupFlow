@@ -1,32 +1,37 @@
 package entity.group;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Random;
+import java.util.*;
+
 import entity.membership.Membership;
 import entity.user.User;
 import entity.user.UserRole;
 
 /**
- * A simple entity representing a group.
+ * A simple entity representing a group. Groups have IDs, names, memberships, and tpes.
+ * Memberships act as a link between a Group and a User.
  */
 public class Group {
-    String groupID;
-    String name;
-    List<Membership> memberships;
-    String groupType;
+    private final String groupID;
+    private String name;
+    private List<Membership> memberships;
+    private String groupType;
 
     /**
-     * Creates a new group with <></>.
+     * Creates a new group with the given name, type, and user who created the group.
+     * The user who created the group is the only member by default, and so is granted the Moderator role.
      *
      * @param name          the group name
-     * @param groupType     the group type (e.g. public, private)
+     * @param groupType     the group type
+     * @param groupCreator  the User object who created the group
+     *
      */
-    public Group(String name, String groupType) {
+    public Group(String name, String groupType, User groupCreator) {
         this.groupID = generateRandomID();      // Temporary until we set up a DB
         this.name = name;
         this.groupType = groupType;
+
+        Membership creatorMembership = new Membership(groupCreator, this, UserRole.MODERATOR);
+        this.memberships = List.of(creatorMembership);
     }
 
     private static String generateRandomID() {
@@ -44,9 +49,9 @@ public class Group {
         return sb.toString();
     }
 
-    public void addMembership(Membership memberhsip) {
-        if (!memberships.contains(memberhsip)) {
-            memberships.add(memberhsip);
+    public void addMembership(Membership membership) {
+        if (!memberships.contains(membership)) {
+            memberships.add(membership);
         }
     }
 
@@ -84,6 +89,14 @@ public class Group {
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String groupName) {
+        this.name = groupName;
+    }
+
+    public void setGroupType(String groupType) {
+        this.groupType = groupType;
     }
 
 }

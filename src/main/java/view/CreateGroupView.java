@@ -1,5 +1,7 @@
 package view;
 
+import entity.membership.Membership;
+import entity.user.User;
 import interface_adapter.create_group.CreateGroupController;
 import interface_adapter.create_group.CreateGroupState;
 import interface_adapter.create_group.CreateGroupViewModel;
@@ -12,6 +14,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.lang.reflect.Member;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CreateGroupView extends JPanel implements ActionListener, PropertyChangeListener {
 
@@ -57,7 +62,8 @@ public class CreateGroupView extends JPanel implements ActionListener, PropertyC
 
                         createGroupController.execute(
                                 currentState.getGroupName(),
-                                currentState.getGroupType()
+                                currentState.getGroupType(),
+                                currentState.getGroupCreatorUsername()
                         );
 
                     }
