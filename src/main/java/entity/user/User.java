@@ -2,10 +2,8 @@ package entity.user;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.NoSuchElementException;
 
 import entity.membership.Membership;
-import entity.user.UserRole;
 import entity.group.Group;
 import entity.task.Task;
 
@@ -62,34 +60,6 @@ public class User {
 
         return groups;
     }
-
-    /**
-     * 
-     * @param group
-     * @return The user's role in the given group. If the
-     *         user is not in the given group, throw an exception.
-     */
-    // public UserRole getRole(Group group) throws NoSuchElementException {
-    // for (Membership m : memberships) {
-    // if (group.equals(m.getGroup())) {
-    // return m.getRole();
-    // }
-    // }
-    // throw new NoSuchElementException("User is not in this group.");
-    // }
-
-    /**
-     * 
-     * @param membership
-     * @return Whether the user is a moderator in the
-     *         given group. If the user is not in the group, throw
-     *         an exception.
-     * @throws NoSuchElementException
-     */
-    // public Boolean checkModerator(Membership membership) throws
-    // NoSuchElementException {
-
-    // }
 
     public void removeMembership(Membership membership) {
         this.memberships.remove(membership);

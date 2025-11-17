@@ -1,37 +1,46 @@
 package entity.group;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.NoSuchElementException;
 
 import entity.membership.Membership;
 import entity.user.User;
 import entity.user.UserRole;
+import entity.task.Task;
 
 /**
- * A simple entity representing a group. Groups have IDs, names, memberships, and tpes.
+ * A simple entity representing a group. Groups have IDs, names, memberships,
+ * and tpes.
  * Memberships act as a link between a Group and a User.
  */
 public class Group {
     private final String groupID;
     private String name;
     private List<Membership> memberships;
+    private List<Task> tasks;
     private String groupType;
 
     /**
-     * Creates a new group with the given name, type, and user who created the group.
-     * The user who created the group is the only member by default, and so is granted the Moderator role.
+     * Creates a new group with the given name, type, and user who created the
+     * group.
+     * The user who created the group is the only member by default, and so is
+     * granted the Moderator role.
      *
-     * @param name          the group name
-     * @param groupType     the group type
-     * @param groupCreator  the User object who created the group
+     * @param name         the group name
+     * @param groupType    the group type
+     * @param groupCreator the User object who created the group
      *
      */
     public Group(String name, String groupType, User groupCreator) {
-        this.groupID = generateRandomID();      // Temporary until we set up a DB
+        this.groupID = generateRandomID(); // Temporary until we set up a DB
         this.name = name;
         this.groupType = groupType;
 
         Membership creatorMembership = new Membership(groupCreator, this, UserRole.MODERATOR);
-        this.memberships = List.of(creatorMembership);
+        this.memberships = new ArrayList<>(List.of(creatorMembership));
+        this.tasks = new ArrayList<>();
     }
 
     private static String generateRandomID() {
@@ -40,7 +49,7 @@ public class Group {
         Random random = new Random();
 
         int length = 8;
-        for (int i=0; i < length; i++) {
+        for (int i = 0; i < length; i++) {
             int randIndex = random.nextInt(alphanum.length());
             char randChar = alphanum.charAt(randIndex);
             sb.append(randChar);
@@ -53,6 +62,10 @@ public class Group {
         if (!memberships.contains(membership)) {
             memberships.add(membership);
         }
+    }
+
+    public void removeMembership(Membership membership) {
+        this.memberships.remove(membership);
     }
 
     public String getGroupType() {
@@ -69,13 +82,9 @@ public class Group {
         return users;
     }
 
-    public void removeMembership(Membership membership) {
-        this.memberships.remove(membership);
-    }
-
     public User getModerator() throws NoSuchElementException {
         for (Membership m : memberships) {
-            if (m.getRole() == UserRole.MODERATOR) {
+            if (m.isModerator()) {
                 return m.getUser();
             }
         }
@@ -106,8 +115,10 @@ public class Group {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Group)) return false;
+        if (this == o)
+            return true;
+        if (!(o instanceof Group))
+            return false;
         Group other = (Group) o;
         return groupID.equals(other.groupID);
     }
