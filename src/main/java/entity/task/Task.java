@@ -5,15 +5,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-// import entity.group.Group;
-// import entity.user.User;
+import entity.group.Group;
+import entity.user.User;
 
 public class Task {
     private String id;
     private String description;
     private boolean completed;
-    // private final Group group;
-    // private final List<User> assignees;
+    private final Group group;
+    private final List<User> assignees;
     private LocalDateTime dueDate;
 
     /**
@@ -22,13 +22,20 @@ public class Task {
      * @param description The text description of the task
      * @param group       The group to which this task belongs
      */
-    public Task(String description, LocalDateTime dueDate/*, Group group*/) {
+    public Task(String description, LocalDateTime dueDate, Group group) {
         this.id = UUID.randomUUID().toString();
         this.description = description;
         this.dueDate = dueDate;
-        // this.group = group;
+        this.group = group;
         this.completed = false;
-        // this.assignees = new ArrayList<>();
+        this.assignees = new ArrayList<>();
+    }
+
+    /**
+     * @return The id of this task.
+     */
+    public String getID() {
+        return this.id;
     }
 
     /**
@@ -41,16 +48,16 @@ public class Task {
     /**
      * @return The group this task is associated with.
      */
-    /* public Group getGroup() {
+    public Group getGroup() {
         return group;
-    } */
+    }
 
     /**
      * @return An unmodifiable list of users assigned to this task.
      */
-    /* public List<User> getAssignees() {
+    public List<User> getAssignees() {
         return assignees;
-    } */
+    }
 
     /**
      * @return The due date of this task, or {@code null} if no due date is set.
@@ -60,12 +67,13 @@ public class Task {
     }
 
     /**
-     * @return {@code true} if the task is marked as completed, otherwise {@code false}.
+     * @return {@code true} if the task is marked as completed, otherwise
+     *         {@code false}.
      */
     public boolean isCompleted() {
         return completed;
     }
-    
+
     /**
      * Updates the description of this task.
      *
@@ -88,7 +96,7 @@ public class Task {
     public void markIncomplete() {
         this.completed = false;
     }
-    
+
     /**
      * Sets the due date of the task.
      *
@@ -116,10 +124,11 @@ public class Task {
      *
      * @param user User to assign to this task
      */
-    /* void addAssignee(User user) {
+
+    void addAssignee(User user) {
         assignees.add(user);
         user.addTask(this);
-    } */
+    }
 
     /**
      * Removes a user from the list of assignees.
@@ -128,8 +137,8 @@ public class Task {
      *
      * @param user The user to remove from assignment
      */
-    /* void removeAssignee(User user) {
+    void removeAssignee(User user) {
         assignees.remove(user);
         user.removeTask(this);
-    } */
+    }
 }
