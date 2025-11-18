@@ -1,13 +1,11 @@
 package entity.membership;
 
-import entity.user.User;
 import entity.user.UserRole;
-import entity.group.Group;
 
 public class Membership {
 
-    private User user;
-    private Group group;
+    private String user;
+    private String group;
     private UserRole role;
 
     /**
@@ -18,34 +16,22 @@ public class Membership {
      * @param group
      * @param role
      */
-    public Membership(User user, Group group, UserRole role) {
-        this.user = user;
-        this.group = group;
+    public Membership(String userID, String groupID, UserRole role) {
+        this.user = userID;
+        this.group = groupID;
         this.role = role;
     }
 
-    public User getUser() {
+    public String getUser() {
         return user;
     }
 
-    public Group getGroup() {
+    public String getGroup() {
         return group;
     }
 
     public UserRole getRole() {
         return role;
-    }
-
-    /**
-     * A group will call this method for the given user they want to remove.
-     * Uncomment once helper functions are implemented.
-     */
-    public void deleteMembership() {
-        // user.removeMembership(this);
-        // group.removeMembership(this);
-
-        // user = null;
-        // group = null;
     }
 
     public void checkPermissions() {
@@ -54,6 +40,14 @@ public class Membership {
 
     public void reassignRole(UserRole newRole) {
         this.role = newRole;
+    }
+
+    /**
+     * 
+     * @return Whether this user has the moderator role.
+     */
+    public Boolean isModerator() {
+        return this.role.equals(UserRole.MODERATOR);
     }
 
 }

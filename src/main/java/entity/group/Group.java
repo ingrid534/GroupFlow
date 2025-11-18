@@ -2,14 +2,11 @@ package entity.group;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import entity.membership.Membership;
-import entity.user.User;
 import entity.user.UserRole;
-import entity.task.Task;
 
 /**
  * A simple entity representing a group. Groups have IDs, names, memberships,
@@ -64,7 +61,6 @@ public class Group {
     public List<String> getMembers() {
         List<String> users = new ArrayList<>();
 
-        // .add will be resolved after changing membership class.
         for (Membership m : memberships) {
             users.add(m.getUser());
         }
@@ -73,7 +69,6 @@ public class Group {
     }
 
     /**
-     * May update this method later - unsure about using taskIDs
      * 
      * @return The list of Task IDs associated with all the tasks in this group.
      */
@@ -82,12 +77,14 @@ public class Group {
     }
 
     // Unsure about implementation
-    // public User getModerator() throws NoSuchElementException {
-    // for (Membership m : memberships) {
-    // if (m.isModerator()) {
-    // return m.getUser();
-    // }
-    // }
+    public String getModerator() throws NoSuchElementException {
+        for (Membership m : memberships) {
+            if (m.isModerator()) {
+                return m.getUser();
+            }
+        }
+        throw new NoSuchElementException("No moderator in this group.");
+    }
 
     // throw new NoSuchElementException("No moderator found.");
 
@@ -111,12 +108,18 @@ public class Group {
         this.memberships.remove(membership);
     }
 
-    public void assignTask(String taskID, String userID) {
-        // TODO: implement this
-    }
-
-    public void unassignTask(String taskID, String userID) {
-        // TODO: implement this
+    /**
+     * 
+     * @param userID
+     * @return Whether the user with the given user ID is a member of this group.
+     */
+    public Boolean isMember(String userID) {
+        for (Membership m : memberships) {
+            if (userID.equals(m.getUser())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

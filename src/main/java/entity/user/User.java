@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import entity.membership.Membership;
-import entity.group.Group;
-import entity.task.Task;
 
 /**
  * A simple entity representing a user. Users have a username and password..
@@ -16,8 +14,8 @@ public class User {
     private final String userID;
     private String name;
     private final String password;
-    private List<Membership> memberships = new ArrayList<>();
-    private List<String> tasks = new ArrayList<>();
+    private List<Membership> memberships;
+    private List<String> tasks;
 
     /**
      * Creates a new user with the given non-empty name and non-empty password.
@@ -36,6 +34,8 @@ public class User {
         this.userID = UUID.randomUUID().toString();
         this.name = name;
         this.password = password;
+        this.memberships = new ArrayList<>();
+        this.tasks = new ArrayList<>();
     }
 
     public String getUserID() {
