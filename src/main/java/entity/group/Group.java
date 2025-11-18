@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 
 import entity.membership.Membership;
 import entity.user.User;
@@ -19,7 +20,7 @@ public class Group {
     private final String groupID;
     private String name;
     private List<Membership> memberships;
-    private List<Task> tasks;
+    private List<String> tasks;
     private String groupType;
 
     /**
@@ -30,32 +31,74 @@ public class Group {
      *
      * @param name         the group name
      * @param groupType    the group type
-     * @param groupCreator the User object who created the group
+     * @param groupCreator the User ID of the user that created this group.
      *
      */
-    public Group(String name, String groupType, User groupCreator) {
-        this.groupID = generateRandomID(); // Temporary until we set up a DB
+    public Group(String name, String groupType, String groupCreator) {
+        this.groupID = UUID.randomUUID().toString(); // Temporary until we set up a DB
         this.name = name;
         this.groupType = groupType;
 
-        Membership creatorMembership = new Membership(groupCreator, this, UserRole.MODERATOR);
+        // will be fixed after Membership is updated.
+        Membership creatorMembership = new Membership(groupCreator, this.groupID, UserRole.MODERATOR);
         this.memberships = new ArrayList<>(List.of(creatorMembership));
         this.tasks = new ArrayList<>();
     }
 
-    private static String generateRandomID() {
-        String alphanum = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        StringBuilder sb = new StringBuilder();
-        Random random = new Random();
+    public String getGroupID() {
+        return groupID;
+    }
 
-        int length = 8;
-        for (int i = 0; i < length; i++) {
-            int randIndex = random.nextInt(alphanum.length());
-            char randChar = alphanum.charAt(randIndex);
-            sb.append(randChar);
+    public String getName() {
+        return name;
+    }
+
+    public String getGroupType() {
+        return groupType;
+    }
+
+    /**
+     * 
+     * @return The userIDs associated with all the users in this group.
+     */
+    public List<String> getMembers() {
+        List<String> users = new ArrayList<>();
+
+        // .add will be resolved after changing membership class.
+        for (Membership m : memberships) {
+            users.add(m.getUser());
         }
 
-        return sb.toString();
+        return users;
+    }
+
+    /**
+     * May update this method later - unsure about using taskIDs
+     * 
+     * @return The list of Task IDs associated with all the tasks in this group.
+     */
+    public List<String> getTasks() {
+        return tasks;
+    }
+
+    // Unsure about implementation
+    // public User getModerator() throws NoSuchElementException {
+    // for (Membership m : memberships) {
+    // if (m.isModerator()) {
+    // return m.getUser();
+    // }
+    // }
+
+    // throw new NoSuchElementException("No moderator found.");
+
+    // }
+
+    public void setName(String groupName) {
+        this.name = groupName;
+    }
+
+    public void setGroupType(String groupType) {
+        this.groupType = groupType;
     }
 
     public void addMembership(Membership membership) {
@@ -68,44 +111,12 @@ public class Group {
         this.memberships.remove(membership);
     }
 
-    public String getGroupType() {
-        return groupType;
+    public void assignTask(String taskID, String userID) {
+        // TODO: implement this
     }
 
-    public List<User> getMembers() {
-        List<User> users = new ArrayList<>();
-
-        for (Membership m : memberships) {
-            users.add(m.getUser());
-        }
-
-        return users;
-    }
-
-    public User getModerator() throws NoSuchElementException {
-        for (Membership m : memberships) {
-            if (m.isModerator()) {
-                return m.getUser();
-            }
-        }
-
-        throw new NoSuchElementException("No moderator found.");
-    }
-
-    public String getGroupID() {
-        return groupID;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String groupName) {
-        this.name = groupName;
-    }
-
-    public void setGroupType(String groupType) {
-        this.groupType = groupType;
+    public void unassignTask(String taskID, String userID) {
+        // TODO: implement this
     }
 
     @Override

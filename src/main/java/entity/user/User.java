@@ -2,6 +2,7 @@ package entity.user;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.UUID;
 
 import entity.membership.Membership;
 import entity.group.Group;
@@ -12,10 +13,11 @@ import entity.task.Task;
  */
 public class User {
 
+    private final String userID;
     private String name;
     private final String password;
     private List<Membership> memberships = new ArrayList<>();
-    private List<Task> tasks = new ArrayList<>();
+    private List<String> tasks = new ArrayList<>();
 
     /**
      * Creates a new user with the given non-empty name and non-empty password.
@@ -31,8 +33,13 @@ public class User {
         if ("".equals(password)) {
             throw new IllegalArgumentException("Password cannot be empty");
         }
+        this.userID = UUID.randomUUID().toString();
         this.name = name;
         this.password = password;
+    }
+
+    public String getUserID() {
+        return userID;
     }
 
     public String getName() {
@@ -43,17 +50,19 @@ public class User {
         return password;
     }
 
-    public List<Task> getTasks() {
+    public List<String> getTasks() {
         return tasks;
     }
 
     /**
      * 
-     * @return A list of all the groups this user is currently a member of.
+     * @return A list of all the group IDs associated with each group this user is
+     *         currently a member of.
      */
-    public List<Group> getGroups() {
-        List<Group> groups = new ArrayList<>();
+    public List<String> getGroups() {
+        List<String> groups = new ArrayList<>();
 
+        // will fix after Membership updated
         for (Membership m : memberships) {
             groups.add(m.getGroup());
         }
@@ -71,12 +80,12 @@ public class User {
         }
     }
 
-    public void addTask(Task task) {
-        this.tasks.add(task);
+    public void addTask(String taskID) {
+        this.tasks.add(taskID);
     }
 
-    public void removeTask(Task task) {
-        this.tasks.remove(task);
+    public void removeTask(String taskID) {
+        this.tasks.remove(taskID);
     }
 
 }

@@ -127,7 +127,7 @@ public class Task {
 
     void addAssignee(User user) {
         assignees.add(user);
-        user.addTask(this);
+        user.addTask(this.id);
     }
 
     /**
@@ -139,6 +139,6 @@ public class Task {
      */
     void removeAssignee(User user) {
         assignees.remove(user);
-        user.removeTask(this);
+        user.removeTask(this.id);
     }
 }
