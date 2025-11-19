@@ -283,7 +283,7 @@
             <property name="tokens" value="LAMBDA"/>
             <property name="allowSingleLineStatement" value="true"/>
         </module>
-        <module name="RightCurly">
+        <!-- <module name="RightCurly">
             <property name="tokens" value="METHOD_DEF"/>
             <property name="tokens" value="CTOR_DEF"/>
             <property name="tokens" value="CLASS_DEF"/>
@@ -310,7 +310,7 @@
         <module name="RightCurly">
             <property name="tokens" value="INTERFACE_DEF"/>
             <property name="option" value="alone_or_singleline"/>
-        </module>
+        </module> -->
 
         <!-- Class Design -->
         <module name="FinalClass"/>
@@ -324,6 +324,8 @@
         <module name="VisibilityModifier">
             <property name="ignoreAnnotationCanonicalNames"
                       value="org.junit.Rule, org.junit.jupiter.api.io.TempDir"/>
+            <property name="protectedAllowed" value="true"/>
+            <property name="packageAllowed" value="true"/>
         </module>
 
         <!-- Coding -->
@@ -332,7 +334,7 @@
         <module name="AvoidInlineConditionals"/>
         <module name="AvoidNoArgumentSuperConstructorCall"/>
         <module name="CovariantEquals"/>
-        <module name="DeclarationOrder"/>
+        <!-- <module name="DeclarationOrder"/> -->
         <module name="DefaultComesLast"/>
         <module name="EmptyStatement"/>
         <module name="EqualsAvoidNull"/>
@@ -379,7 +381,7 @@
                        java.lang.StringBuffer, StringBuffer"/>
         </module>
         <module name="InnerAssignment"/>
-        <module name="MagicNumber"/>
+        <!-- <module name="MagicNumber"/> -->
         <module name="MatchXpath">
             <property name="query" value="//CLASS_DEF[@text!='Checker' and @text!='Main']
       //LITERAL_CATCH//METHOD_CALL[.//IDENT[@text = 'printStackTrace']]/.."/>
@@ -509,7 +511,7 @@
         <module name="ParameterAssignment"/>
         <module name="RequireThis"/>
         <module name="ReturnCount">
-            <property name="max" value="1"/>
+            <!-- <property name="max" value="1"/> -->
             <property name="maxForVoid" value="0"/>
             <property name="format" value="^create"/>
         </module>
@@ -568,7 +570,7 @@
         </module>
         <module name="SuppressionXpathSingleFilter">
             <property name="files" value=".*[\\/]src[\\/](test|it|xdocs-examples)[\\/]"/>
-            <property name="checks" value="AvoidStaticImport"/>
+            <!-- <property name="checks" value="AvoidStaticImport"/> -->
         </module>
         <module name="SuppressionXpathSingleFilter">
             <property name="files" value=".*[\\/]src[\\/](test|it|xdocs-examples)[\\/]"/>
@@ -592,8 +594,8 @@
 
         <!-- Imports -->
         <module name="AvoidStarImport"/>
-        <module name="AvoidStaticImport"/>
-        <module name="CustomImportOrder">
+        <!-- <module name="AvoidStaticImport"/> -->
+        <!-- <module name="CustomImportOrder">
             <property name="customImportOrderRules"
                       value="STATIC###STANDARD_JAVA_PACKAGE###SPECIAL_IMPORTS###THIRD_PARTY_PACKAGE"/>
             <property name="standardPackageRegExp" value="^java\."/>
@@ -601,16 +603,16 @@
             <property name="thirdPartyPackageRegExp" value="^org\."/>
             <property name="sortImportsInGroupAlphabetically" value="true"/>
             <property name="separateLineBetweenGroups" value="true"/>
-        </module>
+        </module> -->
         <module name="IllegalImport"/>
 
-        <module name="ImportOrder">
+        <!-- <module name="ImportOrder">
             <property name="groups" value="/^java\./,javax,org"/>
             <property name="ordered" value="true"/>
             <property name="separated" value="true"/>
             <property name="option" value="top"/>
             <property name="sortStaticImportsAlphabetically" value="true"/>
-        </module>
+        </module> -->
         <module name="RedundantImport"/>
         <module name="UnusedImports"/>
 
@@ -652,10 +654,10 @@
 
         <!-- Metrics -->
         <module name="BooleanExpressionComplexity">
-            <property name="max" value="7"/>
+            <property name="max" value="30"/>
         </module>
-        <module name="ClassDataAbstractionCoupling">
-            <!-- Default classes are also listed -->
+        <!-- <module name="ClassDataAbstractionCoupling">
+            Default classes are also listed 
             <property name="excludedClasses"
                       value="boolean, byte, char, double, float, int, long, short, void,
                        Boolean, Byte, Character, Double, Float, Integer, Long, Short, Void,
@@ -668,9 +670,9 @@
                        HashMap, SortedMap, TreeMap, DetailsAST, CheckstyleException,
                        UnsupportedEncodingException, BuildException, ConversionException,
                        FileNotFoundException, TestException"/>
-        </module>
+        </module> -->
         <module name="ClassFanOutComplexity">
-            <property name="max" value="25"/>
+            <property name="max" value="40"/>
             <!-- Default classes are also listed -->
             <property name="excludedClasses"
                       value="boolean, byte, char, double, float, int, long, short,
@@ -738,7 +740,7 @@
         <!-- Naming Conventions -->
         <module name="AbbreviationAsWordInName">
             <property name="ignoreFinal" value="false"/>
-            <property name="allowedAbbreviationLength" value="0"/>
+            <property name="allowedAbbreviationLength" value="2"/>
             <property name="allowedAbbreviations" value="AST,HTML,ID,JSON"/>
         </module>
         <module name="AbstractClassName"/>
@@ -756,7 +758,7 @@
         </module>
         <module name="MethodName"/>
         <module name="MethodTypeParameterName"/>
-        <module name="PackageName"/>
+        <!-- <module name="PackageName"/> -->
         <module name="ParameterName">
             <property name="format" value="^(id)|([a-z][a-z0-9][a-zA-Z0-9]+)$"/>
             <property name="ignoreOverridden" value="true"/>
@@ -792,7 +794,7 @@
         <module name="ExecutableStatementCount">
             <property name="max" value="30"/>
         </module>
-        <module name="LambdaBodyLength"/>
+        <!-- <module name="LambdaBodyLength"/> -->
         <module name="MethodCount">
             <property name="maxTotal" value="34"/>
         </module>

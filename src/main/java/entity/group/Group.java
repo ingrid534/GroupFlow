@@ -31,7 +31,8 @@ public class Group {
      *
      */
     public Group(String name, GroupType groupType) {
-        this.groupID = UUID.randomUUID().toString(); // Temporary until we set up a DB
+        // Temporary until we set up a DB
+        this.groupID = UUID.randomUUID().toString();
         this.name = name;
         this.groupType = groupType;
         this.memberships = new ArrayList<>();
@@ -51,11 +52,12 @@ public class Group {
     }
 
     /**
+     * Method to get all members in this group.
      * 
      * @return The userIDs associated with all the users in this group.
      */
     public List<String> getMembers() {
-        List<String> users = new ArrayList<>();
+        final List<String> users = new ArrayList<>();
 
         for (Membership m : memberships) {
             users.add(m.getUser());
@@ -65,6 +67,7 @@ public class Group {
     }
 
     /**
+     * Method to get all tasks in this group.
      * 
      * @return The list of Task IDs associated with all the tasks in this group.
      */
@@ -73,10 +76,10 @@ public class Group {
     }
 
     /**
+     * Method to get the moderator of this group.
      * 
-     * @return The moderator of this group. If group has no moderator, throw an
-     *         exception.
-     * @throws NoSuchElementException
+     * @return The moderator of this group
+     * @throws NoSuchElementException if the group has no moderator
      */
     public String getModerator() throws NoSuchElementException {
         for (Membership m : memberships) {
@@ -88,6 +91,7 @@ public class Group {
     }
 
     /**
+     * Method to check whether this group has a moderator.
      * 
      * @return Whether this group has a moderator.
      */
