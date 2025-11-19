@@ -3,7 +3,6 @@ package app;
 
 import data_access.DBTaskDataAccessObject;
 import data_access.DBUserDataAccessObject;
-import data_access.DBUserDataAccessObject;
 import entity.user.UserFactory;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.dashboard.DashboardViewModel;
