@@ -1,7 +1,8 @@
 package app;
 
-import data_access.FileUserDataAccessObject;
-import entity.User.UserFactory;
+
+import data_access.DBUserDataAccessObject;
+import entity.user.UserFactory;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.dashboard.DashboardViewModel;
 import interface_adapter.logged_in.ChangePasswordController;
@@ -44,8 +45,8 @@ public class AppBuilder {
     // set which data access implementation to use, can be any
     // of the classes from the data_access package
 
-    // DAO version using local file storage
-    final FileUserDataAccessObject userDataAccessObject = new FileUserDataAccessObject("users.csv", userFactory);
+    // DAO version using MongoDB
+    final DBUserDataAccessObject userDataAccessObject = new DBUserDataAccessObject(userFactory, "mongodb+srv://data_access:WCV3cDtZas1zWFTg@cluster0.pdhhga4.mongodb.net/?appName=Cluster0", "group_flow");
 
     // DAO version using a shared external database
     // final DBUserDataAccessObject userDataAccessObject = new
