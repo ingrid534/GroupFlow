@@ -57,8 +57,4 @@ public class CreateGroupInteractor implements CreateGroupInputBoundary{
         createGroupPresenter.openCreateGroupModal();
     }
 
-    @Override
-    public void switchToDashboardView() {
-        createGroupPresenter.switchToDashboardView();
-    }
 }

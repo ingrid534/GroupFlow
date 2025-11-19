@@ -1,9 +1,7 @@
 package interface_adapter.logged_in;
 
-import interface_adapter.create_group.CreateGroupState;
 import use_case.change_password.ChangePasswordInputBoundary;
 import use_case.change_password.ChangePasswordInputData;
-import use_case.create_group.CreateGroupInputData;
 
 /**
  * Controller for the Change Password Use Case.

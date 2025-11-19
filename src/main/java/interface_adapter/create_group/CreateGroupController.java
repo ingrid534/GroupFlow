@@ -30,12 +30,4 @@ public class CreateGroupController {
         createGroupInteractor.openCreateGroupModal();
     }
 
-    /**
-     * Executes the "switch to Dashboard" Use Case.
-     */
-    public void switchToDashboard() {
-        createGroupInteractor.switchToDashboardView();
-    }
-
-
 }

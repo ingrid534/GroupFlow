@@ -11,6 +11,4 @@ public interface CreateGroupOutputBoundary {
     void prepareFailView(String errorMessage);
 
     void openCreateGroupModal();
-
-    void switchToDashboardView();
 }

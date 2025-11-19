@@ -9,7 +9,6 @@ public class CreateGroupState {
 
     private String groupName = "";
     private GroupType groupType;
-    private String groupCreatorUsername = "";
     private boolean openModal = false;
     private String error = "";
 
@@ -21,8 +20,6 @@ public class CreateGroupState {
         return groupType;
     }
 
-    public String getGroupCreatorUsername() {return groupCreatorUsername;}
-
     public void setGroupName(String groupName) {
         this.groupName = groupName;
     }
@@ -30,8 +27,6 @@ public class CreateGroupState {
     public void setGroupType(GroupType groupType) {
         this.groupType = groupType;
     }
-
-    public void setGroupCreatorUsername(String groupCreatorUsername) {this.groupCreatorUsername = groupCreatorUsername;}
 
     public void setOpenModal(boolean modalState) {this.openModal = modalState;}
 

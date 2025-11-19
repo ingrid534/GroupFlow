@@ -48,10 +48,4 @@ public class CreateGroupPresenter implements CreateGroupOutputBoundary {
         createGroupViewModel.getState().setOpenModal(true);
         createGroupViewModel.firePropertyChange("openModal");
     }
-
-    @Override
-    public void switchToDashboardView() {
-        viewManagerModel.setState(dashboardViewModel.getViewName());
-        viewManagerModel.firePropertyChange();
-    }
 }

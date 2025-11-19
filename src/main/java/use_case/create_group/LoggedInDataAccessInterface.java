@@ -3,7 +3,7 @@ package use_case.create_group;
 import entity.user.User;
 
 /**
- * DAO interface for the Login Use Case.
+ * DAO interface for a LoggedIn user in the CreateGroup use case.
  */
 public interface LoggedInDataAccessInterface {
 
