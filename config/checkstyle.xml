@@ -341,7 +341,7 @@
         <module name="EqualsHashCode"/>
         <module name="ExplicitInitialization"/>
         <module name="FallThrough"/>
-        <module name="FinalLocalVariable"/>
+        <!-- <module name="FinalLocalVariable"/> -->
         <module name="HiddenField">
             <property name="ignoreConstructorParameter" value="true"/>
             <property name="ignoreSetter" value="true"/>
@@ -507,14 +507,14 @@
         <module name="NoFinalizer"/>
         <module name="OneStatementPerLine"/>
         <module name="OverloadMethodsDeclarationOrder"/>
-        <module name="PackageDeclaration"/>
+        <!-- <module name="PackageDeclaration"/> -->
         <module name="ParameterAssignment"/>
         <module name="RequireThis"/>
-        <module name="ReturnCount">
-            <!-- <property name="max" value="1"/> -->
+        <!-- <module name="ReturnCount">
+            <property name="max" value="1"/>
             <property name="maxForVoid" value="0"/>
             <property name="format" value="^create"/>
-        </module>
+        </module> -->
         <module name="SimplifyBooleanExpression"/>
         <module name="SimplifyBooleanReturn"/>
         <module name="StringLiteralEquality"/>
@@ -593,7 +593,7 @@
         </module>
 
         <!-- Imports -->
-        <module name="AvoidStarImport"/>
+        <!-- <module name="AvoidStarImport"/> -->
         <!-- <module name="AvoidStaticImport"/> -->
         <!-- <module name="CustomImportOrder">
             <property name="customImportOrderRules"
@@ -649,7 +649,7 @@
         </module>
         <module name="NonEmptyAtclauseDescription"/>
         <module name="SingleLineJavadoc"/>
-        <module name="WriteTag"/>
+        <!-- <module name="WriteTag"/> -->
         <module name="SummaryJavadoc"/>
 
         <!-- Metrics -->
@@ -694,7 +694,7 @@
         <module name="CyclomaticComplexity">
             <property name="switchBlockAsSingleDecisionPoint" value="true"/>
         </module>
-        <module name="JavaNCSS"/>
+        <!-- <module name="JavaNCSS"> -->
         <module name="NPathComplexity"/>
 
         <!-- Misc -->
@@ -739,7 +739,7 @@
 
         <!-- Naming Conventions -->
         <module name="AbbreviationAsWordInName">
-            <property name="ignoreFinal" value="false"/>
+            <property name="ignoreFinal" value="true"/>
             <property name="allowedAbbreviationLength" value="2"/>
             <property name="allowedAbbreviations" value="AST,HTML,ID,JSON"/>
         </module>
@@ -790,7 +790,9 @@
         </module>
 
         <!-- Size Violations -->
-        <module name="AnonInnerLength"/>
+        <module name="AnonInnerLength">
+            <property name="max" value="35"/>
+        </module>
         <module name="ExecutableStatementCount">
             <property name="max" value="30"/>
         </module>

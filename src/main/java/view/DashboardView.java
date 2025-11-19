@@ -1,25 +1,22 @@
 package view;
 
 import interface_adapter.dashboard.DashboardViewModel;
-import interface_adapter.logged_in.ChangePasswordController;
 import interface_adapter.dashboard.LoggedInState;
 import interface_adapter.logout.LogoutController;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.SortedSet;
 
 /**
- * Dashboard (formerly LoggedInView):
+ * Dashboard (formerly LoggedInView):.
  * - Left sidebar: user-specific groups
  * - Right area: per-group working area with tabs (placeholders for now)
  * - Header with username + logout button
@@ -29,6 +26,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
 
     private final String viewName = "dashboard";
     private final DashboardViewModel dashboardViewModel;
+    private static final String HOME = "Home";
 
     // Controllers
     private LogoutController logoutController;
@@ -60,10 +58,12 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
 
         // Sidebar behavior
         groupsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        groupsList.addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
+        groupsList.addListSelectionListener(event -> {
+            if (!event.getValueIsAdjusting()) {
                 String sel = groupsList.getSelectedValue();
-                if (sel != null) cards.show(workArea, sel);
+                if (sel != null) {
+                    cards.show(workArea, sel);
+                }
             }
         });
 
@@ -89,7 +89,6 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
         logoutButton = new JButton("Log Out");
         right.add(logoutButton);
 
-
         header.add(right, BorderLayout.EAST);
         return header;
     }
@@ -101,12 +100,12 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
 
         // Workspace (cards)
         workArea.setBorder(new EmptyBorder(0, 0, 0, 0));
-        workArea.add(buildHomePanel(), "Home");
+        workArea.add(buildHomePanel(), HOME);
 
         // TODO: switch to dynamic user data 2.
-//        for (String groupName : currentUser.getGroups()) {
-//            workArea.add(createGroupPanel(groupName), groupName);
-//        }
+        // for (String groupName : currentUser.getGroups()) {
+        // workArea.add(createGroupPanel(groupName), groupName);
+        // }
 
         JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sidebar, workArea);
         split.setDividerLocation(200);
@@ -122,7 +121,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     }
 
     private JPanel createGroupPanel(String name) {
-        JPanel groupPanel = new JPanel(new BorderLayout());
+        final JPanel groupPanel = new JPanel(new BorderLayout());
 
         // Top header
         JPanel header = new JPanel(new BorderLayout());
@@ -135,7 +134,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
 
         // Tabs
         JTabbedPane tabs = new JTabbedPane(JTabbedPane.TOP);
-        tabs.addChangeListener(e -> {
+        tabs.addChangeListener(event -> {
             for (int i = 0; i < tabs.getTabCount(); i++) {
                 if (i == tabs.getSelectedIndex()) {
                     tabs.setForegroundAt(i, new Color(0x1E88E5));
@@ -145,7 +144,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
             }
         });
 
-        tabs.addTab("Home", placeholderPanel("Home panel for " + name));
+        tabs.addTab(HOME, placeholderPanel("Home panel for " + name));
         tabs.addTab("People", placeholderPanel("People tab for " + name));
         tabs.addTab("Meets", placeholderPanel("Meetings tab for " + name));
         tabs.addTab("Tasks", placeholderPanel("Tasks tab for " + name));
@@ -169,50 +168,67 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
 
     // --- Public API for AppBuilder / Controllers ---------------------------
 
-    public String getViewName() { return viewName; }
+    public String getViewName() {
+        return viewName;
+    }
 
     // TODO: add logout implementation
-//    public void setLogoutController(LogoutController c) {
-//        this.logoutController = c;
-//    }
+    // public void setLogoutController(LogoutController c) {
+    // this.logoutController = c;
+    // }
 
     /** Allows the presenter to push the user's groups once loaded. */
+    // TODO: need to break this up into helper methods
     public void setGroups(List<String> groups) {
         groupsModel.clear();
         // always pin Home on top
-        groupsModel.addElement("Home");
+        groupsModel.addElement(HOME);
 
         if (groups != null && !groups.isEmpty()) {
             // sort + dedupe case-insensitively, and drop "Home"
-            java.util.TreeSet<String> sorted =
-                    new java.util.TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+            SortedSet<String> sorted = new java.util.TreeSet<>(String.CASE_INSENSITIVE_ORDER);
             for (String g : groups) {
-                if (g != null && !g.equalsIgnoreCase("Home")) sorted.add(g);
+                if (g != null && !HOME.equalsIgnoreCase(g)) {
+                    sorted.add(g);
+                }
             }
             // add sorted groups below Home
-            for (String g : sorted) groupsModel.addElement(g);
+            for (String g : sorted) {
+                groupsModel.addElement(g);
+            }
         }
 
         // sync workArea cards to match the model
         // + remove cards that no longer exist in the model
         java.util.Set<String> wanted = new java.util.LinkedHashSet<>();
-        for (int i = 0; i < groupsModel.size(); i++) wanted.add(groupsModel.get(i));
+        for (int i = 0; i < groupsModel.size(); i++) {
+            wanted.add(groupsModel.get(i));
+        }
 
         java.util.List<Component> toRemove = new java.util.ArrayList<>();
         for (Component c : workArea.getComponents()) {
             String name = c.getName();
-            if (name != null && !wanted.contains(name)) toRemove.add(c);
+            if (name != null && !wanted.contains(name)) {
+                toRemove.add(c);
+            }
         }
-        for (Component c : toRemove) workArea.remove(c);
+        for (Component c : toRemove) {
+            workArea.remove(c);
+        }
 
         // ensure each non-Home group has a panel
         for (int i = 0; i < groupsModel.size(); i++) {
             String key = groupsModel.get(i);
-            if ("Home".equals(key)) continue;
+            if (HOME.equals(key)) {
+                continue;
+            }
 
             boolean exists = false;
             for (Component c : workArea.getComponents()) {
-                if (key.equals(c.getName())) { exists = true; break; }
+                if (key.equals(c.getName())) {
+                    exists = true;
+                    break;
+                }
             }
             if (!exists) {
                 JPanel gp = createGroupPanel(key);
@@ -221,19 +237,21 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
             }
         }
 
-        if (groupsList.getModel().getSize() > 0) groupsList.setSelectedIndex(0);
+        if (groupsList.getModel().getSize() > 0) {
+            groupsList.setSelectedIndex(0);
+        }
     }
 
     // --- Events -------------------------------------------------------------
 
-    /** Logout button */
+    /** Logout button. */
     @Override
     public void actionPerformed(ActionEvent evt) {
         System.out.println("Click " + evt.getActionCommand());
         logoutController.execute();
     }
 
-    /** React to presenter updates */
+    /** React to presenter updates. */
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if ("state".equals(evt.getPropertyName())) {
@@ -243,7 +261,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
             LoggedInState st = (LoggedInState) evt.getNewValue();
             if (st.getPasswordError() == null) {
                 JOptionPane.showMessageDialog(this, "password updated for " + st.getUsername());
-//                passwordInputField.setText("");
+                // passwordInputField.setText("");
             } else {
                 JOptionPane.showMessageDialog(this, st.getPasswordError());
             }
