@@ -51,7 +51,7 @@ public class Group {
     }
 
     /**
-     *
+     * 
      * @return The userIDs associated with all the users in this group.
      */
     public List<String> getMembers() {
@@ -65,7 +65,7 @@ public class Group {
     }
 
     /**
-     *
+     * 
      * @return The list of Task IDs associated with all the tasks in this group.
      */
     public List<String> getTasks() {
@@ -73,7 +73,7 @@ public class Group {
     }
 
     /**
-     *
+     * 
      * @return The moderator of this group. If group has no moderator, throw an
      *         exception.
      * @throws NoSuchElementException
@@ -88,7 +88,7 @@ public class Group {
     }
 
     /**
-     *
+     * 
      * @return Whether this group has a moderator.
      */
     public boolean hasModerator() {
@@ -101,7 +101,7 @@ public class Group {
     }
 
     /**
-     *
+     * 
      * @return How many moderators there are in this group.
      */
     public int moderatorCount() {
@@ -133,7 +133,7 @@ public class Group {
     }
 
     /**
-     *
+     * 
      * @param userID
      * @return Whether the user with the given user ID is a member of this group.
      */
@@ -153,7 +153,7 @@ public class Group {
      * role is the same as the user's old role, do nothing. If the user is the last
      * moderator in the group and will be demoted, throw IllegalStateException
      * (group must have at least one moderator).
-     *
+     * 
      * @param userID
      * @param newRole
      */

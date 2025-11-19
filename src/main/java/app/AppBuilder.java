@@ -1,5 +1,7 @@
 package app;
 
+
+import data_access.DBUserDataAccessObject;
 import data_access.FileUserDataAccessObject;
 import entity.group.GroupFactory;
 import entity.membership.MembershipFactory;
@@ -54,8 +56,8 @@ public class AppBuilder {
     // set which data access implementation to use, can be any
     // of the classes from the data_access package
 
-    // DAO version using local file storage
-    final FileUserDataAccessObject userDataAccessObject = new FileUserDataAccessObject("users.csv", userFactory);
+    // DAO version using MongoDB
+    final DBUserDataAccessObject userDataAccessObject = new DBUserDataAccessObject(userFactory, "mongodb+srv://data_access:WCV3cDtZas1zWFTg@cluster0.pdhhga4.mongodb.net/?appName=Cluster0", "group_flow");
 
     // DAO version using a shared external database
     // final DBUserDataAccessObject userDataAccessObject = new
@@ -157,14 +159,13 @@ public class AppBuilder {
 
     public AppBuilder addChangePasswordUseCase() {
         final ChangePasswordOutputBoundary changePasswordOutputBoundary = new ChangePasswordPresenter(viewManagerModel,
-                loggedInViewModel, createGroupViewModel);
+                loggedInViewModel);
 
         final ChangePasswordInputBoundary changePasswordInteractor = new ChangePasswordInteractor(userDataAccessObject,
                 changePasswordOutputBoundary, userFactory);
 
         ChangePasswordController changePasswordController = new ChangePasswordController(changePasswordInteractor);
         loggedInView.setChangePasswordController(changePasswordController);
-        dashboardView.setChangePasswordController(changePasswordController);
         return this;
     }
 
@@ -185,7 +186,7 @@ public class AppBuilder {
     }
 
     public JFrame build() {
-        application = new JFrame("Dashboard");
+        final JFrame application = new JFrame("Dashboard");
         application.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         application.setContentPane(cardPanel);
 

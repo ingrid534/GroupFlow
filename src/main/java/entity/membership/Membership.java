@@ -11,7 +11,7 @@ public class Membership {
     /**
      * Creates a new membership with the given user, group, and role of the
      * given user in the group.
-     *
+     * 
      * @param user
      * @param group
      * @param role
@@ -43,7 +43,7 @@ public class Membership {
     }
 
     /**
-     *
+     * 
      * @return Whether this user has the moderator role.
      */
     public Boolean isModerator() {
