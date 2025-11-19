@@ -177,7 +177,11 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     // this.logoutController = c;
     // }
 
-    /** Allows the presenter to push the user's groups once loaded. */
+    /**
+     * Allows the presenter to push the user's groups once loaded.
+     * 
+     * @param groups The list of groups to be pushed
+     */
     // TODO: need to break this up into helper methods
     public void setGroups(List<String> groups) {
         groupsModel.clear();
