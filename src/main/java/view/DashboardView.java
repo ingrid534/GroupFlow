@@ -146,7 +146,8 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
         });
 
         tabs.addTab("Home", placeholderPanel("Home panel for " + name));
-        tabs.addTab("People", placeholderPanel("People tab for " + name));
+        tabs.addTab("People", new PeopleTabPanel(name));
+//        tabs.addTab("People", placeholderPanel("People tab for " + name));
         tabs.addTab("Meets", placeholderPanel("Meetings tab for " + name));
         tabs.addTab("Tasks", placeholderPanel("Tasks tab for " + name));
         tabs.addTab("Sched", placeholderPanel("Schedule tab for " + name));
