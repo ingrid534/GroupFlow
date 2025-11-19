@@ -123,7 +123,7 @@ public class Task {
      * @return Whether this task has a set due date.
      */
     public Boolean hasDueDate() {
-        return dueDate.equals(null);
+        return dueDate != null;
     }
 
     /**
