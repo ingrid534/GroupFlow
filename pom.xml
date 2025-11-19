@@ -70,9 +70,6 @@
                 </dependencies>
                 <configuration>
                     <configLocation>config/checkstyle.xml</configLocation>
-                    <failsOnError>false</failsOnError>
-                    <failOnViolation>false</failOnViolation> <!-- Add this -->
-                    <violationSeverity>warning</violationSeverity>
                 </configuration>
                 <executions>
                     <execution>
