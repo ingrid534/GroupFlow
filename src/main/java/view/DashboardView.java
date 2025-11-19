@@ -4,6 +4,8 @@ import interface_adapter.dashboard.DashboardViewModel;
 import interface_adapter.logged_in.ChangePasswordController;
 import interface_adapter.dashboard.LoggedInState;
 import interface_adapter.logout.LogoutController;
+import interface_adapter.viewtasks.ViewTasksViewModel;
+import interface_adapter.viewtasks.ViewTasksController;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -29,6 +31,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
 
     private final String viewName = "dashboard";
     private final DashboardViewModel dashboardViewModel;
+    private ViewTasksView viewTasksView;
 
     // Controllers
     private LogoutController logoutController;
@@ -70,6 +73,10 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
         // TODO: switch to dynamic user data 1.
         setGroups(List.of("Group 1", "Group 2", "Group 3"));
         groupsList.setSelectedIndex(0);
+    }
+
+    public void setTasksView(ViewTasksView view) {
+        this.viewTasksView = view;
     }
 
     private JComponent buildHeader() {
@@ -117,7 +124,22 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     private JPanel buildHomePanel() {
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(new EmptyBorder(12, 12, 12, 12));
-        p.add(new JLabel("Welcome! Select a group to view its workspace."), BorderLayout.NORTH);
+
+        JLabel welcome = new JLabel("Your Tasks:");
+        welcome.setBorder(new EmptyBorder(0, 0, 12, 0));
+        p.add(welcome, BorderLayout.NORTH);
+
+        if (viewTasksView != null) {
+            JScrollPane taskScrollPane = new JScrollPane(viewTasksView);
+            taskScrollPane.setPreferredSize(new Dimension(250, 400));
+            taskScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
+            p.add(taskScrollPane, BorderLayout.WEST);
+        }
+        p.add(new JLabel("Welcome! Select a group to view its workspace."), BorderLayout.CENTER);
+
+        p.setName("Home");
+
         return p;
     }
 

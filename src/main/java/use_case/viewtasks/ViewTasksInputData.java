@@ -4,13 +4,13 @@ package use_case.viewtasks;
  * Input data containing the user requesting to view tasks.
  */
 public class ViewTasksInputData {
-    private final String userId;
+    private final String username;
 
-    public ViewTasksInputData(String userId) {
-        this.userId = userId;
+    public ViewTasksInputData(String username) {
+        this.username = username;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getUserName() {
+        return username;
     }
 }

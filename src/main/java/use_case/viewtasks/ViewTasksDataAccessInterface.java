@@ -8,7 +8,7 @@ import java.util.List;
  */
 public interface ViewTasksDataAccessInterface {
 
-    List<String> getTasksForUser(String userId);
+    List<String> getTasksForUser(String username);
 
     Task getTask(String taskId);
 }

@@ -7,32 +7,36 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ViewTasksInteractor implements ViewTasksInputBoundary {
-    private final ViewTasksDataAccessInterface taskRepo;
+    private final ViewTasksDataAccessInterface taskAccessObject;
     private final ViewTasksOutputBoundary presenter;
 
-    public ViewTasksInteractor(ViewTasksDataAccessInterface taskRepo,
+    private static final DateTimeFormatter DATE_FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    public ViewTasksInteractor(ViewTasksDataAccessInterface taskAccessObject,
                                ViewTasksOutputBoundary presenter) {
-        this.taskRepo = taskRepo;
+        this.taskAccessObject = taskAccessObject;
         this.presenter = presenter;
     }
 
     @Override
     public void execute(ViewTasksInputData inputData) {
-        List<String> task_ids = taskRepo.getTasksForUser(inputData.getUserId());
+        List<String> taskIds = taskAccessObject.getTasksForUser(inputData.getUserName());
         List<ViewTasksOutputData.TaskDTO> dtoList = new ArrayList<>();
 
-        for (String taskId : task_ids) {
-            Task task = taskRepo.getTask(taskId);
+        for (String taskId : taskIds) {
+            Task task = taskAccessObject.getTask(taskId);
 
             if (task == null) continue;
 
+            String dueDateString = task.getDueDate()
+                            .map(d -> d.format(DATE_FORMATTER))
+                                    .orElse("No due date");
             dtoList.add(
                     new ViewTasksOutputData.TaskDTO(
                             task.getID(),
                             task.getDescription(),
-                            task.getDueDate()
-                                    .map(d -> d.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
-                                    .orElse("No due date"),
+                            dueDateString,
                             task.isCompleted(),
                             task.getGroup()
                     )
