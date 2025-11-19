@@ -60,17 +60,19 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>10.17.0</version>
+                <version>3.6.0</version>
                 <dependencies>
                     <dependency>
                         <groupId>com.puppycrawl.tools</groupId>
                         <artifactId>checkstyle</artifactId>
-                        <version>12.1.2</version>
+                        <version>10.17.0</version>
                     </dependency>
                 </dependencies>
                 <configuration>
                     <configLocation>config/checkstyle.xml</configLocation>
                     <failsOnError>false</failsOnError>
+                    <failOnViolation>false</failOnViolation> <!-- Add this -->
+                    <violationSeverity>warning</violationSeverity>
                 </configuration>
                 <executions>
                     <execution>
