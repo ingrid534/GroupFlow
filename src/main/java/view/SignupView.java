@@ -23,7 +23,7 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
     private final JTextField usernameInputField = new JTextField(15);
     private final JPasswordField passwordInputField = new JPasswordField(15);
     private final JPasswordField repeatPasswordInputField = new JPasswordField(15);
-    private SignupController signupController = null;
+    private SignupController signupController;
 
     private final JButton signUp;
     private final JButton cancel;
@@ -61,20 +61,17 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
                             signupController.execute(
                                     currentState.getUsername(),
                                     currentState.getPassword(),
-                                    currentState.getRepeatPassword()
-                            );
+                                    currentState.getRepeatPassword());
                         }
                     }
-                }
-        );
+                });
 
         toLogin.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent evt) {
                         signupController.switchToLoginView();
                     }
-                }
-        );
+                });
 
         cancel.addActionListener(this);
 

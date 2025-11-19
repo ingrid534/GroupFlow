@@ -15,7 +15,8 @@ public class LoggedInState {
         passwordError = copy.passwordError;
     }
 
-    // Because of the previous copy constructor, the default constructor must be explicit.
+    // Because of the previous copy constructor, the default constructor must be
+    // explicit.
     public LoggedInState() {
 
     }
