@@ -19,7 +19,7 @@ public class ViewTasksViewModel extends ViewModel<LoggedInState> {
         setState(new LoggedInState());
     }
 
-    public void firePropertyChange(List<ViewTasksOutputData.TaskDTO> tasks) {
+    public void setTasks(List<ViewTasksOutputData.TaskDTO> tasks) {
         this.tasks = tasks;
         this.support.firePropertyChange("tasks", null, this.tasks);
     }
