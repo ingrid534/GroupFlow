@@ -1,5 +1,6 @@
 package view;
 
+import interface_adapter.create_group.CreateGroupController;
 import interface_adapter.dashboard.DashboardViewModel;
 import interface_adapter.logged_in.ChangePasswordController;
 import interface_adapter.dashboard.LoggedInState;
@@ -33,6 +34,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     // Controllers
     private LogoutController logoutController;
     private ChangePasswordController changePasswordController;
+    private CreateGroupController createGroupController;
 
     // Header widgets
     private final JLabel usernameLabel = new JLabel();
@@ -125,7 +127,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
         createGroup.addActionListener(
                 evt -> {
                     if (evt.getSource().equals(createGroup)) {
-                        changePasswordController.switchToCreateGroupView(usernameLabel.getName());
+                        createGroupController.openCreateGroupModal();
                     }
                 }
         );
@@ -267,5 +269,9 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
 
     public void setChangePasswordController(ChangePasswordController changePasswordController) {
         this.changePasswordController = changePasswordController;
+    }
+
+    public void setCreateGroupController(CreateGroupController createGroupController) {
+        this.createGroupController = createGroupController;
     }
 }

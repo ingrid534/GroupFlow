@@ -1,5 +1,6 @@
 package interface_adapter.create_group;
 
+import entity.group.GroupType;
 import use_case.create_group.CreateGroupInputBoundary;
 import use_case.create_group.CreateGroupInputData;
 
@@ -19,10 +20,14 @@ public class CreateGroupController {
      * @param groupType the type of group being created
      */
 
-    public void execute(String groupName, String groupType, String groupCreator) {
-        final CreateGroupInputData createGroupInputData = new CreateGroupInputData(groupName, groupType, groupCreator);
+    public void execute(String groupName, GroupType groupType) {
+        final CreateGroupInputData createGroupInputData = new CreateGroupInputData(groupName, groupType);
 
         createGroupInteractor.execute(createGroupInputData);
+    }
+
+    public void openCreateGroupModal() {
+        createGroupInteractor.openCreateGroupModal();
     }
 
     /**

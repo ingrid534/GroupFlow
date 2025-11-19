@@ -2,6 +2,7 @@ package app;
 
 import data_access.FileUserDataAccessObject;
 import entity.group.GroupFactory;
+import entity.membership.MembershipFactory;
 import entity.user.UserFactory;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.create_group.CreateGroupController;
@@ -44,6 +45,7 @@ public class AppBuilder {
     private final CardLayout cardLayout = new CardLayout();
     final UserFactory userFactory = new UserFactory();
     final GroupFactory groupFactory = new GroupFactory();
+    final MembershipFactory membershipFactory = new MembershipFactory();
     final ViewManagerModel viewManagerModel = new ViewManagerModel();
     ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
 
@@ -69,6 +71,8 @@ public class AppBuilder {
     private LoginView loginView;
     private DashboardView dashboardView;
     private CreateGroupView createGroupView;
+
+    private JFrame application;
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
@@ -108,30 +112,26 @@ public class AppBuilder {
     public AppBuilder addCreateGroupView() {
         createGroupViewModel = new CreateGroupViewModel();
         createGroupView = new CreateGroupView(createGroupViewModel);
-        cardPanel.add(createGroupView, createGroupView.getViewName());
         return this;
     }
+
 
     public AppBuilder addCreateGroupUseCase() {
         final CreateGroupOutputBoundary createGroupOutputBoundary = new CreateGroupPresenter(viewManagerModel,
                 dashboardViewModel, createGroupViewModel);
         final CreateGroupInputBoundary createGroupInteractor = new CreateGroupInteractor(
-                userDataAccessObject, createGroupOutputBoundary, groupFactory);
+                userDataAccessObject, createGroupOutputBoundary, groupFactory, membershipFactory);
 
         CreateGroupController createGroupController = new CreateGroupController(createGroupInteractor);
-        createGroupView.setLoginController(createGroupController);
+        createGroupView.setCreateGroupController(createGroupController);
+        dashboardView.setCreateGroupController(createGroupController);
 
-        final ChangePasswordOutputBoundary changePasswordOutputBoundary = new ChangePasswordPresenter(viewManagerModel,
-                loggedInViewModel, createGroupViewModel);
-
-        final ChangePasswordInputBoundary changePasswordInteractor = new ChangePasswordInteractor(userDataAccessObject,
-                changePasswordOutputBoundary, userFactory);
-
-        ChangePasswordController changePasswordController = new ChangePasswordController(changePasswordInteractor);
-        dashboardView.setChangePasswordController(changePasswordController);
+        createGroupView.hookCreateGroupModalOpen(application);
 
         return this;
     }
+
+
 
     public AppBuilder addSignupUseCase() {
         final SignupOutputBoundary signupOutputBoundary = new SignupPresenter(viewManagerModel,
@@ -185,7 +185,7 @@ public class AppBuilder {
     }
 
     public JFrame build() {
-        final JFrame application = new JFrame("Dashboard");
+        application = new JFrame("Dashboard");
         application.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         application.setContentPane(cardPanel);
 

@@ -98,8 +98,6 @@ public class FileUserDataAccessObject implements SignupUserDataAccessInterface,
 
     @Override
     public void save(Group group) {
-        System.out.println(group.getName());
-        System.out.println(group.getModerator().getName());
         groups.put(group.getName(), group);
         this.save();
     }

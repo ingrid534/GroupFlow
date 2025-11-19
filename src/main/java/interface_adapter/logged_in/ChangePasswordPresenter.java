@@ -38,7 +38,6 @@ public class ChangePasswordPresenter implements ChangePasswordOutputBoundary {
 
     @Override
     public void switchToCreateGroupView(String username) {
-        System.out.println(username);
         createGroupViewModel.getState().setGroupCreatorUsername(username);
         viewManagerModel.setState(createGroupViewModel.getViewName());
         viewManagerModel.firePropertyChange();

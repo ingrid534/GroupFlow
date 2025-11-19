@@ -15,6 +15,8 @@ public class Main {
                 .addLogoutUseCase()
                 .addCreateGroupUseCase()
 //                .addChangePasswordUseCase()
+
+
                 .build();
 
         application.pack();

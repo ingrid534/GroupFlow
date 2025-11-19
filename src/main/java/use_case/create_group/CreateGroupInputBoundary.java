@@ -4,5 +4,7 @@ public interface CreateGroupInputBoundary {
 
     void execute(CreateGroupInputData createGroupInputData);
 
+    void openCreateGroupModal();
+
     void switchToDashboardView();
 }

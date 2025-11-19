@@ -2,9 +2,6 @@ package interface_adapter.create_group;
 
 import interface_adapter.ViewManagerModel;
 import interface_adapter.dashboard.DashboardViewModel;
-import interface_adapter.logged_in.LoggedInState;
-import interface_adapter.logged_in.LoggedInViewModel;
-import interface_adapter.login.LoginState;
 import use_case.create_group.CreateGroupOutputBoundary;
 import use_case.create_group.CreateGroupOutputData;
 
@@ -24,17 +21,32 @@ public class CreateGroupPresenter implements CreateGroupOutputBoundary {
 
     @Override
     public void prepareSuccessView(CreateGroupOutputData response) {
-        // clear everything from the  state
+        createGroupViewModel.getState().setOpenModal(false);
+        createGroupViewModel.firePropertyChange("openModal");
+
+        // clear everything from the state
         createGroupViewModel.setState(new CreateGroupState());
 
-        // switch to the dashboard view
-        this.viewManagerModel.setState(dashboardViewModel.getViewName());
-        this.viewManagerModel.firePropertyChange();
+        // Test to see we have the group data (TODO: Remove later)
+        System.out.println(response.getGroupName());
+        System.out.println(response.getGroupType());
+        System.out.println(response.getGroupID());
+
+        // TODO: Add the response to a DashboardState (e.g. append to a list of Groups) to dynamically show the groups
+        // dashboardViewModel.getState().addGroup(groupData)
     }
 
     @Override
     public void prepareFailView(String error) {
+        final CreateGroupState createGroupState = createGroupViewModel.getState();
+        createGroupState.setError(error);
+        createGroupViewModel.firePropertyChange();
+    }
 
+    @Override
+    public void openCreateGroupModal() {
+        createGroupViewModel.getState().setOpenModal(true);
+        createGroupViewModel.firePropertyChange("openModal");
     }
 
     @Override
