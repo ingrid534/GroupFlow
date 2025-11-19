@@ -1,6 +1,7 @@
 package app;
 
 
+import data_access.DBGroupDataAccessObject;
 import data_access.DBUserDataAccessObject;
 import data_access.FileUserDataAccessObject;
 import entity.group.GroupFactory;
@@ -58,6 +59,7 @@ public class AppBuilder {
 
     // DAO version using MongoDB
     final DBUserDataAccessObject userDataAccessObject = new DBUserDataAccessObject(userFactory, "mongodb+srv://data_access:WCV3cDtZas1zWFTg@cluster0.pdhhga4.mongodb.net/?appName=Cluster0", "group_flow");
+    final DBGroupDataAccessObject groupDataAccessObject = new DBGroupDataAccessObject(); // TODO: Implement
 
     // DAO version using a shared external database
     // final DBUserDataAccessObject userDataAccessObject = new
@@ -122,7 +124,7 @@ public class AppBuilder {
         final CreateGroupOutputBoundary createGroupOutputBoundary = new CreateGroupPresenter(viewManagerModel,
                 dashboardViewModel, createGroupViewModel);
         final CreateGroupInputBoundary createGroupInteractor = new CreateGroupInteractor(
-                userDataAccessObject, createGroupOutputBoundary, groupFactory, membershipFactory);
+                groupDataAccessObject, userDataAccessObject, createGroupOutputBoundary, groupFactory, membershipFactory);
 
         CreateGroupController createGroupController = new CreateGroupController(createGroupInteractor);
         createGroupView.setCreateGroupController(createGroupController);

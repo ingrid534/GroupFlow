@@ -5,23 +5,24 @@ import entity.group.GroupFactory;
 import entity.group.GroupType;
 import entity.user.User;
 import entity.membership.MembershipFactory;
-import entity.user.UserRole;
 
 /**
  * The CreateGroup Interactor
  */
 
 public class CreateGroupInteractor implements CreateGroupInputBoundary{
-    private final CreateGroupDataAccessInterface dataAccessObject;
+    private final CreateGroupDataAccessInterface groupDataAccessObject;
+    private final LoggedInDataAccessInterface userDataAccessObject;
     private final CreateGroupOutputBoundary createGroupPresenter;
     private final GroupFactory groupFactory;
     private final MembershipFactory membershipFactory;
 
-    public CreateGroupInteractor(CreateGroupDataAccessInterface dataAccessObject,
+    public CreateGroupInteractor(CreateGroupDataAccessInterface groupDataAccessObject, LoggedInDataAccessInterface userDataAccessObject,
                                  CreateGroupOutputBoundary createGroupOutputBoundary,
                                  GroupFactory groupFactory,
                                  MembershipFactory membershipFactory) {
-        this.dataAccessObject = dataAccessObject;
+        this.groupDataAccessObject = groupDataAccessObject;
+        this.userDataAccessObject = userDataAccessObject;
         this.createGroupPresenter = createGroupOutputBoundary;
         this.groupFactory = groupFactory;
         this.membershipFactory = membershipFactory;
@@ -38,9 +39,9 @@ public class CreateGroupInteractor implements CreateGroupInputBoundary{
             createGroupPresenter.prepareFailView("Select a group type.");
         } else {
             final Group group = groupFactory.create(groupName, groupType);
-            dataAccessObject.save(group);
+            groupDataAccessObject.save(group);
 
-            final User groupCreator = dataAccessObject.get(dataAccessObject.getCurrentUsername());
+            final User groupCreator = userDataAccessObject.get(userDataAccessObject.getCurrentUsername());
             // TODO: Add membership once we have ID's from DB
             // membershipFactory.create(groupCreator.getUserID(), groupType, UserRole.MODERATOR);
 

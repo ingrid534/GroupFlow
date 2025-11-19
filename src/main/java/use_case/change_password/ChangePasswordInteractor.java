@@ -33,9 +33,4 @@ public class ChangePasswordInteractor implements ChangePasswordInputBoundary {
             userPresenter.prepareSuccessView(changePasswordOutputData);
         }
     }
-
-    @Override
-    public void switchToCreateGroupView(String username) {
-        userPresenter.switchToCreateGroupView(username);
-    }
 }

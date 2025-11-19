@@ -25,8 +25,4 @@ public class ChangePasswordController {
 
         userChangePasswordUseCaseInteractor.execute(changePasswordInputData);
     }
-
-    public void switchToCreateGroupView(String username) {
-        userChangePasswordUseCaseInteractor.switchToCreateGroupView(username);
-    }
 }
