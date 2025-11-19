@@ -18,7 +18,7 @@ public class Group {
     private String name;
     private List<Membership> memberships;
     private List<String> tasks;
-    private String groupType;
+    private GroupType groupType;
 
     /**
      * Creates a new group with the given name, type, and user who created the
@@ -31,12 +31,11 @@ public class Group {
      * @param groupCreator the User ID of the user that created this group.
      *
      */
-    public Group(String name, String groupType, String groupCreator) {
+    public Group(String name, GroupType groupType, String groupCreator) {
         this.groupID = UUID.randomUUID().toString(); // Temporary until we set up a DB
         this.name = name;
         this.groupType = groupType;
 
-        // will be fixed after Membership is updated.
         Membership creatorMembership = new Membership(groupCreator, this.groupID, UserRole.MODERATOR);
         this.memberships = new ArrayList<>(List.of(creatorMembership));
         this.tasks = new ArrayList<>();
@@ -50,7 +49,7 @@ public class Group {
         return name;
     }
 
-    public String getGroupType() {
+    public GroupType getGroupType() {
         return groupType;
     }
 
@@ -86,15 +85,11 @@ public class Group {
         throw new NoSuchElementException("No moderator in this group.");
     }
 
-    // throw new NoSuchElementException("No moderator found.");
-
-    // }
-
     public void setName(String groupName) {
         this.name = groupName;
     }
 
-    public void setGroupType(String groupType) {
+    public void setGroupType(GroupType groupType) {
         this.groupType = groupType;
     }
 
