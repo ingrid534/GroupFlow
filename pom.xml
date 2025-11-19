@@ -70,6 +70,7 @@
                 </dependencies>
                 <configuration>
                     <configLocation>config/checkstyle.xml</configLocation>
+                    <failsOnError>true</failsOnError>
                 </configuration>
                 <executions>
                     <execution>
