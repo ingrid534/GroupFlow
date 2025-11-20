@@ -9,6 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.List;
 
 public class ViewTasksView extends JPanel implements PropertyChangeListener {
 
@@ -41,13 +42,13 @@ public class ViewTasksView extends JPanel implements PropertyChangeListener {
 
     private void refreshList() {
         listModel.clear();
-
-        if (viewModel.getTasks().isEmpty()) {
+        List<ViewTasksOutputData.TaskDTO> tasks = viewModel.getState().getTasks();
+        if (tasks.isEmpty()) {
             listModel.addElement("All done!");
             return;
         }
 
-        for (ViewTasksOutputData.TaskDTO dto : viewModel.getTasks()) {
+        for (ViewTasksOutputData.TaskDTO dto : tasks) {
             String text;
             if (dto.getDueDateString() == null || dto.getDueDateString().isEmpty()) {
                 text = dto.getDescription();

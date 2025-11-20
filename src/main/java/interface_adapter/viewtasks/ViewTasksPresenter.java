@@ -12,6 +12,8 @@ public class ViewTasksPresenter implements ViewTasksOutputBoundary {
 
     @Override
     public void presentTasks(ViewTasksOutputData outputData) {
-        viewTasksViewModel.setTasks(outputData.getTasks());
+        final LoggedInState loggedInState = viewTasksViewModel.getState();
+        loggedInState.setTasks(outputData.getTasks());
+        viewTasksViewModel.firePropertyChange("tasks");
     }
 }
