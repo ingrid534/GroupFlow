@@ -1,6 +1,5 @@
 package use_case.join_group;
 
-import use_case.login.LoginInputData;
 
 public interface JoinGroupInputBoundary {
     /**
