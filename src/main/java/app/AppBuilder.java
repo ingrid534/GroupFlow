@@ -1,8 +1,12 @@
 package app;
 
+import java.awt.CardLayout;
+import java.awt.Dimension;
 
-import data_access.DBTaskDataAccessObject;
-import data_access.DBUserDataAccessObject;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.WindowConstants;
+
 import data_access.DBUserDataAccessObject;
 import entity.user.UserFactory;
 import interface_adapter.ViewManagerModel;
@@ -18,9 +22,6 @@ import interface_adapter.logout.LogoutPresenter;
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
-import interface_adapter.viewtasks.ViewTasksController;
-import interface_adapter.viewtasks.ViewTasksPresenter;
-import interface_adapter.viewtasks.ViewTasksViewModel;
 import use_case.change_password.ChangePasswordInputBoundary;
 import use_case.change_password.ChangePasswordInteractor;
 import use_case.change_password.ChangePasswordOutputBoundary;
@@ -33,14 +34,15 @@ import use_case.logout.LogoutOutputBoundary;
 import use_case.signup.SignupInputBoundary;
 import use_case.signup.SignupInteractor;
 import use_case.signup.SignupOutputBoundary;
-import use_case.viewtasks.ViewTasksInputBoundary;
-import use_case.viewtasks.ViewTasksInteractor;
-import use_case.viewtasks.ViewTasksOutputBoundary;
-import view.*;
+import view.DashboardView;
+import view.LoggedInView;
+import view.LoginView;
+import view.SignupView;
+import view.ViewManager;
 
-import javax.swing.*;
-import java.awt.*;
-
+/**
+ * Class for setting up application.
+ */
 public class AppBuilder {
     private final JPanel cardPanel = new JPanel();
     private final CardLayout cardLayout = new CardLayout();
@@ -54,8 +56,8 @@ public class AppBuilder {
     // of the classes from the data_access package
 
     // DAO version using MongoDB
-    final DBUserDataAccessObject userDataAccessObject = new DBUserDataAccessObject(userFactory, "mongodb+srv://data_access:WCV3cDtZas1zWFTg@cluster0.pdhhga4.mongodb.net/?appName=Cluster0", "group_flow");
-    final DBTaskDataAccessObject taskDataAccessObject = new DBTaskDataAccessObject(); // to be implemented
+    final DBUserDataAccessObject userDataAccessObject = new DBUserDataAccessObject(userFactory,
+            "mongodb+srv://data_access:WCV3cDtZas1zWFTg@cluster0.pdhhga4.mongodb.net/?appName=Cluster0", "group_flow");
 
     // DAO version using a shared external database
     // final DBUserDataAccessObject userDataAccessObject = new
@@ -69,13 +71,16 @@ public class AppBuilder {
     private LoggedInView loggedInView;
     private LoginView loginView;
     private DashboardView dashboardView;
-    private ViewTasksView viewTasksView;
-    private ViewTasksViewModel viewTasksViewModel;
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
     }
 
+    /**
+     * Method to add the SignUp view.
+     * 
+     * @return The app builder.
+     */
     public AppBuilder addSignupView() {
         signupViewModel = new SignupViewModel();
         signupView = new SignupView(signupViewModel);
@@ -84,6 +89,11 @@ public class AppBuilder {
         return this;
     }
 
+    /**
+     * Method to add the LoginView.
+     * 
+     * @return App builder
+     */
     public AppBuilder addLoginView() {
         loginViewModel = new LoginViewModel();
         loginView = new LoginView(loginViewModel);
@@ -92,6 +102,11 @@ public class AppBuilder {
         return this;
     }
 
+    /**
+     * Method to add the LoggedInView.
+     * 
+     * @return App builder.
+     */
     public AppBuilder addLoggedInView() {
         loggedInViewModel = new LoggedInViewModel();
         loggedInView = new LoggedInView(loggedInViewModel);
@@ -99,37 +114,56 @@ public class AppBuilder {
         return this;
     }
 
+    /**
+     * Method to add the dashboard view.
+     * 
+     * @return App builder.
+     */
     public AppBuilder addDashboardView() {
         dashboardViewModel = new DashboardViewModel();
-
         dashboardView = new DashboardView(dashboardViewModel);
         cardPanel.add(dashboardView, dashboardView.getViewName());
         viewSizes.put(dashboardView.getViewName(), new Dimension(1000, 600));
         return this;
     }
 
+    /**
+     * Method to add the Signup Use case.
+     * 
+     * @return App builder.
+     */
     public AppBuilder addSignupUseCase() {
         final SignupOutputBoundary signupOutputBoundary = new SignupPresenter(viewManagerModel,
                 signupViewModel, loginViewModel);
         final SignupInputBoundary userSignupInteractor = new SignupInteractor(
                 userDataAccessObject, signupOutputBoundary, userFactory);
 
-        SignupController controller = new SignupController(userSignupInteractor);
+        final SignupController controller = new SignupController(userSignupInteractor);
         signupView.setSignupController(controller);
         return this;
     }
 
+    /**
+     * Method to add LoginUseCase.
+     * 
+     * @return App builder.
+     */
     public AppBuilder addLoginUseCase() {
         final LoginOutputBoundary loginOutputBoundary = new LoginPresenter(viewManagerModel,
                 dashboardViewModel, loginViewModel, signupViewModel);
         final LoginInputBoundary loginInteractor = new LoginInteractor(
                 userDataAccessObject, loginOutputBoundary);
 
-        LoginController loginController = new LoginController(loginInteractor);
+        final LoginController loginController = new LoginController(loginInteractor);
         loginView.setLoginController(loginController);
         return this;
     }
 
+    /**
+     * Method to add the ChangePassword use case.
+     * 
+     * @return App builder.
+     */
     public AppBuilder addChangePasswordUseCase() {
         final ChangePasswordOutputBoundary changePasswordOutputBoundary = new ChangePasswordPresenter(viewManagerModel,
                 loggedInViewModel);
@@ -137,7 +171,8 @@ public class AppBuilder {
         final ChangePasswordInputBoundary changePasswordInteractor = new ChangePasswordInteractor(userDataAccessObject,
                 changePasswordOutputBoundary, userFactory);
 
-        ChangePasswordController changePasswordController = new ChangePasswordController(changePasswordInteractor);
+        final ChangePasswordController changePasswordController = new ChangePasswordController(
+                changePasswordInteractor);
         loggedInView.setChangePasswordController(changePasswordController);
         return this;
     }
@@ -158,23 +193,11 @@ public class AppBuilder {
         return this;
     }
 
-    public AppBuilder addViewTasksUseCase() {
-        viewTasksViewModel = new ViewTasksViewModel();
-
-        ViewTasksOutputBoundary presenter = new  ViewTasksPresenter(viewTasksViewModel);
-        ViewTasksInputBoundary interactor = new ViewTasksInteractor(taskDataAccessObject, presenter);
-
-        ViewTasksController viewTasksController = new ViewTasksController(interactor);
-
-        viewTasksView = new ViewTasksView(viewTasksViewModel);
-        viewTasksView.setController(viewTasksController);
-
-        dashboardView.setTasksView(viewTasksView);
-
-        return this;
-
-    }
-
+    /**
+     * Build the JFrame.
+     * 
+     * @return The JFrame.
+     */
     public JFrame build() {
         final JFrame application = new JFrame("Dashboard");
         application.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -183,12 +206,13 @@ public class AppBuilder {
         // when view changes, set preferred size for that view and pack
         viewManagerModel.addPropertyChangeListener(evt -> {
             if ("state".equals(evt.getPropertyName())) {
-                String viewName = (String) evt.getNewValue();
-                Dimension d = viewSizes.get(viewName);
+                final String viewName = (String) evt.getNewValue();
+                final Dimension d = viewSizes.get(viewName);
                 if (d != null) {
                     application.setPreferredSize(d);
                 } else {
-                    application.setPreferredSize(null); // fallback to view’s own preferred size
+                    application.setPreferredSize(null);
+                    // fallback to view’s own preferred size
                 }
                 cardLayout.show(cardPanel, viewName);
                 application.pack();
@@ -197,14 +221,15 @@ public class AppBuilder {
         });
 
         // initial state
-        String initial = signupView.getViewName();
+        final String initial = signupView.getViewName();
         viewManagerModel.setState(initial);
         viewManagerModel.firePropertyChange();
 
         // initial preferred size and pack BEFORE showing
-        Dimension initSize = viewSizes.get(initial);
-        if (initSize != null)
+        final Dimension initSize = viewSizes.get(initial);
+        if (initSize != null) {
             application.setPreferredSize(initSize);
+        }
         cardLayout.show(cardPanel, initial);
         application.pack();
         application.setLocationRelativeTo(null);

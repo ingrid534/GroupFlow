@@ -18,7 +18,8 @@ public class Task {
      * Creates a new Task instance with the given due date.
      *
      * @param description The text description of the task
-     * @param group       The group to which this task belongs
+     * @param groupID     The group to which this task belongs
+     * @param dueDate     the due date for this task
      */
     public Task(String description, String groupID, LocalDateTime dueDate) {
         this.id = UUID.randomUUID().toString();
@@ -32,8 +33,8 @@ public class Task {
     /**
      * Creates a new Task instance without a due date.
      * 
-     * @param description
-     * @param groupID
+     * @param description the description for this task
+     * @param groupID     the group this task is associated with
      */
     public Task(String description, String groupID) {
         this.id = UUID.randomUUID().toString();
@@ -43,42 +44,29 @@ public class Task {
         this.assignees = new ArrayList<>();
     }
 
-    /**
-     * @return The id of this task.
-     */
     public String getID() {
         return this.id;
     }
 
-    /**
-     * @return The description of this task.
-     */
     public String getDescription() {
         return description;
     }
 
-    /**
-     * @return The groupID of the group this task is associated with.
-     */
     public String getGroup() {
         return group;
     }
 
-    /**
-     * @return A list of userIDs corresponding to the users assigned to this task.
-     */
     public List<String> getAssignees() {
         return assignees;
     }
 
-    /**
-     * @return The due date of this task, or {@code null} if no due date is set.
-     */
     public Optional<LocalDateTime> getDueDate() {
         return Optional.ofNullable(dueDate);
     }
 
     /**
+     * Check whether this task is completed.
+     * 
      * @return {@code true} if the task is marked as completed, otherwise
      *         {@code false}.
      */
@@ -112,13 +100,14 @@ public class Task {
     /**
      * Sets the due date of the task.
      *
-     * @param date The deadline for the task
+     * @param dueDate The deadline for the task
      */
     public void setDueDate(LocalDateTime dueDate) {
         this.dueDate = dueDate;
     }
 
     /**
+     * Check whether this task has a due date.
      * 
      * @return Whether this task has a set due date.
      */
@@ -128,19 +117,19 @@ public class Task {
 
     /**
      * Determines whether this task is overdue.
-     *
+     * 
      * @return {@code true} if the task is incomplete,
      *         and the due date has passed; otherwise {@code false}.
      */
     public boolean isOverdue() {
-        return !completed &&
-                dueDate.isBefore(LocalDateTime.now());
+        return !completed
+                && dueDate.isBefore(LocalDateTime.now());
     }
 
     /**
-     * Adds a user to the list of assignees
-     *
-     * @param user UserID of the User to assign to this task to
+     * Adds a user to the list of assignees.
+     * 
+     * @param userID UserID of the User to assign to this task to
      */
 
     public void addAssignee(String userID) {
@@ -149,8 +138,8 @@ public class Task {
 
     /**
      * Removes a user from the list of assignees.
-     *
-     * @param user The user to remove from assignment
+     * 
+     * @param userID The user to remove from assignment
      */
     public void removeAssignee(String userID) {
         assignees.remove(userID);

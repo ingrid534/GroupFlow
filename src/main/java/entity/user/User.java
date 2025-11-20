@@ -55,6 +55,7 @@ public class User {
     }
 
     /**
+     * Return all the groups this user is a member of.
      * 
      * @return A list of all the group IDs associated with each group this user is
      *         currently a member of.
@@ -70,20 +71,40 @@ public class User {
         return groups;
     }
 
+    /**
+     * Remove the given membership from the user's list of memberships.
+     * 
+     * @param membership The membership to remove
+     */
     public void removeMembership(Membership membership) {
         this.memberships.remove(membership);
     }
 
+    /**
+     * Add the given membership to the user's list of memberships.
+     * 
+     * @param membership The membership to add
+     */
     public void addMembership(Membership membership) {
         if (!memberships.contains(membership)) {
             memberships.add(membership);
         }
     }
 
+    /**
+     * Add the given task to the user's list of tasks.
+     * 
+     * @param taskID the task to add
+     */
     public void addTask(String taskID) {
         this.tasks.add(taskID);
     }
 
+    /**
+     * Remove the given task to the user's list of tasks.
+     * 
+     * @param taskID Task to remove
+     */
     public void removeTask(String taskID) {
         this.tasks.remove(taskID);
     }
