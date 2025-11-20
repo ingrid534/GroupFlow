@@ -175,7 +175,6 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
 //    public void setLogoutController(LogoutController c) {
 //        this.logoutController = c;
 //    }
-    //이건 왜 안 쓰여진거임? logout 되는데 이건 다른git 만들어서 push하자
 
     /** Allows the presenter to push the user's groups once loaded. */
     public void setGroups(List<String> groups) {
