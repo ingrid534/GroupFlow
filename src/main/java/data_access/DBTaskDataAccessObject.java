@@ -17,8 +17,8 @@ import use_case.logout.LogoutUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
 import org.bson.Document;
 
-import java.util.LinkedList;
 import java.util.List;
+import java.util.ArrayList;
 
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.set;
@@ -27,7 +27,7 @@ public class DBTaskDataAccessObject implements ViewTasksDataAccessInterface {
     // Need to be implemented
     @Override
     public List<String> getTasksForUser(String username) {
-        return new LinkedList<>();
+        return new ArrayList<>();
     }
 
     @Override
