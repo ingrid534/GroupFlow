@@ -133,7 +133,7 @@ public class AppBuilder {
      */
     public AppBuilder addDashboardView() {
         dashboardViewModel = new DashboardViewModel();
-        dashboardView = new DashboardView(dashboardViewModel);
+        dashboardView = new DashboardView(dashboardViewModel, viewTasksView);
         cardPanel.add(dashboardView, dashboardView.getViewName());
         viewSizes.put(dashboardView.getViewName(), new Dimension(1000, 600));
         return this;
@@ -150,7 +150,6 @@ public class AppBuilder {
         ViewTasksInputBoundary interactor = new ViewTasksInteractor(taskDataAccessObject, presenter);
         ViewTasksController viewTasksController = new ViewTasksController(interactor);
         viewTasksView = new ViewTasksView(viewTasksViewModel, viewTasksController);
-        dashboardView.setTasksView(viewTasksView);
         return this;
     }
 

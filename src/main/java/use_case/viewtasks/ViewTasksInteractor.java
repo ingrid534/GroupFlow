@@ -31,6 +31,14 @@ public class ViewTasksInteractor implements ViewTasksInputBoundary {
                 continue;
             }
 
+            if (task.isCompleted()) {
+                continue;
+            }
+
+            if (task.isOverdue()) {
+                continue;
+            }
+
             String dueDateString = task.getDueDate()
                             .map(dateTime -> dateTime.format(DATE_FORMATTER))
                                     .orElse("No due date");

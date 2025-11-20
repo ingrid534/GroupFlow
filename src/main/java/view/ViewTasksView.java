@@ -41,6 +41,12 @@ public class ViewTasksView extends JPanel implements PropertyChangeListener {
 
     private void refreshList() {
         listModel.clear();
+
+        if (viewModel.getTasks().isEmpty()) {
+            listModel.addElement("All done!");
+            return;
+        }
+
         for (ViewTasksOutputData.TaskDTO dto : viewModel.getTasks()) {
             String text;
             if (dto.getDueDateString() == null || dto.getDueDateString().isEmpty()) {
