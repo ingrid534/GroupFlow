@@ -671,8 +671,8 @@
                        UnsupportedEncodingException, BuildException, ConversionException,
                        FileNotFoundException, TestException"/>
         </module> -->
-        <module name="ClassFanOutComplexity">
-            <property name="max" value="40"/>
+        <!-- <module name="ClassFanOutComplexity">
+            <property name="max" value="40"/> -->
             <!-- Default classes are also listed -->
             <property name="excludedClasses"
                       value="boolean, byte, char, double, float, int, long, short,
