@@ -3,69 +3,77 @@ package entity.task;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
-
-// import entity.group.Group;
-// import entity.user.User;
 
 public class Task {
     private String id;
     private String description;
     private boolean completed;
-    // private final Group group;
-    // private final List<User> assignees;
+    private final String group;
+    private final List<String> assignees;
     private LocalDateTime dueDate;
 
     /**
-     * Creates a new Task instance.
+     * Creates a new Task instance with the given due date.
      *
      * @param description The text description of the task
-     * @param group       The group to which this task belongs
+     * @param groupID     The group to which this task belongs
+     * @param dueDate     the due date for this task
      */
-    public Task(String description, LocalDateTime dueDate/*, Group group*/) {
+    public Task(String description, String groupID, LocalDateTime dueDate) {
         this.id = UUID.randomUUID().toString();
         this.description = description;
         this.dueDate = dueDate;
-        // this.group = group;
+        this.group = groupID;
         this.completed = false;
-        // this.assignees = new ArrayList<>();
+        this.assignees = new ArrayList<>();
     }
 
     /**
-     * @return The description of this task.
+     * Creates a new Task instance without a due date.
+     * 
+     * @param description the description for this task
+     * @param groupID     the group this task is associated with
      */
+    public Task(String description, String groupID) {
+        this.id = UUID.randomUUID().toString();
+        this.description = description;
+        this.group = groupID;
+        this.completed = false;
+        this.assignees = new ArrayList<>();
+    }
+
+    public String getID() {
+        return this.id;
+    }
+
     public String getDescription() {
         return description;
     }
 
-    /**
-     * @return The group this task is associated with.
-     */
-    /* public Group getGroup() {
+    public String getGroup() {
         return group;
-    } */
+    }
 
-    /**
-     * @return An unmodifiable list of users assigned to this task.
-     */
-    /* public List<User> getAssignees() {
+    public List<String> getAssignees() {
         return assignees;
-    } */
+    }
 
-    /**
-     * @return The due date of this task, or {@code null} if no due date is set.
-     */
-    public LocalDateTime getDueDate() {
-        return dueDate;
+    public Optional<LocalDateTime> getDueDate() {
+        return Optional.ofNullable(dueDate);
     }
 
     /**
-     * @return {@code true} if the task is marked as completed, otherwise {@code false}.
+     * Check whether this task is completed.
+     * 
+     * @return {@code true} if the task is marked as completed, otherwise
+     *         {@code false}.
      */
     public boolean isCompleted() {
         return completed;
     }
-    
+
     /**
      * Updates the description of this task.
      *
@@ -88,48 +96,52 @@ public class Task {
     public void markIncomplete() {
         this.completed = false;
     }
-    
+
     /**
      * Sets the due date of the task.
      *
-     * @param date The deadline for the task
+     * @param dueDate The deadline for the task
      */
-    public void setDueDate(LocalDateTime date) {
-        this.dueDate = date;
+    public void setDueDate(LocalDateTime dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    /**
+     * Check whether this task has a due date.
+     * 
+     * @return Whether this task has a set due date.
+     */
+    public Boolean hasDueDate() {
+        return dueDate != null;
     }
 
     /**
      * Determines whether this task is overdue.
-     *
+     * 
      * @return {@code true} if the task is incomplete,
      *         and the due date has passed; otherwise {@code false}.
      */
     public boolean isOverdue() {
-        return !completed &&
-                dueDate.isBefore(LocalDateTime.now());
+        return !completed
+                && dueDate.isBefore(LocalDateTime.now());
     }
 
     /**
      * Adds a user to the list of assignees.
-     * This method is intentionally package-private and should only be invoked
-     * by {@code Group} to enforce group-level permission logic.
-     *
-     * @param user User to assign to this task
+     * 
+     * @param userID UserID of the User to assign to this task to
      */
-    /* void addAssignee(User user) {
-        assignees.add(user);
-        user.addTask(this);
-    } */
+
+    public void addAssignee(String userID) {
+        assignees.add(userID);
+    }
 
     /**
      * Removes a user from the list of assignees.
-     * This method is intentionally package-private and should only be invoked
-     * by {@code Group}.
-     *
-     * @param user The user to remove from assignment
+     * 
+     * @param userID The user to remove from assignment
      */
-    /* void removeAssignee(User user) {
-        assignees.remove(user);
-        user.removeTask(this);
-    } */
+    public void removeAssignee(String userID) {
+        assignees.remove(userID);
+    }
 }

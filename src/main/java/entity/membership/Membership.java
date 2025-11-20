@@ -1,34 +1,35 @@
 package entity.membership;
 
-import entity.user.User;
 import entity.user.UserRole;
-import entity.group.Group;
 
+/**
+ * Membership class.
+ */
 public class Membership {
 
-    private User user;
-    private Group group;
+    private String user;
+    private String group;
     private UserRole role;
 
     /**
      * Creates a new membership with the given user, group, and role of the
      * given user in the group.
      * 
-     * @param user
-     * @param group
-     * @param role
+     * @param userID  The user corresponding to this membership.
+     * @param groupID The group corresponding to this membership.
+     * @param role    The role of the given user in the given group.
      */
-    public Membership(User user, Group group, UserRole role) {
-        this.user = user;
-        this.group = group;
+    public Membership(String userID, String groupID, UserRole role) {
+        this.user = userID;
+        this.group = groupID;
         this.role = role;
     }
 
-    public User getUser() {
+    public String getUser() {
         return user;
     }
 
-    public Group getGroup() {
+    public String getGroup() {
         return group;
     }
 
@@ -37,23 +38,29 @@ public class Membership {
     }
 
     /**
-     * A group will call this method for the given user they want to remove.
-     * Uncomment once helper functions are implemented.
+     * Check whether a user has a certain permission.
+     * Not yet implemented.
      */
-    public void deleteMembership() {
-        // user.removeMembership(this);
-        // group.removeMembership(this);
-
-        // user = null;
-        // group = null;
-    }
-
     public void checkPermissions() {
         // need to implement user permissions first
     }
 
+    /**
+     * Reassign a new role to the user of this membership.
+     * 
+     * @param newRole The new role for the user
+     */
     public void reassignRole(UserRole newRole) {
         this.role = newRole;
+    }
+
+    /**
+     * Check whether the user in this membership is moderator of the group.
+     * 
+     * @return Whether this user has the moderator role.
+     */
+    public Boolean isModerator() {
+        return this.role.equals(UserRole.MODERATOR);
     }
 
 }

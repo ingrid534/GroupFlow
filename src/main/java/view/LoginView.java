@@ -25,12 +25,12 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
     private final JLabel usernameErrorField = new JLabel();
 
     private final JPasswordField passwordInputField = new JPasswordField(15);
-    private final JLabel passwordErrorField = new JLabel();
+    // private final JLabel passwordErrorField = new JLabel();
 
     private final JButton logIn;
     private final JButton cancel;
     private final JButton toSignup;
-    private LoginController loginController = null;
+    private LoginController loginController;
 
     public LoginView(LoginViewModel loginViewModel) {
 

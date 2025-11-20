@@ -22,7 +22,7 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
     private final String viewName = "logged in";
     private final LoggedInViewModel loggedInViewModel;
     private final JLabel passwordErrorField = new JLabel();
-    private ChangePasswordController changePasswordController = null;
+    private ChangePasswordController changePasswordController;
     private LogoutController logoutController;
 
     private final JLabel username;
@@ -88,11 +88,9 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
 
                         this.changePasswordController.execute(
                                 currentState.getUsername(),
-                                currentState.getPassword()
-                        );
+                                currentState.getPassword());
                     }
-                }
-        );
+                });
 
         this.add(title);
         this.add(usernameInfo);
@@ -105,6 +103,7 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
 
     /**
      * React to a button click that results in evt.
+     * 
      * @param evt the ActionEvent to react to
      */
     public void actionPerformed(ActionEvent evt) {
@@ -117,14 +116,12 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
         if (evt.getPropertyName().equals("state")) {
             final LoggedInState state = (LoggedInState) evt.getNewValue();
             username.setText(state.getUsername());
-        }
-        else if (evt.getPropertyName().equals("password")) {
+        } else if (evt.getPropertyName().equals("password")) {
             final LoggedInState state = (LoggedInState) evt.getNewValue();
             if (state.getPasswordError() == null) {
                 JOptionPane.showMessageDialog(this, "password updated for " + state.getUsername());
                 passwordInputField.setText("");
-            }
-            else {
+            } else {
                 JOptionPane.showMessageDialog(this, state.getPasswordError());
             }
         }
