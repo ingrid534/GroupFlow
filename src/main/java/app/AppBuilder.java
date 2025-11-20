@@ -149,8 +149,7 @@ public class AppBuilder {
         ViewTasksOutputBoundary presenter = new ViewTasksPresenter(viewTasksViewModel);
         ViewTasksInputBoundary interactor = new ViewTasksInteractor(taskDataAccessObject, presenter);
         ViewTasksController viewTasksController = new ViewTasksController(interactor);
-        viewTasksView = new ViewTasksView(viewTasksViewModel);
-        viewTasksView.setController(viewTasksController);
+        viewTasksView = new ViewTasksView(viewTasksViewModel, viewTasksController);
         dashboardView.setTasksView(viewTasksView);
         return this;
     }

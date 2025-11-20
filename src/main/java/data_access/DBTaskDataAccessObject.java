@@ -7,6 +7,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.UpdateResult;
 import entity.group.Group;
+import entity.task.Task;
 import entity.user.User;
 import entity.user.UserFactory;
 import use_case.change_password.ChangePasswordUserDataAccessInterface;
@@ -16,9 +17,21 @@ import use_case.logout.LogoutUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
 import org.bson.Document;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.set;
 
 public class DBTaskDataAccessObject implements ViewTasksDataAccessInterface {
-    // to be implemented
+    // Need to be implemented
+    @Override
+    public List<String> getTasksForUser(String username) {
+        return new LinkedList<>();
+    }
+
+    @Override
+    public Task getTask(String taskId) {
+        return null;
+    }
 }

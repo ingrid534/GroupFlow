@@ -18,9 +18,10 @@ public class ViewTasksView extends JPanel implements PropertyChangeListener {
     private final DefaultListModel<String> listModel = new DefaultListModel<>();
     private final JList<String> taskList = new JList<>(listModel);
 
-    public ViewTasksView(ViewTasksViewModel viewModel) {
+    public ViewTasksView(ViewTasksViewModel viewModel, ViewTasksController viewTasksController) {
         this.viewModel = viewModel;
         this.viewModel.addPropertyChangeListener(this);
+        this.viewTasksController = viewTasksController;
 
         setLayout(new BorderLayout());
 
@@ -32,14 +33,10 @@ public class ViewTasksView extends JPanel implements PropertyChangeListener {
         add(scrollPane, BorderLayout.CENTER);
 
         LoggedInState currentState = viewModel.getState();
-        viewTasksController.execute(currentState.getUsername());
+        this.viewTasksController.execute(currentState.getUsername());
 
         // Optional: initial render if there are already tasks in the view model
         refreshList();
-    }
-
-    public void setController(ViewTasksController viewtasksController) {
-        this.viewTasksController = viewtasksController;
     }
 
     private void refreshList() {
