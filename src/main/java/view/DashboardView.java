@@ -31,7 +31,6 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
 
     // Controllers
     private LogoutController logoutController;
-    private ChangePasswordController changePasswordController;
     private CreateGroupController createGroupController;
 
     // Header widgets
@@ -287,10 +286,6 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
 
     public void setLogoutController(LogoutController logoutController) {
         this.logoutController = logoutController;
-    }
-
-    public void setChangePasswordController(ChangePasswordController changePasswordController) {
-        this.changePasswordController = changePasswordController;
     }
 
     public void setCreateGroupController(CreateGroupController createGroupController) {

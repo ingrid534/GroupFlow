@@ -9,7 +9,7 @@ public class CreateGroupState {
 
     private String groupName = "";
     private GroupType groupType;
-    private boolean openModal = false;
+    private boolean openModal;
     private String error = "";
 
     public String getGroupName() {
@@ -28,10 +28,13 @@ public class CreateGroupState {
         this.groupType = groupType;
     }
 
-    public void setOpenModal(boolean modalState) {this.openModal = modalState;}
+    public void setOpenModal(boolean modalState) {
+        this.openModal = modalState;
+    }
 
-    public boolean getOpenModal() {return openModal;}
-
+    public boolean getOpenModal() {
+        return openModal;
+    }
 
     public String getError() {
         return error;

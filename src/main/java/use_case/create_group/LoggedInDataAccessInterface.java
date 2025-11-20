@@ -4,6 +4,7 @@ import entity.user.User;
 
 /**
  * DAO interface for a LoggedIn user in the CreateGroup use case.
+ * This interface defines the contract for accessing data related to the currently logged-in user.
  */
 public interface LoggedInDataAccessInterface {
 
@@ -23,5 +24,10 @@ public interface LoggedInDataAccessInterface {
      */
     User get(String username);
 
+    /**
+     * Retrieves the username of the currently logged-in user.
+     *
+     * @return the username of the currently logged-in user
+     */
     String getCurrentUsername();
 }

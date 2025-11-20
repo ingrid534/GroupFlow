@@ -8,17 +8,18 @@ import entity.membership.MembershipFactory;
 import entity.user.UserRole;
 
 /**
- * The CreateGroup Interactor
+ * The CreateGroup Interactor.
  */
 
-public class CreateGroupInteractor implements CreateGroupInputBoundary{
+public class CreateGroupInteractor implements CreateGroupInputBoundary {
     private final CreateGroupDataAccessInterface groupDataAccessObject;
     private final LoggedInDataAccessInterface userDataAccessObject;
     private final CreateGroupOutputBoundary createGroupPresenter;
     private final GroupFactory groupFactory;
     private final MembershipFactory membershipFactory;
 
-    public CreateGroupInteractor(CreateGroupDataAccessInterface groupDataAccessObject, LoggedInDataAccessInterface userDataAccessObject,
+    public CreateGroupInteractor(CreateGroupDataAccessInterface groupDataAccessObject,
+                                 LoggedInDataAccessInterface userDataAccessObject,
                                  CreateGroupOutputBoundary createGroupOutputBoundary,
                                  GroupFactory groupFactory,
                                  MembershipFactory membershipFactory) {
@@ -45,9 +46,9 @@ public class CreateGroupInteractor implements CreateGroupInputBoundary{
             final User groupCreator = userDataAccessObject.get(userDataAccessObject.getCurrentUsername());
 
             // TODO: Add membership once we have ID's from DB
-             membershipFactory.create(groupCreator.getUserID(), group.getGroupID(), UserRole.MODERATOR);
+            membershipFactory.create(groupCreator.getUserID(), group.getGroupID(), UserRole.MODERATOR);
 
-             // someDAO.save(membership)?
+            // someDAO.save(membership)?
 
             final CreateGroupOutputData createGroupOutputData = new CreateGroupOutputData(
                     group.getGroupID(), groupName, groupType

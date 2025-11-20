@@ -9,7 +9,6 @@ import javax.swing.WindowConstants;
 
 import data_access.DBGroupDataAccessObject;
 import data_access.DBUserDataAccessObject;
-import data_access.FileUserDataAccessObject;
 import entity.group.GroupFactory;
 import entity.membership.MembershipFactory;
 import entity.user.UserFactory;
@@ -44,11 +43,7 @@ import use_case.logout.LogoutOutputBoundary;
 import use_case.signup.SignupInputBoundary;
 import use_case.signup.SignupInteractor;
 import use_case.signup.SignupOutputBoundary;
-import view.DashboardView;
-import view.LoggedInView;
-import view.LoginView;
-import view.SignupView;
-import view.ViewManager;
+import view.*;
 
 /**
  * Class for setting up application.
@@ -68,8 +63,13 @@ public class AppBuilder {
     // of the classes from the data_access package
 
     // DAO version using MongoDB
-    final DBUserDataAccessObject userDataAccessObject = new DBUserDataAccessObject(userFactory, "mongodb+srv://data_access:WCV3cDtZas1zWFTg@cluster0.pdhhga4.mongodb.net/?appName=Cluster0", "group_flow");
-    final DBGroupDataAccessObject groupDataAccessObject = new DBGroupDataAccessObject(); // TODO: Implement
+    private final String mongoDBConnectionString =
+            "mongodb+srv://data_access:WCV3cDtZas1zWFTg@cluster0.pdhhga4.mongodb.net/?appName=Cluster0";
+    final DBUserDataAccessObject userDataAccessObject =
+            new DBUserDataAccessObject(userFactory, mongoDBConnectionString, "group_flow");
+
+    // TODO: Implement group DAO
+    final DBGroupDataAccessObject groupDataAccessObject = new DBGroupDataAccessObject();
 
     // DAO version using a shared external database
     // final DBUserDataAccessObject userDataAccessObject = new
@@ -143,18 +143,28 @@ public class AppBuilder {
         return this;
     }
 
+    /**
+     * Method to add the Create Group View.
+     *
+     * @return App Builder
+     */
     public AppBuilder addCreateGroupView() {
         createGroupViewModel = new CreateGroupViewModel();
         createGroupView = new CreateGroupView(createGroupViewModel);
         return this;
     }
 
-
+    /**
+     * Method to add the Create Group Use Case.
+     *
+     * @return App Builder
+     */
     public AppBuilder addCreateGroupUseCase() {
         final CreateGroupOutputBoundary createGroupOutputBoundary = new CreateGroupPresenter(viewManagerModel,
                 dashboardViewModel, createGroupViewModel);
         final CreateGroupInputBoundary createGroupInteractor = new CreateGroupInteractor(
-                groupDataAccessObject, userDataAccessObject, createGroupOutputBoundary, groupFactory, membershipFactory);
+                groupDataAccessObject, userDataAccessObject, createGroupOutputBoundary, groupFactory,
+                membershipFactory);
 
         CreateGroupController createGroupController = new CreateGroupController(createGroupInteractor);
         createGroupView.setCreateGroupController(createGroupController);
@@ -164,8 +174,6 @@ public class AppBuilder {
 
         return this;
     }
-
-
 
     /**
      * Method to add the Signup Use case.

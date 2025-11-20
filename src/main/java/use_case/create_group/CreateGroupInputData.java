@@ -22,5 +22,4 @@ public class CreateGroupInputData {
         return groupType;
     }
 
-
 }

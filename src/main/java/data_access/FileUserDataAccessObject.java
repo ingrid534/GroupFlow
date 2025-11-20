@@ -26,7 +26,7 @@ public class FileUserDataAccessObject implements SignupUserDataAccessInterface,
         LoginUserDataAccessInterface,
         ChangePasswordUserDataAccessInterface,
         LogoutUserDataAccessInterface,
-        CreateGroupDataAccessInterface  {
+        CreateGroupDataAccessInterface {
 
     private static final String HEADER = "username,password";
 

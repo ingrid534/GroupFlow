@@ -6,6 +6,8 @@ import use_case.create_group.CreateGroupInputData;
 
 /**
  * The controller for the Create Group Use Case.
+ * This class acts as an intermediary between the user interface and the Create Group use case interactor.
+ * It handles user input and delegates the creation of groups to the interactor.
  */
 public class CreateGroupController {
     private final CreateGroupInputBoundary createGroupInteractor;
@@ -26,6 +28,10 @@ public class CreateGroupController {
         createGroupInteractor.execute(createGroupInputData);
     }
 
+    /**
+     * Opens the Create Group modal.
+     * This method triggers the interactor to open the modal for creating a group.
+     */
     public void openCreateGroupModal() {
         createGroupInteractor.openCreateGroupModal();
     }
