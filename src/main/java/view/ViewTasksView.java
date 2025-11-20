@@ -29,6 +29,7 @@ public class ViewTasksView extends JPanel implements PropertyChangeListener {
         // just a hint to layout manager
         taskList.setVisibleRowCount(10);
         JScrollPane scrollPane = new JScrollPane(taskList);
+        scrollPane.setPreferredSize(new Dimension(250, 400));
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
         add(scrollPane, BorderLayout.CENTER);

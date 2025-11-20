@@ -129,11 +129,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
             tasks.setBorder(new EmptyBorder(0, 0, 8, 0));
             rightPanel.add(tasks, BorderLayout.NORTH);
 
-            JScrollPane taskScrollPane = new JScrollPane(viewTasksView);
-            taskScrollPane.setPreferredSize(new Dimension(250, 400));
-            taskScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-
-            rightPanel.add(taskScrollPane, BorderLayout.CENTER);
+            rightPanel.add(viewTasksView, BorderLayout.CENTER);
 
             p.add(rightPanel, BorderLayout.EAST);
         }
