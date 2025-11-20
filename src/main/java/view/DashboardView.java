@@ -28,6 +28,9 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     private final DashboardViewModel dashboardViewModel;
     private static final String HOME = "Home";
 
+    // Views
+    private ViewTasksView viewTasksView;
+
     // Controllers
     private LogoutController logoutController;
 
@@ -70,6 +73,10 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
         // TODO: switch to dynamic user data 1.
         setGroups(List.of("Group 1", "Group 2", "Group 3"));
         groupsList.setSelectedIndex(0);
+    }
+
+    public void setTasksView(ViewTasksView view) {
+        this.viewTasksView = view;
     }
 
     private JComponent buildHeader() {
@@ -116,6 +123,19 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     private JPanel buildHomePanel() {
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(new EmptyBorder(12, 12, 12, 12));
+
+        JLabel tasks = new JLabel("Your Tasks:");
+        tasks.setBorder(new EmptyBorder(0, 0, 12, 0));
+        p.add(tasks, BorderLayout.CENTER);
+
+        if (viewTasksView != null) {
+            JScrollPane taskScrollPane = new JScrollPane(viewTasksView);
+            taskScrollPane.setPreferredSize(new Dimension(250, 400));
+            taskScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
+            p.add(taskScrollPane, BorderLayout.EAST);
+        }
+
         p.add(new JLabel("Welcome! Select a group to view its workspace."), BorderLayout.NORTH);
         return p;
     }

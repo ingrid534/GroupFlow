@@ -15,7 +15,7 @@ public class Main {
                 .addLoginView()
                 .addSignupView()
                 .addDashboardView()
-                //.addViewTasksUseCase()
+                .addViewTasksUseCase()
                 .addSignupUseCase()
                 .addLoginUseCase()
                 .addLogoutUseCase()
