@@ -8,7 +8,7 @@ public class LogoutInteractor implements LogoutInputBoundary {
     private LogoutOutputBoundary logoutPresenter;
 
     public LogoutInteractor(LogoutUserDataAccessInterface userDataAccessInterface,
-                            LogoutOutputBoundary logoutOutputBoundary) {
+            LogoutOutputBoundary logoutOutputBoundary) {
         this.userDataAccessObject = userDataAccessInterface;
         this.logoutPresenter = logoutOutputBoundary;
 
@@ -25,4 +25,3 @@ public class LogoutInteractor implements LogoutInputBoundary {
         logoutPresenter.prepareSuccessView(logoutOutputData);
     }
 }
-

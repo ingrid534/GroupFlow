@@ -31,7 +31,8 @@ public class Group {
      *
      */
     public Group(String name, GroupType groupType) {
-        this.groupID = UUID.randomUUID().toString(); // Temporary until we set up a DB
+        // Temporary until we set up a DB
+        this.groupID = UUID.randomUUID().toString();
         this.name = name;
         this.groupType = groupType;
         this.memberships = new ArrayList<>();
@@ -51,11 +52,12 @@ public class Group {
     }
 
     /**
+     * Method to get all members in this group.
      * 
      * @return The userIDs associated with all the users in this group.
      */
     public List<String> getMembers() {
-        List<String> users = new ArrayList<>();
+        final List<String> users = new ArrayList<>();
 
         for (Membership m : memberships) {
             users.add(m.getUser());
@@ -65,6 +67,7 @@ public class Group {
     }
 
     /**
+     * Method to get all tasks in this group.
      * 
      * @return The list of Task IDs associated with all the tasks in this group.
      */
@@ -73,10 +76,11 @@ public class Group {
     }
 
     /**
+     * Method to get the moderator of this group.
+     * TODO: modify so it returns ALL the moderators
      * 
-     * @return The moderator of this group. If group has no moderator, throw an
-     *         exception.
-     * @throws NoSuchElementException
+     * @return The moderator of this group
+     * @throws NoSuchElementException if the group has no moderator
      */
     public String getModerator() throws NoSuchElementException {
         for (Membership m : memberships) {
@@ -88,6 +92,7 @@ public class Group {
     }
 
     /**
+     * Method to check whether this group has a moderator.
      * 
      * @return Whether this group has a moderator.
      */
@@ -101,6 +106,7 @@ public class Group {
     }
 
     /**
+     * Returns the number of moderators in this group.
      * 
      * @return How many moderators there are in this group.
      */
@@ -122,19 +128,30 @@ public class Group {
         this.groupType = groupType;
     }
 
+    /**
+     * Adds the given membership to this group.
+     * 
+     * @param membership The membership to be added to the group.
+     */
     public void addMembership(Membership membership) {
         if (!memberships.contains(membership)) {
             memberships.add(membership);
         }
     }
 
+    /**
+     * Removes the given membership from this group.
+     * 
+     * @param membership The membership to be removed.
+     */
     public void removeMembership(Membership membership) {
         this.memberships.remove(membership);
     }
 
     /**
+     * Checks whether the given user is a member of this group.
      * 
-     * @param userID
+     * @param userID The user whose membership to check
      * @return Whether the user with the given user ID is a member of this group.
      */
     public Boolean isMember(String userID) {
@@ -154,8 +171,11 @@ public class Group {
      * moderator in the group and will be demoted, throw IllegalStateException
      * (group must have at least one moderator).
      * 
-     * @param userID
-     * @param newRole
+     * @param userID  The userID for the user whose role needs to change
+     * @param newRole The new role for the given user.
+     * @throws NoSuchElementException if the given user is not in this group
+     * @throws IllegalStateException  if the user is the last moderator in the group
+     *                                and will be demoted
      */
     public void changeUserRole(String userID, UserRole newRole) throws NoSuchElementException, IllegalStateException {
         Membership target = null;
@@ -185,10 +205,12 @@ public class Group {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (!(o instanceof Group))
+        }
+        if (!(o instanceof Group)) {
             return false;
+        }
         Group other = (Group) o;
         return groupID.equals(other.groupID);
     }

@@ -20,10 +20,8 @@ import static com.mongodb.client.model.Updates.set;
 
 /**
  * A MongoDB-based implementation of all user-related data access operations.
- * <p>
  * This class handles creating, retrieving, updating, and checking the existence
  * of user records stored inside a MongoDB "users" collection.
- * </p>
  */
 public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
         LoginUserDataAccessInterface,
@@ -65,13 +63,13 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
      */
     @Override
     public User get(String username) {
-        Document doc = usersCollection.find(eq(USERNAME, username)).first();
+        final Document doc = usersCollection.find(eq(USERNAME, username)).first();
         if (doc == null) {
             throw new RuntimeException("User not found: " + username);
         }
 
-        String name = doc.getString(USERNAME);
-        String password = doc.getString(PASSWORD);
+        final String name = doc.getString(USERNAME);
+        final String password = doc.getString(PASSWORD);
 
         return userFactory.create(name, password);
     }
@@ -104,24 +102,22 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
      */
     @Override
     public boolean existsByName(String username) {
-        Document doc = usersCollection.find(eq(USERNAME, username))
+        final Document doc = usersCollection.find(eq(USERNAME, username))
                 .projection(new Document("_id", 1))
                 .first();
         return doc != null;
     }
 
     /**
-     * Saves a new user into MongoDB.
-     * <p>
+     * Saves a new user into MongoDB
      * Inserts a new document with "username" and "password" fields.
-     * </p>
      *
      * @param user The user to save.
      * @throws RuntimeException If insertion fails (e.g., duplicate username).
      */
     @Override
     public void save(User user) {
-        Document newUser = new Document()
+        final Document newUser = new Document()
                 .append(USERNAME, user.getName())
                 .append(PASSWORD, user.getPassword());
 
@@ -140,10 +136,9 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
      */
     @Override
     public void changePassword(User user) {
-        UpdateResult result = usersCollection.updateOne(
+        final UpdateResult result = usersCollection.updateOne(
                 eq(USERNAME, user.getName()),
-                set(PASSWORD, user.getPassword())
-        );
+                set(PASSWORD, user.getPassword()));
 
         if (result.getMatchedCount() == 0) {
             throw new RuntimeException("User not found: " + user.getName());
