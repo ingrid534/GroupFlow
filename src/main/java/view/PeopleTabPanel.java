@@ -38,10 +38,11 @@ public class PeopleTabPanel extends JPanel {
         split.setDividerSize(4);
 
         // Create Members panel
-        JPanel membersPanel = createListPanel(
+        JPanel membersPanel;
+        membersPanel = createListPanel(
                 "Members",
                 membersListPanel,
-                new String[]{"Name A-Z", "Name Z-A", "Role"} //(optionally)
+                new String[]{"Name A-Z", "Name Z-A", "Role"}
         );
 
         // Example data (temporary)
@@ -80,7 +81,7 @@ public class PeopleTabPanel extends JPanel {
         panel.setBorder(BorderFactory.createTitledBorder(title));
 
         JPanel top = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        top.add(new JLabel("Sort by:")); // (optionally)
+        top.add(new JLabel("Sort by:"));
         JComboBox<String> sortCombo = new JComboBox<>(sortOptions);
         top.add(sortCombo);
         panel.add(top, BorderLayout.NORTH);
@@ -109,7 +110,7 @@ public class PeopleTabPanel extends JPanel {
         roleDropdown.setSelectedItem(role);
         JButton removeBtn = new JButton("\u2716");
 
-        removeBtn.addActionListener(e -> {
+        removeBtn.addActionListener(event -> {
             membersListPanel.remove(row);
             membersListPanel.revalidate();
             membersListPanel.repaint();
@@ -144,18 +145,18 @@ public class PeopleTabPanel extends JPanel {
 
         JPanel row = createRowPanel();
 
-        JLabel nameLabel = new JLabel(username);
+        final JLabel nameLabel = new JLabel(username);
 
         JButton acceptBtn = new JButton("\u2714");
         acceptBtn.setForeground(new Color(3, 120, 3));
-        acceptBtn.addActionListener(e -> {
+        acceptBtn.addActionListener(event -> {
             addMember(username, roles[0]);
             removePendingRow(row);
         });
 
         JButton declineBtn = new JButton("\u2716");
         declineBtn.setForeground(new Color(220, 20, 60));
-        declineBtn.addActionListener(e -> removePendingRow(row));
+        declineBtn.addActionListener(event -> removePendingRow(row));
 
         addComponentsToRow(row, nameLabel, acceptBtn, declineBtn);
 
