@@ -10,6 +10,11 @@ public class JoinGroupController {
         this.interactor = interactor;
     }
 
+    /**
+     * Executes the JoinGroup Use Case.
+     *
+     * @param groupCode the groupCode of the user logging in
+     */
     public void execute(String groupCode) {
         interactor.execute(new JoinGroupInputData(groupCode));
     }
