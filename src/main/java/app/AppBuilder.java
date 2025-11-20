@@ -45,8 +45,8 @@ import view.DashboardView;
 import view.LoggedInView;
 import view.LoginView;
 import view.SignupView;
-import view.ViewManager;
 import view.ViewTasksView;
+import view.ViewManager;
 
 /**
  * Class for setting up application.
