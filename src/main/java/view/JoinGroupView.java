@@ -13,7 +13,7 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-public class JoinGroupView extends JPanel implements ActionListener, PropertyChangeListener{
+public class JoinGroupView extends JPanel implements ActionListener, PropertyChangeListener {
 
     private final String viewName = "join group";
 
@@ -31,7 +31,8 @@ public class JoinGroupView extends JPanel implements ActionListener, PropertyCha
         JLabel title = new JLabel(JoinGroupViewModel.TITLE_LABEL);
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        LabelTextPanel groupCodePanel = new LabelTextPanel(
+        LabelTextPanel groupCodePanel;
+        groupCodePanel = new LabelTextPanel(
                 new JLabel(JoinGroupViewModel.GROUP_CODE_LABEL), groupCodeField);
 
         JPanel buttons = new JPanel();
@@ -40,7 +41,7 @@ public class JoinGroupView extends JPanel implements ActionListener, PropertyCha
         buttons.add(joinButton);
         buttons.add(cancelButton);
 
-        joinButton.addActionListener(e -> {
+        joinButton.addActionListener(e00 -> {
             JoinGroupState state = joinGroupviewModel.getState();
             controller.execute(state.getGroupCode());
         });
@@ -65,13 +66,16 @@ public class JoinGroupView extends JPanel implements ActionListener, PropertyCha
             }
 
             @Override
-            public void insertUpdate(DocumentEvent e) { updateState(); }
+            public void insertUpdate(DocumentEvent e) {
+                updateState(); }
 
             @Override
-            public void removeUpdate(DocumentEvent e) { updateState(); }
+            public void removeUpdate(DocumentEvent e) {
+                updateState(); }
 
             @Override
-            public void changedUpdate(DocumentEvent e) { updateState(); }
+            public void changedUpdate(DocumentEvent e) {
+                updateState(); }
         });
     }
 
@@ -88,11 +92,10 @@ public class JoinGroupView extends JPanel implements ActionListener, PropertyCha
         }
     }
 
-    public String getViewName() { return viewName; }
+    public String getViewName() {
+        return viewName; }
 
-    public void setJoinGroupController(JoinGroupController controller) {
-        this.controller = controller;
+    public void setJoinGroupController(JoinGroupController control) {
+        this.controller = control;
     }
-
-
 }

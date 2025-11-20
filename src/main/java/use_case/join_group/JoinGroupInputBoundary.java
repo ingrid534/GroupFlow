@@ -1,6 +1,5 @@
 package use_case.join_group;
 
-
 public interface JoinGroupInputBoundary {
     /**
      * Executes the joinGroup use case.
@@ -8,8 +7,6 @@ public interface JoinGroupInputBoundary {
      */
     void execute(JoinGroupInputData joinGroupInputData);
 
-    /**
-     * Executes the switch to group view use case.
-     */
-    //void switchToDashboardView();
+    // Executes the switch to group view use case.
+    // void switchToDashboardView();
 }

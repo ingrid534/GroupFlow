@@ -5,7 +5,7 @@ import interface_adapter.dashboard.DashboardViewModel;
 import use_case.join_group.JoinGroupOutputBoundary;
 import use_case.join_group.JoinGroupOutputData;
 
-public class JoinGroupPresenter implements JoinGroupOutputBoundary{
+public class JoinGroupPresenter implements JoinGroupOutputBoundary {
     private final JoinGroupViewModel joinGroupViewModel;
     private final DashboardViewModel dashboardViewModel;
     private final ViewManagerModel viewManagerModel;

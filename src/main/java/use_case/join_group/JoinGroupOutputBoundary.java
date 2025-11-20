@@ -13,9 +13,7 @@ public interface JoinGroupOutputBoundary {
      */
     void prepareFailView(String errorMessage);
 
-    /**
-     * Switches to the Dashboard View.
-     */
-    //void switchToDashboardView();
+    // Switches to the Dashboard View.
+    // void switchToDashboardView();
 
 }
