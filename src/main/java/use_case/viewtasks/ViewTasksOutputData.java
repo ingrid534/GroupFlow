@@ -7,15 +7,25 @@ import java.util.List;
  */
 public class ViewTasksOutputData {
 
+    private final List<TaskDTO> tasks;
+
+    public ViewTasksOutputData(List<TaskDTO> tasks) {
+        this.tasks = tasks;
+    }
+
+    public List<TaskDTO> getTasks() {
+        return tasks;
+    }
+
     /**
      * A task Data Transfer Object for UI/presenter layer.
      */
     public static class TaskDTO {
-        public final String taskId;
-        public final String description;
-        public final String dueDateString;
-        public final boolean completed;
-        public final String groupId;
+        private final String taskId;
+        private final String description;
+        private final String dueDateString;
+        private final boolean completed;
+        private final String groupId;
 
         public TaskDTO(String taskId, String description,
                        String dueDateString, boolean completed,
@@ -26,14 +36,26 @@ public class ViewTasksOutputData {
             this.completed = completed;
             this.groupId = groupId;
         }
-    }
-    private final List<TaskDTO> tasks;
 
-    public ViewTasksOutputData(List<TaskDTO> tasks) {
-        this.tasks = tasks;
+        public String getTaskId() {
+            return taskId;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public String getDueDateString() {
+            return dueDateString;
+        }
+
+        public boolean isCompleted() {
+            return completed;
+        }
+
+        public String getGroupId() {
+            return groupId;
+        }
     }
 
-    public List<TaskDTO> getTasks() {
-        return tasks;
-    }
 }

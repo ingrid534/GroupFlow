@@ -8,6 +8,7 @@ public interface ViewTasksInputBoundary {
     /**
      * Executes the use case to fetch tasks for a user.
      *
+     * @param inputData the input data
      */
     void execute(ViewTasksInputData inputData);
 }

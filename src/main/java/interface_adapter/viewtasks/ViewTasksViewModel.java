@@ -19,6 +19,13 @@ public class ViewTasksViewModel extends ViewModel<LoggedInState> {
         setState(new LoggedInState());
     }
 
+    /**
+     * Updates the list of tasks stored in this ViewModel and notifies all
+     * registered property change listeners that the task data has changed.
+     *
+     * @param tasks the new list of task data transfer objects to display;
+     *              must not be {@code null}
+     */
     public void setTasks(List<ViewTasksOutputData.TaskDTO> tasks) {
         this.tasks = tasks;
         this.support.firePropertyChange("tasks", null, this.tasks);

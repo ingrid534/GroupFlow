@@ -10,7 +10,6 @@ import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-
 public class ViewTasksView extends JPanel implements PropertyChangeListener {
 
     private final ViewTasksViewModel viewModel;
@@ -25,7 +24,8 @@ public class ViewTasksView extends JPanel implements PropertyChangeListener {
 
         setLayout(new BorderLayout());
 
-        taskList.setVisibleRowCount(10); // just a hint to layout manager
+        // just a hint to layout manager
+        taskList.setVisibleRowCount(10);
         JScrollPane scrollPane = new JScrollPane(taskList);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
@@ -38,23 +38,28 @@ public class ViewTasksView extends JPanel implements PropertyChangeListener {
         refreshList();
     }
 
-    public void setController(ViewTasksController viewTasksController) {
-        this.viewTasksController = viewTasksController;
+    public void setController(ViewTasksController viewtasksController) {
+        this.viewTasksController = viewtasksController;
     }
 
     private void refreshList() {
         listModel.clear();
         for (ViewTasksOutputData.TaskDTO dto : viewModel.getTasks()) {
             String text;
-            if (dto.dueDateString == null || dto.dueDateString.isEmpty()) {
-                text = dto.description;
+            if (dto.getDueDateString() == null || dto.getDueDateString().isEmpty()) {
+                text = dto.getDescription();
             } else {
-                text = dto.description + " (due " + dto.dueDateString + ")";
+                text = dto.getDescription() + " (due " + dto.getDueDateString() + ")";
             }
             listModel.addElement(text);
         }
     }
 
+    /**
+     * Responds to property change events fired by the {@link ViewTasksViewModel}.
+     *
+     * @param evt the property change event fired by the ViewModel
+     */
     public void propertyChange(PropertyChangeEvent evt) {
         if ("tasks".equals(evt.getPropertyName())) {
             refreshList();

@@ -27,10 +27,12 @@ public class ViewTasksInteractor implements ViewTasksInputBoundary {
         for (String taskId : taskIds) {
             Task task = taskAccessObject.getTask(taskId);
 
-            if (task == null) continue;
+            if (task == null) {
+                continue;
+            }
 
             String dueDateString = task.getDueDate()
-                            .map(d -> d.format(DATE_FORMATTER))
+                            .map(dateTime -> dateTime.format(DATE_FORMATTER))
                                     .orElse("No due date");
             dtoList.add(
                     new ViewTasksOutputData.TaskDTO(

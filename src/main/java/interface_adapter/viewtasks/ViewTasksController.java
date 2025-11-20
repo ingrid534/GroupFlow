@@ -13,6 +13,11 @@ public class ViewTasksController {
         this.interactor = interactor;
     }
 
+    /**
+     * Executes the ViewTask Use Case.
+     *
+     * @param username the username of the user
+     */
     public void execute(String username) {
         ViewTasksInputData inputData = new ViewTasksInputData(username);
         interactor.execute(inputData);
