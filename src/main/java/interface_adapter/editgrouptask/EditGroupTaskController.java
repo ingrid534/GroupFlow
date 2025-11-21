@@ -1,0 +1,44 @@
+package interface_adapter.editgrouptask;
+
+import use_case.editgrouptasks.EditGroupTasksInputBoundary;
+import use_case.editgrouptasks.EditGroupTasksInputData;
+
+import java.util.List;
+
+/**
+ * Controller for the EditGroupTasks use case.
+ * Receives user input from the view and forwards it to the interactor.
+ */
+public class EditGroupTaskController {
+
+    private final EditGroupTasksInputBoundary interactor;
+
+    /**
+     * Constructs an EditGroupTasksController.
+     *
+     * @param interactor the edit use case interactor
+     */
+    public EditGroupTaskController(EditGroupTasksInputBoundary interactor) {
+        this.interactor = interactor;
+    }
+
+    /**
+     * Executes the EditGroupTasks use case with the given parameters.
+     *
+     * @param userId       ID of the user performing the edit
+     * @param groupId      ID of the group containing the task
+     * @param taskId       ID of the task to edit
+     * @param description  new description (nullable)
+     * @param dueDate      new due date as string (nullable)
+     * @param completed    new completed flag (nullable)
+     * @param newAssigneeIds newAssigneeIds to be added to the task (nullable)
+     */
+    public void execute(String userId, String groupId, String taskId, String description,
+                        String dueDate, Boolean completed, List<String> newAssigneeIds) {
+        EditGroupTasksInputData inputData =
+                new EditGroupTasksInputData(userId, groupId, taskId,
+                        description, dueDate, completed, newAssigneeIds);
+
+        interactor.execute(inputData);
+    }
+}

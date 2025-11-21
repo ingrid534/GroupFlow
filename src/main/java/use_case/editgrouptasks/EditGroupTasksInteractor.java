@@ -1,6 +1,11 @@
 package use_case.editgrouptasks;
 
 import entity.task.Task;
+import entity.user.User;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Interactor for editing a specific task that belong to a specific group.
@@ -40,8 +45,9 @@ public class EditGroupTasksInteractor implements EditGroupTasksInputBoundary {
             task.setDescription(inputData.getNewDescription());
         }
 
-        if (inputData.getNewDueDate() != null) {
-            task.setDueDate(inputData.getNewDueDate());
+        if (inputData.getNewDueDate() != null && !inputData.getNewDueDate().isEmpty()) {
+            LocalDateTime newDue = LocalDate.parse(inputData.getNewDueDate()).atStartOfDay();
+            task.setDueDate(newDue);
         }
 
         if (inputData.getNewCompleted() != null) {
@@ -51,6 +57,26 @@ public class EditGroupTasksInteractor implements EditGroupTasksInputBoundary {
             task.markIncomplete();
         }
 
-        dataAccess.saveTask(task);
+        List<String> newIds = inputData.getNewAssigneeUserIds();
+        if (newIds != null) {
+
+            for (String oldId : task.getAssignees()) {
+                User u = dataAccess.getUser(oldId);
+                if (u != null) {
+                    u.getTasks().remove(task.getID());
+                    dataAccess.saveUser(u);
+                }
+            }
+
+            for (String newId : newIds) {
+                User u = dataAccess.getUser(newId);
+                if (u != null) {
+                    u.getTasks().add(task.getID());
+                    dataAccess.saveUser(u);
+                }
+            }
+
+            dataAccess.saveTask(task);
+        }
     }
 }

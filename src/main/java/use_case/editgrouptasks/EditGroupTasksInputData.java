@@ -1,6 +1,5 @@
 package use_case.editgrouptasks;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -13,7 +12,7 @@ public class EditGroupTasksInputData {
     private final String taskId;
 
     private final String newDescription;
-    private final LocalDateTime newDueDate;
+    private final String newDueDate;
     private final Boolean newCompleted;
     private final List<String> newAssigneeIds;
 
@@ -29,7 +28,7 @@ public class EditGroupTasksInputData {
      * @param newAssigneeIds the new assignee user ids, or {@code null} to keep
      */
     public EditGroupTasksInputData(String groupId, String userId, String taskId,
-                                   String newDescription, LocalDateTime newDueDate,
+                                   String newDescription, String newDueDate,
                                    Boolean newCompleted, List<String> newAssigneeIds) {
         this.groupId = groupId;
         this.userId = userId;
@@ -56,7 +55,7 @@ public class EditGroupTasksInputData {
         return newDescription;
     }
 
-    public LocalDateTime getNewDueDate() {
+    public String getNewDueDate() {
         return newDueDate;
     }
 
