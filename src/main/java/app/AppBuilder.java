@@ -7,10 +7,16 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
+import data_access.DBGroupDataAccessObject;
 import data_access.DBUserDataAccessObject;
 import data_access.DBTaskDataAccessObject;
+import entity.group.GroupFactory;
+import entity.membership.MembershipFactory;
 import entity.user.UserFactory;
 import interface_adapter.ViewManagerModel;
+import interface_adapter.create_group.CreateGroupController;
+import interface_adapter.create_group.CreateGroupPresenter;
+import interface_adapter.create_group.CreateGroupViewModel;
 import interface_adapter.dashboard.DashboardViewModel;
 import interface_adapter.logged_in.ChangePasswordController;
 import interface_adapter.logged_in.ChangePasswordPresenter;
@@ -29,6 +35,9 @@ import interface_adapter.viewtasks.ViewTasksViewModel;
 import use_case.change_password.ChangePasswordInputBoundary;
 import use_case.change_password.ChangePasswordInteractor;
 import use_case.change_password.ChangePasswordOutputBoundary;
+import use_case.create_group.CreateGroupInputBoundary;
+import use_case.create_group.CreateGroupInteractor;
+import use_case.create_group.CreateGroupOutputBoundary;
 import use_case.login.LoginInputBoundary;
 import use_case.login.LoginInteractor;
 import use_case.login.LoginOutputBoundary;
@@ -41,12 +50,7 @@ import use_case.signup.SignupOutputBoundary;
 import use_case.viewtasks.ViewTasksInputBoundary;
 import use_case.viewtasks.ViewTasksInteractor;
 import use_case.viewtasks.ViewTasksOutputBoundary;
-import view.DashboardView;
-import view.LoggedInView;
-import view.LoginView;
-import view.SignupView;
-import view.ViewTasksView;
-import view.ViewManager;
+import view.*;
 
 /**
  * Class for setting up application.
@@ -55,6 +59,8 @@ public class AppBuilder {
     private final JPanel cardPanel = new JPanel();
     private final CardLayout cardLayout = new CardLayout();
     final UserFactory userFactory = new UserFactory();
+    final GroupFactory groupFactory = new GroupFactory();
+    final MembershipFactory membershipFactory = new MembershipFactory();
     final ViewManagerModel viewManagerModel = new ViewManagerModel();
     ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
 
@@ -64,8 +70,13 @@ public class AppBuilder {
     // of the classes from the data_access package
 
     // DAO version using MongoDB
+    private final String mongoDBConnectionString =
+            "mongodb+srv://data_access:WCV3cDtZas1zWFTg@cluster0.pdhhga4.mongodb.net/?appName=Cluster0";
+
+    // TODO: Implement group DAO
+    final DBGroupDataAccessObject groupDataAccessObject = new DBGroupDataAccessObject();
     final DBUserDataAccessObject userDataAccessObject = new DBUserDataAccessObject(userFactory,
-            "mongodb+srv://data_access:WCV3cDtZas1zWFTg@cluster0.pdhhga4.mongodb.net/?appName=Cluster0", "group_flow");
+            mongoDBConnectionString, "group_flow");
     // to be implemented
     final DBTaskDataAccessObject taskDataAccessObject = new DBTaskDataAccessObject();
 
@@ -78,9 +89,13 @@ public class AppBuilder {
     private LoginViewModel loginViewModel;
     private LoggedInViewModel loggedInViewModel;
     private DashboardViewModel dashboardViewModel;
+    private CreateGroupViewModel createGroupViewModel;
     private LoggedInView loggedInView;
     private LoginView loginView;
     private DashboardView dashboardView;
+    private CreateGroupView createGroupView;
+
+    private JFrame application;
     private ViewTasksView viewTasksView;
     private ViewTasksViewModel viewTasksViewModel;
 
@@ -90,7 +105,7 @@ public class AppBuilder {
 
     /**
      * Method to add the SignUp view.
-     * 
+     *
      * @return The app builder.
      */
     public AppBuilder addSignupView() {
@@ -103,7 +118,7 @@ public class AppBuilder {
 
     /**
      * Method to add the LoginView.
-     * 
+     *
      * @return App builder
      */
     public AppBuilder addLoginView() {
@@ -116,7 +131,7 @@ public class AppBuilder {
 
     /**
      * Method to add the LoggedInView.
-     * 
+     *
      * @return App builder.
      */
     public AppBuilder addLoggedInView() {
@@ -128,7 +143,7 @@ public class AppBuilder {
 
     /**
      * Method to add the dashboard view.
-     * 
+     *
      * @return App builder.
      */
     public AppBuilder addDashboardView() {
@@ -154,8 +169,40 @@ public class AppBuilder {
     }
 
     /**
+     * Method to add the Create Group View.
+     *
+     * @return App Builder
+     */
+    public AppBuilder addCreateGroupView() {
+        createGroupViewModel = new CreateGroupViewModel();
+        createGroupView = new CreateGroupView(createGroupViewModel);
+        return this;
+    }
+
+    /**
+     * Method to add the Create Group Use Case.
+     *
+     * @return App Builder
+     */
+    public AppBuilder addCreateGroupUseCase() {
+        final CreateGroupOutputBoundary createGroupOutputBoundary = new CreateGroupPresenter(viewManagerModel,
+                dashboardViewModel, createGroupViewModel);
+        final CreateGroupInputBoundary createGroupInteractor = new CreateGroupInteractor(
+                groupDataAccessObject, userDataAccessObject, createGroupOutputBoundary, groupFactory,
+                membershipFactory);
+
+        CreateGroupController createGroupController = new CreateGroupController(createGroupInteractor);
+        createGroupView.setCreateGroupController(createGroupController);
+        dashboardView.setCreateGroupController(createGroupController);
+
+        createGroupView.hookCreateGroupModalOpen(application);
+
+        return this;
+    }
+
+    /**
      * Method to add the Signup Use case.
-     * 
+     *
      * @return App builder.
      */
     public AppBuilder addSignupUseCase() {
@@ -171,7 +218,7 @@ public class AppBuilder {
 
     /**
      * Method to add LoginUseCase.
-     * 
+     *
      * @return App builder.
      */
     public AppBuilder addLoginUseCase() {
@@ -187,7 +234,7 @@ public class AppBuilder {
 
     /**
      * Method to add the ChangePassword use case.
-     * 
+     *
      * @return App builder.
      */
     public AppBuilder addChangePasswordUseCase() {
@@ -221,11 +268,11 @@ public class AppBuilder {
 
     /**
      * Build the JFrame.
-     * 
+     *
      * @return The JFrame.
      */
     public JFrame build() {
-        final JFrame application = new JFrame("Dashboard");
+        application = new JFrame("Dashboard");
         application.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         application.setContentPane(cardPanel);
 

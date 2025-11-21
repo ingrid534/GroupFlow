@@ -6,7 +6,7 @@ public class Main {
 
     /**
      * Main method.
-     * 
+     *
      * @param args Arguments.
      */
     public static void main(String[] args) {
@@ -16,10 +16,12 @@ public class Main {
                 .addSignupView()
                 .addViewTasksUseCase()
                 .addDashboardView()
+                .addCreateGroupView()
                 .addSignupUseCase()
                 .addLoginUseCase()
                 .addLogoutUseCase()
                 // .addChangePasswordUseCase()
+                .addCreateGroupUseCase()
                 .build();
 
         application.pack();

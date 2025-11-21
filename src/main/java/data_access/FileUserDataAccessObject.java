@@ -1,8 +1,10 @@
 package data_access;
 
 import entity.user.User;
+import entity.group.Group;
 import entity.user.UserFactory;
 import use_case.change_password.ChangePasswordUserDataAccessInterface;
+import use_case.create_group.CreateGroupDataAccessInterface;
 import use_case.login.LoginUserDataAccessInterface;
 import use_case.logout.LogoutUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
@@ -23,14 +25,15 @@ import java.util.Map;
 public class FileUserDataAccessObject implements SignupUserDataAccessInterface,
         LoginUserDataAccessInterface,
         ChangePasswordUserDataAccessInterface,
-        LogoutUserDataAccessInterface {
+        LogoutUserDataAccessInterface,
+        CreateGroupDataAccessInterface {
 
     private static final String HEADER = "username,password";
 
     private final File csvFile;
     private final Map<String, Integer> headers = new LinkedHashMap<>();
     private final Map<String, User> accounts = new HashMap<>();
-
+    private final Map<String, Group> groups = new HashMap<>();
     private String currentUsername;
 
     /**
@@ -95,6 +98,12 @@ public class FileUserDataAccessObject implements SignupUserDataAccessInterface,
     @Override
     public void save(User user) {
         accounts.put(user.getName(), user);
+        this.save();
+    }
+
+    @Override
+    public void save(Group group) {
+        groups.put(group.getName(), group);
         this.save();
     }
 
