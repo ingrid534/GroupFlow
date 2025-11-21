@@ -34,9 +34,6 @@ public class ViewTasksView extends JPanel implements PropertyChangeListener {
 
         add(scrollPane, BorderLayout.CENTER);
 
-        LoggedInState currentState = viewModel.getState();
-        this.viewTasksController.execute(currentState.getUsername());
-
         // Optional: initial render if there are already tasks in the view model
         refreshList();
     }
@@ -66,6 +63,10 @@ public class ViewTasksView extends JPanel implements PropertyChangeListener {
      * @param evt the property change event fired by the ViewModel
      */
     public void propertyChange(PropertyChangeEvent evt) {
+        if ("state".equals(evt.getPropertyName())) {
+            LoggedInState state = (LoggedInState) evt.getNewValue();
+            viewTasksController.execute(state.getUsername());
+        }
         if ("tasks".equals(evt.getPropertyName())) {
             refreshList();
         }
