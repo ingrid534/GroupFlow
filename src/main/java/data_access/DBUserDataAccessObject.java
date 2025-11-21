@@ -9,6 +9,7 @@ import com.mongodb.client.result.UpdateResult;
 import entity.user.User;
 import entity.user.UserFactory;
 import use_case.change_password.ChangePasswordUserDataAccessInterface;
+import use_case.create_group.LoggedInDataAccessInterface;
 import use_case.login.LoginUserDataAccessInterface;
 import use_case.logout.LogoutUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
@@ -25,7 +26,8 @@ import static com.mongodb.client.model.Updates.set;
 public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
         LoginUserDataAccessInterface,
         ChangePasswordUserDataAccessInterface,
-        LogoutUserDataAccessInterface {
+        LogoutUserDataAccessInterface,
+        LoggedInDataAccessInterface {
 
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";

@@ -1,5 +1,6 @@
 package view;
 
+import interface_adapter.create_group.CreateGroupController;
 import interface_adapter.dashboard.DashboardViewModel;
 import interface_adapter.dashboard.LoggedInState;
 import interface_adapter.logout.LogoutController;
@@ -33,10 +34,12 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
 
     // Controllers
     private LogoutController logoutController;
+    private CreateGroupController createGroupController;
 
     // Header widgets
     private final JLabel usernameLabel = new JLabel();
     private JButton logoutButton;
+    private JButton createGroup;
 
     // Main layout pieces
     private final DefaultListModel<String> groupsModel = new DefaultListModel<>();
@@ -135,6 +138,15 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
         }
 
         p.add(new JLabel("Welcome! Select a group to view its workspace."), BorderLayout.NORTH);
+        createGroup = new JButton("Create Group");
+        p.add(createGroup);
+        createGroup.addActionListener(
+                evt -> {
+                    if (evt.getSource().equals(createGroup)) {
+                        createGroupController.openCreateGroupModal();
+                    }
+                }
+        );
         return p;
     }
 
@@ -292,5 +304,9 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
 
     public void setLogoutController(LogoutController logoutController) {
         this.logoutController = logoutController;
+    }
+
+    public void setCreateGroupController(CreateGroupController createGroupController) {
+        this.createGroupController = createGroupController;
     }
 }
