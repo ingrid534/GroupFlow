@@ -29,6 +29,9 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     private final DashboardViewModel dashboardViewModel;
     private static final String HOME = "Home";
 
+    // Views
+    private ViewTasksView viewTasksView;
+
     // Controllers
     private LogoutController logoutController;
     private CreateGroupController createGroupController;
@@ -44,9 +47,10 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     private final CardLayout cards = new CardLayout();
     private final JPanel workArea = new JPanel(cards);
 
-    public DashboardView(DashboardViewModel dashboardViewModel) {
+    public DashboardView(DashboardViewModel dashboardViewModel, ViewTasksView viewTasksView) {
         this.dashboardViewModel = Objects.requireNonNull(dashboardViewModel);
         this.dashboardViewModel.addPropertyChangeListener(this);
+        this.viewTasksView = Objects.requireNonNull(viewTasksView);
 
         setLayout(new BorderLayout(12, 12));
         setBorder(new EmptyBorder(12, 12, 12, 12));
@@ -119,6 +123,20 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     private JPanel buildHomePanel() {
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(new EmptyBorder(12, 12, 12, 12));
+
+        if (viewTasksView != null) {
+            JPanel rightPanel = new JPanel(new BorderLayout());
+            rightPanel.setBorder(new EmptyBorder(0, 12, 0, 0));
+
+            JLabel tasks = new JLabel("Your Tasks:");
+            tasks.setBorder(new EmptyBorder(0, 0, 8, 0));
+            rightPanel.add(tasks, BorderLayout.NORTH);
+
+            rightPanel.add(viewTasksView, BorderLayout.CENTER);
+
+            p.add(rightPanel, BorderLayout.EAST);
+        }
+
         p.add(new JLabel("Welcome! Select a group to view its workspace."), BorderLayout.NORTH);
         createGroup = new JButton("Create Group");
         p.add(createGroup);

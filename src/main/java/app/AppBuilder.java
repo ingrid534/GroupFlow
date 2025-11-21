@@ -9,6 +9,7 @@ import javax.swing.WindowConstants;
 
 import data_access.DBGroupDataAccessObject;
 import data_access.DBUserDataAccessObject;
+import data_access.DBTaskDataAccessObject;
 import entity.group.GroupFactory;
 import entity.membership.MembershipFactory;
 import entity.user.UserFactory;
@@ -28,6 +29,9 @@ import interface_adapter.logout.LogoutPresenter;
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
+import interface_adapter.viewtasks.ViewTasksController;
+import interface_adapter.viewtasks.ViewTasksPresenter;
+import interface_adapter.viewtasks.ViewTasksViewModel;
 import use_case.change_password.ChangePasswordInputBoundary;
 import use_case.change_password.ChangePasswordInteractor;
 import use_case.change_password.ChangePasswordOutputBoundary;
@@ -43,6 +47,9 @@ import use_case.logout.LogoutOutputBoundary;
 import use_case.signup.SignupInputBoundary;
 import use_case.signup.SignupInteractor;
 import use_case.signup.SignupOutputBoundary;
+import use_case.viewtasks.ViewTasksInputBoundary;
+import use_case.viewtasks.ViewTasksInteractor;
+import use_case.viewtasks.ViewTasksOutputBoundary;
 import view.*;
 
 /**
@@ -65,11 +72,13 @@ public class AppBuilder {
     // DAO version using MongoDB
     private final String mongoDBConnectionString =
             "mongodb+srv://data_access:WCV3cDtZas1zWFTg@cluster0.pdhhga4.mongodb.net/?appName=Cluster0";
-    final DBUserDataAccessObject userDataAccessObject =
-            new DBUserDataAccessObject(userFactory, mongoDBConnectionString, "group_flow");
 
     // TODO: Implement group DAO
     final DBGroupDataAccessObject groupDataAccessObject = new DBGroupDataAccessObject();
+    final DBUserDataAccessObject userDataAccessObject = new DBUserDataAccessObject(userFactory,
+            mongoDBConnectionString, "group_flow");
+    // to be implemented
+    final DBTaskDataAccessObject taskDataAccessObject = new DBTaskDataAccessObject();
 
     // DAO version using a shared external database
     // final DBUserDataAccessObject userDataAccessObject = new
@@ -87,6 +96,8 @@ public class AppBuilder {
     private CreateGroupView createGroupView;
 
     private JFrame application;
+    private ViewTasksView viewTasksView;
+    private ViewTasksViewModel viewTasksViewModel;
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
@@ -137,9 +148,23 @@ public class AppBuilder {
      */
     public AppBuilder addDashboardView() {
         dashboardViewModel = new DashboardViewModel();
-        dashboardView = new DashboardView(dashboardViewModel);
+        dashboardView = new DashboardView(dashboardViewModel, viewTasksView);
         cardPanel.add(dashboardView, dashboardView.getViewName());
         viewSizes.put(dashboardView.getViewName(), new Dimension(1000, 600));
+        return this;
+    }
+
+    /**
+     * Method to add the TaskView to dashboard.
+     *
+     * @return App builder
+     */
+    public AppBuilder addViewTasksUseCase() {
+        viewTasksViewModel = new ViewTasksViewModel();
+        ViewTasksOutputBoundary presenter = new ViewTasksPresenter(viewTasksViewModel);
+        ViewTasksInputBoundary interactor = new ViewTasksInteractor(taskDataAccessObject, presenter);
+        ViewTasksController viewTasksController = new ViewTasksController(interactor);
+        viewTasksView = new ViewTasksView(viewTasksViewModel, viewTasksController);
         return this;
     }
 
@@ -198,7 +223,7 @@ public class AppBuilder {
      */
     public AppBuilder addLoginUseCase() {
         final LoginOutputBoundary loginOutputBoundary = new LoginPresenter(viewManagerModel,
-                dashboardViewModel, loginViewModel, signupViewModel);
+                dashboardViewModel, loginViewModel, signupViewModel, viewTasksViewModel);
         final LoginInputBoundary loginInteractor = new LoginInteractor(
                 userDataAccessObject, loginOutputBoundary);
 
