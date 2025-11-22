@@ -7,9 +7,7 @@ public interface ViewGroupTasksInputBoundary {
 
     /**
      * Executes the view-group-tasks use case.
-     *
-     * @param inputData the input data containing the group id
      */
-    void execute(ViewGroupTasksInputData inputData);
+    void execute();
 }
 

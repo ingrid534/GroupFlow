@@ -1,5 +1,6 @@
 package use_case.viewtasks;
 
+import entity.group.Group;
 import entity.task.Task;
 import java.util.List;
 
@@ -23,4 +24,6 @@ public interface ViewTasksDataAccessInterface {
      *         if no task with the given ID exists
      */
     Task getTask(String taskId);
+
+    void saveGroup(Group group);
 }

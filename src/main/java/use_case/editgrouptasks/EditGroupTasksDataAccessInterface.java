@@ -11,12 +11,11 @@ import java.util.List;
 public interface EditGroupTasksDataAccessInterface {
 
     /**
-     * Returns whether the current logged in user is a moderator in the given group.
+     * Returns whether the current logged in user is a moderator in the currentGroup.
      *
-     * @param groupId the group id
      * @return whether user is moderator
      */
-    boolean isModerator(String groupId);
+    boolean isModerator();
 
     /**
      * Returns the Task object with the taskId.
@@ -47,11 +46,4 @@ public interface EditGroupTasksDataAccessInterface {
      * @param user user to be saved
      */
     void saveUser(User user);
-
-    /**
-     * Get the list of usernames of the user of the group.
-     *
-     * @param groupId the groupId of the group
-     */
-    List<String> getMemberNames(String groupId);
 }

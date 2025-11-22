@@ -1,6 +1,9 @@
 package use_case.viewgrouptasks;
 
+import entity.group.Group;
 import entity.task.Task;
+import entity.user.User;
+
 import java.util.List;
 
 /**
@@ -10,10 +13,16 @@ import java.util.List;
 public interface ViewGroupTasksDataAccessInterface {
 
     /**
-     * Returns all tasks that belong to the given group.
+     * Returns all tasks that belong to the current group.
      *
-     * @param groupId the group id
      * @return the list of tasks for that group (never {@code null})
      */
-    List<Task> getTasksForGroup(String groupId);
+    List<Task> getTasksForGroup();
+
+    /**
+     * Returns all member names that belong to the current group.
+     *
+     * @return the list of member names for that group (never {@code null})
+     */
+    List<String> getMemberNames();
 }

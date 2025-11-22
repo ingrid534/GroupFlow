@@ -7,7 +7,6 @@ import java.util.List;
  */
 public class EditGroupTasksInputData {
 
-    private final String groupId;
     private final String taskId;
 
     private final String newDescription;
@@ -18,26 +17,20 @@ public class EditGroupTasksInputData {
     /**
      * Creates new input data for editing a task.
      *
-     * @param groupId        the group id
      * @param taskId         the task id to edit
      * @param newDescription the new description, or {@code null} to keep
      * @param newDueDate     the new due date, or {@code null} to keep/clear
      * @param newCompleted   the new completion flag, or {@code null} to keep
      * @param newAssigneeIds the new assignee user ids, or {@code null} to keep
      */
-    public EditGroupTasksInputData(String groupId, String taskId,
+    public EditGroupTasksInputData(String taskId,
                                    String newDescription, String newDueDate,
                                    Boolean newCompleted, List<String> newAssigneeIds) {
-        this.groupId = groupId;
         this.taskId = taskId;
         this.newDescription = newDescription;
         this.newDueDate = newDueDate;
         this.newCompleted = newCompleted;
         this.newAssigneeIds = newAssigneeIds;
-    }
-
-    public String getGroupId() {
-        return groupId;
     }
 
     public String getTaskId() {

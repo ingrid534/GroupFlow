@@ -11,8 +11,27 @@ import java.util.List;
  */
 public class ViewGroupTasksState {
 
+    private List<String> memberNames = new ArrayList<>();
     private List<ViewGroupTasksOutputData.TaskDTO> tasks = new ArrayList<>();
     private String error;
+
+    /**
+     * Sets the list of membernames.
+     *
+     * @param names list of member names
+     */
+    public void setMemberNames(List<String> names) {
+        this.memberNames = names;
+    }
+
+    /**
+     * Returns the list of member names for the current group.
+     *
+     * @return list of member names
+     */
+    public List<String> getMemberNames() {
+        return memberNames;
+    }
 
     /**
      * Returns the list of tasks for the current group.

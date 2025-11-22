@@ -31,6 +31,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
 
     // Views
     private ViewTasksView viewTasksView;
+    private GroupTasksView groupTasksView;
 
     // Controllers
     private LogoutController logoutController;
@@ -47,10 +48,11 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     private final CardLayout cards = new CardLayout();
     private final JPanel workArea = new JPanel(cards);
 
-    public DashboardView(DashboardViewModel dashboardViewModel, ViewTasksView viewTasksView) {
+    public DashboardView(DashboardViewModel dashboardViewModel, ViewTasksView viewTasksView, GroupTasksView groupTasksView) {
         this.dashboardViewModel = Objects.requireNonNull(dashboardViewModel);
         this.dashboardViewModel.addPropertyChangeListener(this);
         this.viewTasksView = Objects.requireNonNull(viewTasksView);
+        this.groupTasksView = Objects.requireNonNull(groupTasksView);
 
         setLayout(new BorderLayout(12, 12));
         setBorder(new EmptyBorder(12, 12, 12, 12));
@@ -177,7 +179,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
         tabs.addTab(HOME, placeholderPanel("Home panel for " + name));
         tabs.addTab("People", new PeopleTabPanel(name));
         tabs.addTab("Meets", placeholderPanel("Meetings tab for " + name));
-        tabs.addTab("Tasks", placeholderPanel("Tasks tab for " + name));
+        tabs.addTab("Tasks", groupTasksView);
         tabs.addTab("Sched", placeholderPanel("Schedule tab for " + name));
         tabs.addTab("Optional", placeholderPanel("Optional tab for " + name));
         // initialize selected color (default white is hard to see)

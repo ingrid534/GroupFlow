@@ -15,6 +15,7 @@ public class Main {
                 .addLoginView()
                 .addSignupView()
                 .addViewTasksUseCase()
+                .addGroupTasksUseCases()
                 .addDashboardView()
                 .addCreateGroupView()
                 .addSignupUseCase()

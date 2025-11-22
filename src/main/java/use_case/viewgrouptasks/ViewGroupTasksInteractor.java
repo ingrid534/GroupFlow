@@ -26,8 +26,8 @@ public class ViewGroupTasksInteractor implements ViewGroupTasksInputBoundary {
     }
 
     @Override
-    public void execute(ViewGroupTasksInputData inputData) {
-        List<Task> tasks = dataAccess.getTasksForGroup(inputData.getGroupId());
+    public void execute() {
+        List<Task> tasks = dataAccess.getTasksForGroup();
 
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         List<ViewGroupTasksOutputData.TaskDTO> dtos = new ArrayList<>();
@@ -40,7 +40,9 @@ public class ViewGroupTasksInteractor implements ViewGroupTasksInputBoundary {
                     task.isCompleted(), task.getAssignees()));
         }
 
+        List<String> names = dataAccess.getMemberNames();
+
         presenter.present(
-                new ViewGroupTasksOutputData(dtos));
+                new ViewGroupTasksOutputData(dtos, names));
     }
 }

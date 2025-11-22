@@ -28,7 +28,7 @@ public class EditGroupTasksInteractor implements EditGroupTasksInputBoundary {
 
     @Override
     public void execute(EditGroupTasksInputData inputData) {
-        if (!dataAccess.isModerator(inputData.getGroupId())) {
+        if (!dataAccess.isModerator()) {
             presenter.present(new EditGroupTasksOutputData(false,
                     "Only moderators can edit tasks."));
             return;

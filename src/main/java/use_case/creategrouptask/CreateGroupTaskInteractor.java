@@ -35,13 +35,13 @@ public class CreateGroupTaskInteractor implements CreateGroupTaskInputBoundary {
 
     @Override
     public void execute(CreateGroupTaskInputData inputData) {
-        if (!dataAccess.isModerator(inputData.getGroupId())) {
+        if (!dataAccess.isModerator()) {
             presenter.present(new CreateGroupTaskOutputData(false,
                     "Only moderators may create tasks in this group."));
             return;
         }
 
-        Group group = dataAccess.getGroup(inputData.getGroupId());
+        Group group = dataAccess.getCurrentGroup();
         if (group == null) {
             presenter.present(new CreateGroupTaskOutputData(false,
                     "Group not found."));
@@ -52,9 +52,9 @@ public class CreateGroupTaskInteractor implements CreateGroupTaskInputBoundary {
 
         if (inputData.getDueDate() != null && !inputData.getDueDate().isEmpty()) {
             LocalDateTime due = LocalDate.parse(inputData.getDueDate()).atStartOfDay();
-            task = taskFactory.createWithDeadline(inputData.getDescription(), inputData.getGroupId(), due);
+            task = taskFactory.createWithDeadline(inputData.getDescription(), dataAccess.getGroupId(), due);
         } else {
-            task = taskFactory.createWithoutDeadline(inputData.getDescription(), inputData.getGroupId());
+            task = taskFactory.createWithoutDeadline(inputData.getDescription(), dataAccess.getGroupId());
         }
 
         group.addTask(task.getID());

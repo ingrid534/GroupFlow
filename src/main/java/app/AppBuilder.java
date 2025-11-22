@@ -12,12 +12,19 @@ import data_access.DBUserDataAccessObject;
 import data_access.DBTaskDataAccessObject;
 import entity.group.GroupFactory;
 import entity.membership.MembershipFactory;
+import entity.task.TaskFactory;
 import entity.user.UserFactory;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.create_group.CreateGroupController;
 import interface_adapter.create_group.CreateGroupPresenter;
 import interface_adapter.create_group.CreateGroupViewModel;
+import interface_adapter.creategrouptasks.CreateGroupTasksController;
+import interface_adapter.creategrouptasks.CreateGroupTasksPresenter;
+import interface_adapter.creategrouptasks.CreateGroupTasksViewModel;
 import interface_adapter.dashboard.DashboardViewModel;
+import interface_adapter.editgrouptask.EditGroupTaskController;
+import interface_adapter.editgrouptask.EditGroupTaskPresenter;
+import interface_adapter.editgrouptask.EditGroupTaskViewModel;
 import interface_adapter.logged_in.ChangePasswordController;
 import interface_adapter.logged_in.ChangePasswordPresenter;
 import interface_adapter.logged_in.LoggedInViewModel;
@@ -29,6 +36,9 @@ import interface_adapter.logout.LogoutPresenter;
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
+import interface_adapter.viewgrouptasks.ViewGroupTasksController;
+import interface_adapter.viewgrouptasks.ViewGroupTasksPresenter;
+import interface_adapter.viewgrouptasks.ViewGroupTasksViewModel;
 import interface_adapter.viewtasks.ViewTasksController;
 import interface_adapter.viewtasks.ViewTasksPresenter;
 import interface_adapter.viewtasks.ViewTasksViewModel;
@@ -38,6 +48,12 @@ import use_case.change_password.ChangePasswordOutputBoundary;
 import use_case.create_group.CreateGroupInputBoundary;
 import use_case.create_group.CreateGroupInteractor;
 import use_case.create_group.CreateGroupOutputBoundary;
+import use_case.creategrouptask.CreateGroupTaskInputBoundary;
+import use_case.creategrouptask.CreateGroupTaskInteractor;
+import use_case.creategrouptask.CreateGroupTaskOutputBoundary;
+import use_case.editgrouptasks.EditGroupTasksInputBoundary;
+import use_case.editgrouptasks.EditGroupTasksInteractor;
+import use_case.editgrouptasks.EditGroupTasksOutputBoundary;
 import use_case.login.LoginInputBoundary;
 import use_case.login.LoginInteractor;
 import use_case.login.LoginOutputBoundary;
@@ -47,6 +63,9 @@ import use_case.logout.LogoutOutputBoundary;
 import use_case.signup.SignupInputBoundary;
 import use_case.signup.SignupInteractor;
 import use_case.signup.SignupOutputBoundary;
+import use_case.viewgrouptasks.ViewGroupTasksInputBoundary;
+import use_case.viewgrouptasks.ViewGroupTasksInteractor;
+import use_case.viewgrouptasks.ViewGroupTasksOutputBoundary;
 import use_case.viewtasks.ViewTasksInputBoundary;
 import use_case.viewtasks.ViewTasksInteractor;
 import use_case.viewtasks.ViewTasksOutputBoundary;
@@ -61,6 +80,7 @@ public class AppBuilder {
     final UserFactory userFactory = new UserFactory();
     final GroupFactory groupFactory = new GroupFactory();
     final MembershipFactory membershipFactory = new MembershipFactory();
+    final TaskFactory taskFactory = new TaskFactory();
     final ViewManagerModel viewManagerModel = new ViewManagerModel();
     ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
 
@@ -94,6 +114,10 @@ public class AppBuilder {
     private LoginView loginView;
     private DashboardView dashboardView;
     private CreateGroupView createGroupView;
+    private GroupTasksView groupTasksView;
+    private ViewGroupTasksViewModel viewGroupTasksViewModel;
+    private EditGroupTaskViewModel editGroupTaskViewModel;
+    private CreateGroupTasksViewModel createGroupTasksViewModel;
 
     private JFrame application;
     private ViewTasksView viewTasksView;
@@ -148,7 +172,7 @@ public class AppBuilder {
      */
     public AppBuilder addDashboardView() {
         dashboardViewModel = new DashboardViewModel();
-        dashboardView = new DashboardView(dashboardViewModel, viewTasksView);
+        dashboardView = new DashboardView(dashboardViewModel, viewTasksView, groupTasksView);
         cardPanel.add(dashboardView, dashboardView.getViewName());
         viewSizes.put(dashboardView.getViewName(), new Dimension(1000, 600));
         return this;
@@ -165,6 +189,42 @@ public class AppBuilder {
         ViewTasksInputBoundary interactor = new ViewTasksInteractor(taskDataAccessObject, presenter);
         ViewTasksController viewTasksController = new ViewTasksController(interactor);
         viewTasksView = new ViewTasksView(viewTasksViewModel, viewTasksController);
+        return this;
+    }
+
+    public AppBuilder addGroupTasksUseCases() {
+        viewGroupTasksViewModel = new ViewGroupTasksViewModel();
+        ViewGroupTasksOutputBoundary ViewPresenter =
+                new ViewGroupTasksPresenter(viewGroupTasksViewModel);
+
+        ViewGroupTasksInputBoundary ViewInteractor =
+                new ViewGroupTasksInteractor(taskDataAccessObject, ViewPresenter);
+
+        ViewGroupTasksController ViewController =
+                new ViewGroupTasksController(ViewInteractor);
+
+        editGroupTaskViewModel = new EditGroupTaskViewModel();
+        EditGroupTasksOutputBoundary EditPresenter =
+                new EditGroupTaskPresenter(editGroupTaskViewModel);
+
+        EditGroupTasksInputBoundary EditInteractor =
+                new EditGroupTasksInteractor(taskDataAccessObject, EditPresenter);
+
+        EditGroupTaskController EditController =
+                new EditGroupTaskController(EditInteractor);
+
+        createGroupTasksViewModel = new CreateGroupTasksViewModel();
+        CreateGroupTaskOutputBoundary CreatePresenter =
+                new CreateGroupTasksPresenter(createGroupTasksViewModel);
+
+        CreateGroupTaskInputBoundary CreateInteractor =
+                new CreateGroupTaskInteractor(taskDataAccessObject, CreatePresenter, taskFactory);
+
+        CreateGroupTasksController CreateController =
+                new CreateGroupTasksController(CreateInteractor);
+
+        groupTasksView = new GroupTasksView(viewGroupTasksViewModel, editGroupTaskViewModel, createGroupTasksViewModel,
+                ViewController, EditController, CreateController);
         return this;
     }
 

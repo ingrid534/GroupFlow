@@ -4,19 +4,26 @@ import java.util.List;
 
 public class ViewGroupTasksOutputData {
 
-    private final java.util.List<TaskDTO> tasks;
+    private final List<TaskDTO> tasks;
+    private final List<String> names;
 
     /**
      * Creates new output data for group tasks.
      *
-     * @param tasks the tasks belonging to the group
+     * @param tasks       the tasks belonging to the group
+     * @param memberNames the members belonging to the group
      */
-    public ViewGroupTasksOutputData(List<TaskDTO> tasks) {
+    public ViewGroupTasksOutputData(List<TaskDTO> tasks, List<String> memberNames) {
         this.tasks = tasks;
+        this.names = memberNames;
     }
 
-    public java.util.List<TaskDTO> getTasks() {
+    public List<TaskDTO> getTasks() {
         return tasks;
+    }
+
+    public List<String> getNames() {
+        return names;
     }
 
     /**

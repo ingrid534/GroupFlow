@@ -9,20 +9,25 @@ import java.util.List;
 public interface CreateGroupTaskDataAccessInterface {
 
     /**
-     * Returns whether the current logged in user is a moderator in the given group.
+     * Returns whether the current logged in user is a moderator in the currentGroup.
      *
-     * @param groupId the group id
      * @return whether user is moderator
      */
-    boolean isModerator(String groupId);
+    boolean isModerator();
 
     /**
-     * Returns the Group object with the groupId.
+     * Returns the current selected group object.
      *
-     * @param groupId the groupId
      * @return the Group object
      */
-    Group getGroup(String groupId);
+    Group getCurrentGroup();
+
+    /**
+     * Returns the current selected group id.
+     *
+     * @return the Group id
+     */
+    String getGroupId();
 
     /**
      * Returns the User object with the userId.
@@ -52,11 +57,4 @@ public interface CreateGroupTaskDataAccessInterface {
      * @param user user to be saved
      */
     void saveUser(User user);
-
-    /**
-     * Get the list of usernames of the user of the group.
-     *
-     * @param groupId the groupId of the group
-     */
-    List<String> getMemberNames(String groupId);
 }

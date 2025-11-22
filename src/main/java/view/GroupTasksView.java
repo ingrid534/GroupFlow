@@ -20,9 +20,8 @@ import java.util.List;
  * to create and edit tasks.
  */
 public class GroupTasksView extends JPanel implements PropertyChangeListener {
-    private final String groupId;
-    private final List<String> usernames;
 
+    private final List<String> usernames;
     private final ViewGroupTasksViewModel viewModel;
     private final EditGroupTaskViewModel editModel;
     private final CreateGroupTasksViewModel createModel;
@@ -36,8 +35,6 @@ public class GroupTasksView extends JPanel implements PropertyChangeListener {
     /**
      * Constructs a GroupTasksView.
      *
-     * @param groupId          The group to display tasks for
-     * @param memberNames      The list of usernames of the users of the group
      * @param viewModel        ViewModel for viewing tasks
      * @param editModel        ViewModel for editing tasks
      * @param createModel      ViewModel for creating tasks
@@ -46,8 +43,6 @@ public class GroupTasksView extends JPanel implements PropertyChangeListener {
      * @param createController Controller for create tasks use case
      */
     public GroupTasksView(
-            String groupId,
-            List<String> memberNames,
             ViewGroupTasksViewModel viewModel,
             EditGroupTaskViewModel editModel,
             CreateGroupTasksViewModel createModel,
@@ -55,9 +50,7 @@ public class GroupTasksView extends JPanel implements PropertyChangeListener {
             EditGroupTaskController editController,
             CreateGroupTasksController createController) {
 
-        this.groupId = groupId;
-        this.usernames = memberNames;
-
+        this.usernames = viewModel.getState().getMemberNames();
         this.viewModel = viewModel;
         this.editModel = editModel;
         this.createModel = createModel;
@@ -78,7 +71,7 @@ public class GroupTasksView extends JPanel implements PropertyChangeListener {
         refresh();
 
         // load tasks immediately
-        viewController.execute(groupId);
+        viewController.execute();
     }
 
     /** Refreshes the UI according to the ViewModel state. */
@@ -132,7 +125,7 @@ public class GroupTasksView extends JPanel implements PropertyChangeListener {
      * the CreateGroupTasksController.
      */
     private void openCreateDialog() {
-        new CreateTaskView(groupId, usernames, createController, createModel);
+        new CreateTaskView(usernames, createController, createModel);
     }
 
     /**
@@ -141,7 +134,7 @@ public class GroupTasksView extends JPanel implements PropertyChangeListener {
      * @param dto the task DTO to edit
      */
     private void openEditDialog(ViewGroupTasksOutputData.TaskDTO dto) {
-        new EditTaskView(groupId, dto.getId(), usernames, editController, editModel);
+        new EditTaskView(dto.getId(), usernames, editController, editModel);
     }
 
     @Override
@@ -153,7 +146,7 @@ public class GroupTasksView extends JPanel implements PropertyChangeListener {
             refresh();
         } else if ("edit_result".equals(prop) || "create_result".equals(prop)) {
             // After a successful or failed edit/create, reload tasks from the use case.
-            viewController.execute(groupId);
+            viewController.execute();
         }
     }
 }

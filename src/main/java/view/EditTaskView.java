@@ -33,7 +33,6 @@ import java.util.List;
  */
 public class EditTaskView extends JDialog implements PropertyChangeListener {
 
-    private final String groupId;
     private final String taskId;
     private final List<String> memberNames;
 
@@ -50,17 +49,14 @@ public class EditTaskView extends JDialog implements PropertyChangeListener {
     /**
      * Constructs a modal dialog for editing a task.
      *
-     * @param groupId     ID of the group containing the task
      * @param taskId      ID of the task to edit
      * @param memberNames list of usernames that can be assigned this task
      * @param controller  controller for the edit-group-task use case
      * @param viewModel   ViewModel providing edit result feedback
      */
-    public EditTaskView(String groupId, String taskId, List<String> memberNames,
+    public EditTaskView(String taskId, List<String> memberNames,
                         EditGroupTaskController controller, EditGroupTaskViewModel viewModel) {
         super((Frame) null, "Edit Task", true);
-
-        this.groupId = groupId;
         this.taskId = taskId;
         this.memberNames = memberNames;
         this.controller = controller;
@@ -167,7 +163,7 @@ public class EditTaskView extends JDialog implements PropertyChangeListener {
         Boolean completed = Boolean.valueOf(completedCheckBox.isSelected());
 
         saveButton.setEnabled(false);
-        controller.execute(groupId, taskId,
+        controller.execute(taskId,
                 newDescription, newDue, completed, selectedAssignees);
     }
 

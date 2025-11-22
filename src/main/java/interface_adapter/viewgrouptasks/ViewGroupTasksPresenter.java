@@ -19,6 +19,7 @@ public class ViewGroupTasksPresenter implements ViewGroupTasksOutputBoundary {
     public void present(ViewGroupTasksOutputData response) {
         ViewGroupTasksState state = viewModel.getState();
         state.setTasks(response.getTasks());
+        state.setMemberNames(response.getNames());
         state.setError(null);
 
         viewModel.setState(state);

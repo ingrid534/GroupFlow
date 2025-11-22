@@ -25,17 +25,16 @@ public class EditGroupTaskController {
     /**
      * Executes the EditGroupTasks use case with the given parameters.
      *
-     * @param groupId        ID of the group containing the task
      * @param taskId         ID of the task to edit
      * @param description    new description (nullable)
      * @param dueDate        new due date as string (nullable)
      * @param completed      new completed flag (nullable)
      * @param newAssigneeIds newAssigneeIds to be added to the task (nullable)
      */
-    public void execute(String groupId, String taskId, String description,
+    public void execute(String taskId, String description,
                         String dueDate, Boolean completed, List<String> newAssigneeIds) {
         EditGroupTasksInputData inputData =
-                new EditGroupTasksInputData(groupId, taskId,
+                new EditGroupTasksInputData(taskId,
                         description, dueDate, completed, newAssigneeIds);
 
         interactor.execute(inputData);
