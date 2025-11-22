@@ -15,7 +15,6 @@ public class Main {
                 .addLoginView()
                 .addSignupView()
                 .addViewTasksUseCase()
-                .addGroupTasksUseCases()
                 .addDashboardView()
                 .addCreateGroupView()
                 .addSignupUseCase()
@@ -23,6 +22,7 @@ public class Main {
                 .addLogoutUseCase()
                 // .addChangePasswordUseCase()
                 .addCreateGroupUseCase()
+                .addGroupTasksUseCases()
                 .build();
 
         application.pack();

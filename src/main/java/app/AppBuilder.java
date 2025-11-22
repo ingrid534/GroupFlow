@@ -172,7 +172,7 @@ public class AppBuilder {
      */
     public AppBuilder addDashboardView() {
         dashboardViewModel = new DashboardViewModel();
-        dashboardView = new DashboardView(dashboardViewModel, viewTasksView, groupTasksView);
+        dashboardView = new DashboardView(dashboardViewModel, viewTasksView);
         cardPanel.add(dashboardView, dashboardView.getViewName());
         viewSizes.put(dashboardView.getViewName(), new Dimension(1000, 600));
         return this;
@@ -223,8 +223,12 @@ public class AppBuilder {
         CreateGroupTasksController CreateController =
                 new CreateGroupTasksController(CreateInteractor);
 
-        groupTasksView = new GroupTasksView(viewGroupTasksViewModel, editGroupTaskViewModel, createGroupTasksViewModel,
-                ViewController, EditController, CreateController);
+        this.dashboardView.setViewGroupTasksController(ViewController);
+        this.dashboardView.setEditGroupTaskController(EditController);
+        this.dashboardView.setCreateGroupTasksController(CreateController);
+        this.dashboardView.setCreateGroupTasksViewModel(createGroupTasksViewModel);
+        this.dashboardView.setEditGroupTasksViewModel(editGroupTaskViewModel);
+        this.dashboardView.setViewGroupTasksViewModel(viewGroupTasksViewModel);
         return this;
     }
 
