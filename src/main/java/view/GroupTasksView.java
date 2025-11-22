@@ -21,7 +21,6 @@ import java.util.List;
  */
 public class GroupTasksView extends JPanel implements PropertyChangeListener {
     private final String groupId;
-    private final String userId;
     private final List<String> usernames;
 
     private final ViewGroupTasksViewModel viewModel;
@@ -37,19 +36,17 @@ public class GroupTasksView extends JPanel implements PropertyChangeListener {
     /**
      * Constructs a GroupTasksView.
      *
-     * @param groupId         The group to display tasks for
-     * @param userId          The user currently logged in
-     * @param memberNames     The list of usernames of the users of the group
-     * @param viewModel       ViewModel for viewing tasks
-     * @param editModel       ViewModel for editing tasks
-     * @param createModel     ViewModel for creating tasks
-     * @param viewController  Controller for view tasks use case
-     * @param editController  Controller for edit tasks use case
+     * @param groupId          The group to display tasks for
+     * @param memberNames      The list of usernames of the users of the group
+     * @param viewModel        ViewModel for viewing tasks
+     * @param editModel        ViewModel for editing tasks
+     * @param createModel      ViewModel for creating tasks
+     * @param viewController   Controller for view tasks use case
+     * @param editController   Controller for edit tasks use case
      * @param createController Controller for create tasks use case
      */
     public GroupTasksView(
             String groupId,
-            String userId,
             List<String> memberNames,
             ViewGroupTasksViewModel viewModel,
             EditGroupTaskViewModel editModel,
@@ -59,7 +56,6 @@ public class GroupTasksView extends JPanel implements PropertyChangeListener {
             CreateGroupTasksController createController) {
 
         this.groupId = groupId;
-        this.userId = userId;
         this.usernames = memberNames;
 
         this.viewModel = viewModel;
@@ -136,7 +132,7 @@ public class GroupTasksView extends JPanel implements PropertyChangeListener {
      * the CreateGroupTasksController.
      */
     private void openCreateDialog() {
-        new CreateTaskView(userId, groupId, usernames, createController, createModel);
+        new CreateTaskView(groupId, usernames, createController, createModel);
     }
 
     /**
@@ -145,7 +141,7 @@ public class GroupTasksView extends JPanel implements PropertyChangeListener {
      * @param dto the task DTO to edit
      */
     private void openEditDialog(ViewGroupTasksOutputData.TaskDTO dto) {
-        new EditTaskView(userId, groupId, dto.getId(), usernames, editController, editModel);
+        new EditTaskView(groupId, dto.getId(), usernames, editController, editModel);
     }
 
     @Override

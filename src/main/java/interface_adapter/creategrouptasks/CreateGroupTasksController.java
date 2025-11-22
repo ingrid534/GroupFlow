@@ -25,20 +25,18 @@ public class CreateGroupTasksController {
     /**
      * Executes the CreateGroupTask use case.
      *
-     * @param userId       ID of the user (must be moderator)
-     * @param groupId      Group in which the task will be created
-     * @param description  Description of the task
-     * @param dueDate      Due date string (nullable)
-     * @param assigneeIds  List of user IDs assigned to the task
+     * @param groupId     Group in which the task will be created
+     * @param description Description of the task
+     * @param dueDate     Due date string (nullable)
+     * @param assigneeIds List of user IDs assigned to the task
      */
-    public void execute(String userId,
-                        String groupId,
+    public void execute(String groupId,
                         String description,
                         String dueDate,
                         List<String> assigneeIds) {
 
         CreateGroupTaskInputData inputData =
-                new CreateGroupTaskInputData(userId, groupId, description, dueDate, assigneeIds);
+                new CreateGroupTaskInputData(groupId, description, dueDate, assigneeIds);
 
         interactor.execute(inputData);
     }

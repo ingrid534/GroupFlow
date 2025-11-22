@@ -4,6 +4,7 @@ import interface_adapter.ViewManagerModel;
 import interface_adapter.dashboard.DashboardViewModel;
 import interface_adapter.dashboard.LoggedInState;
 import interface_adapter.signup.SignupViewModel;
+import interface_adapter.viewtasks.ViewTasksState;
 import interface_adapter.viewtasks.ViewTasksViewModel;
 import use_case.login.LoginOutputBoundary;
 import use_case.login.LoginOutputData;
@@ -17,17 +18,15 @@ public class LoginPresenter implements LoginOutputBoundary {
     private final DashboardViewModel dashboardViewModel;
     private final ViewManagerModel viewManagerModel;
     private final SignupViewModel signupViewModel;
-    private final ViewTasksViewModel viewTasksViewModel;
 
     public LoginPresenter(ViewManagerModel viewManagerModel,
                           DashboardViewModel loggedInViewModel,
                           LoginViewModel loginViewModel,
-                          SignupViewModel signupViewModel, ViewTasksViewModel viewTasksViewModel) {
+                          SignupViewModel signupViewModel) {
         this.viewManagerModel = viewManagerModel;
         this.dashboardViewModel = loggedInViewModel;
         this.loginViewModel = loginViewModel;
         this.signupViewModel = signupViewModel;
-        this.viewTasksViewModel = viewTasksViewModel;
     }
 
     @Override
@@ -35,9 +34,6 @@ public class LoginPresenter implements LoginOutputBoundary {
         // On success, update the loggedInViewModel's state
         final LoggedInState loggedInState = dashboardViewModel.getState();
         loggedInState.setUsername(response.getUsername());
-        final interface_adapter.viewtasks.LoggedInState loggedInStateView = viewTasksViewModel.getState();
-        loggedInStateView.setUsername(response.getUsername());
-        this.viewTasksViewModel.firePropertyChange();
         this.dashboardViewModel.firePropertyChange();
 
         // and clear everything from the LoginViewModel's state

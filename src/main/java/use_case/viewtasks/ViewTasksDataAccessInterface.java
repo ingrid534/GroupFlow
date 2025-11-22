@@ -11,12 +11,9 @@ public interface ViewTasksDataAccessInterface {
     /**
      * Returns a list of task IDs that are assigned to the specified user.
      *
-     * @param username the unique identifier of the user whose tasks
-     *                 should be retrieved
-     * @return a list of task IDs associated with the user; never {@code null},
-     *         but may be empty if the user has no assigned tasks
+     * @return a list of task IDs associated with the currently logged in user
      */
-    List<String> getTasksForUser(String username);
+    List<String> GetTasksForCurrentUser();
 
     /**
      * Retrieves the full {@link Task} entity corresponding to the given task ID.

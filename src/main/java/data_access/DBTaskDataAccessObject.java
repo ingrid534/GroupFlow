@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class DBTaskDataAccessObject implements ViewTasksDataAccessInterface {
     // Need to be implemented
     @Override
-    public List<String> getTasksForUser(String username) {
+    public List<String> GetTasksForCurrentUser() {
         return new ArrayList<>();
     }
 

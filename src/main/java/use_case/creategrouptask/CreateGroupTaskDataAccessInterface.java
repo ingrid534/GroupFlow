@@ -7,14 +7,14 @@ import entity.user.User;
 import java.util.List;
 
 public interface CreateGroupTaskDataAccessInterface {
+
     /**
-     * Returns whether the given user is a moderator in the given group.
+     * Returns whether the current logged in user is a moderator in the given group.
      *
      * @param groupId the group id
-     * @param userId the user id
      * @return whether user is moderator
      */
-    boolean isModerator(String groupId, String userId);
+    boolean isModerator(String groupId);
 
     /**
      * Returns the Group object with the groupId.

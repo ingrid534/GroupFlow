@@ -35,7 +35,7 @@ public class CreateGroupTaskInteractor implements CreateGroupTaskInputBoundary {
 
     @Override
     public void execute(CreateGroupTaskInputData inputData) {
-        if (!dataAccess.isModerator(inputData.getGroupId(), inputData.getUserId())) {
+        if (!dataAccess.isModerator(inputData.getGroupId())) {
             presenter.present(new CreateGroupTaskOutputData(false,
                     "Only moderators may create tasks in this group."));
             return;
