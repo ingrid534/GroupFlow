@@ -3,6 +3,8 @@ package use_case.editgrouptasks;
 import entity.task.Task;
 import entity.user.User;
 
+import java.util.List;
+
 /**
  * Data access interface for editing group tasks.
  */
@@ -46,4 +48,11 @@ public interface EditGroupTasksDataAccessInterface {
      * @param user user to be saved
      */
     void saveUser(User user);
+
+    /**
+     * Get the list of usernames of the user of the group.
+     *
+     * @param groupId the groupId of the group
+     */
+    List<String> getMemberNames(String groupId);
 }

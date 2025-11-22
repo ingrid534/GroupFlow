@@ -4,6 +4,8 @@ import entity.group.Group;
 import entity.task.Task;
 import entity.user.User;
 
+import java.util.List;
+
 public interface CreateGroupTaskDataAccessInterface {
     /**
      * Returns whether the given user is a moderator in the given group.
@@ -50,4 +52,11 @@ public interface CreateGroupTaskDataAccessInterface {
      * @param user user to be saved
      */
     void saveUser(User user);
+
+    /**
+     * Get the list of usernames of the user of the group.
+     *
+     * @param groupId the groupId of the group
+     */
+    List<String> getMemberNames(String groupId);
 }
