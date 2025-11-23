@@ -13,14 +13,5 @@ public interface ViewTasksDataAccessInterface {
      *
      * @return a list of task IDs associated with the currently logged in user
      */
-    List<String> getTasksForCurrentUser();
-
-    /**
-     * Retrieves the full {@link Task} entity corresponding to the given task ID.
-     *
-     * @param taskId the unique identifier of the task to retrieve
-     * @return the {@link Task} object associated with the ID, or {@code null}
-     *         if no task with the given ID exists
-     */
-    Task getTask(String taskId);
+    List<Task> getTasksForCurrentUser();
 }

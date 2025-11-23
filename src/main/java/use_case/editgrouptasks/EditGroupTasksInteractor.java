@@ -12,23 +12,27 @@ import java.util.List;
  */
 public class EditGroupTasksInteractor implements EditGroupTasksInputBoundary {
     private final EditGroupTasksDataAccessInterface dataAccess;
+    private final EditGroupTasksUserDataAccessInterface userDataAccess;
     private final EditGroupTasksOutputBoundary presenter;
 
     /**
      * Constructs an interactor.
      *
-     * @param dataAccess the data access object
-     * @param presenter  the output boundary
+     * @param dataAccess     the data access object
+     * @param presenter      the output boundary
+     * @param userDataAccess the user data access object
      */
     public EditGroupTasksInteractor(EditGroupTasksDataAccessInterface dataAccess,
-                                    EditGroupTasksOutputBoundary presenter) {
+                                    EditGroupTasksOutputBoundary presenter,
+                                    EditGroupTasksUserDataAccessInterface userDataAccess) {
         this.dataAccess = dataAccess;
+        this.userDataAccess = userDataAccess;
         this.presenter = presenter;
     }
 
     @Override
     public void execute(EditGroupTasksInputData inputData) {
-        if (!dataAccess.isModerator()) {
+        if (!userDataAccess.isModerator()) {
             presenter.present(new EditGroupTasksOutputData(false,
                     "Only moderators can edit tasks."));
             return;
@@ -61,18 +65,18 @@ public class EditGroupTasksInteractor implements EditGroupTasksInputBoundary {
         if (newUsernames != null) {
 
             for (String oldId : task.getAssignees()) {
-                User u = dataAccess.getUser(oldId);
+                User u = userDataAccess.getUserFromId(oldId);
                 if (u != null) {
                     u.getTasks().remove(task.getID());
-                    dataAccess.saveUser(u);
+                    userDataAccess.save(u);
                 }
             }
 
             for (String username : newUsernames) {
-                User u = dataAccess.getUserFromUsername(username);
+                User u = userDataAccess.getUserFromUsername(username);
                 if (u != null) {
                     u.getTasks().add(task.getID());
-                    dataAccess.saveUser(u);
+                    userDataAccess.save(u);
                 }
             }
 

@@ -203,7 +203,7 @@ public class AppBuilder {
                 new ViewGroupTasksPresenter(viewGroupTasksViewModel);
 
         ViewGroupTasksInputBoundary viewInteractor =
-                new ViewGroupTasksInteractor(taskDataAccessObject, viewPresenter);
+                new ViewGroupTasksInteractor(taskDataAccessObject, viewPresenter, groupDataAccessObject);
 
         ViewGroupTasksController viewController =
                 new ViewGroupTasksController(viewInteractor);
@@ -213,7 +213,7 @@ public class AppBuilder {
                 new EditGroupTaskPresenter(editGroupTaskViewModel, viewTasksViewModel);
 
         EditGroupTasksInputBoundary editInteractor =
-                new EditGroupTasksInteractor(taskDataAccessObject, editPresenter);
+                new EditGroupTasksInteractor(taskDataAccessObject, editPresenter, userDataAccessObject);
 
         EditGroupTaskController editController =
                 new EditGroupTaskController(editInteractor);
@@ -223,7 +223,8 @@ public class AppBuilder {
                 new CreateGroupTasksPresenter(createGroupTasksViewModel, viewTasksViewModel);
 
         CreateGroupTaskInputBoundary createInteractor =
-                new CreateGroupTaskInteractor(taskDataAccessObject, createPresenter, taskFactory);
+                new CreateGroupTaskInteractor(taskDataAccessObject, createPresenter, taskFactory,
+                        userDataAccessObject, groupDataAccessObject);
 
         CreateGroupTasksController createController =
                 new CreateGroupTasksController(createInteractor);

@@ -10,6 +10,8 @@ import entity.user.User;
 import entity.user.UserFactory;
 import use_case.change_password.ChangePasswordUserDataAccessInterface;
 import use_case.create_group.LoggedInDataAccessInterface;
+import use_case.creategrouptask.CreateGroupTaskUserDataAccessInterface;
+import use_case.editgrouptasks.EditGroupTasksUserDataAccessInterface;
 import use_case.login.LoginUserDataAccessInterface;
 import use_case.logout.LogoutUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
@@ -27,7 +29,9 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
         LoginUserDataAccessInterface,
         ChangePasswordUserDataAccessInterface,
         LogoutUserDataAccessInterface,
-        LoggedInDataAccessInterface {
+        LoggedInDataAccessInterface,
+        EditGroupTasksUserDataAccessInterface,
+        CreateGroupTaskUserDataAccessInterface {
 
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
@@ -143,5 +147,38 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
         if (result.getMatchedCount() == 0) {
             throw new RuntimeException("User not found: " + user.getName());
         }
+    }
+
+    // TODO
+    /**
+     * Returns whether the current logged in user is a moderator in the currentGroup.
+     *
+     * @return whether user is moderator
+     */
+    @Override
+    public boolean isModerator() {
+        return true;
+    }
+
+    /**
+     * Returns the User object with the userId.
+     *
+     * @param userId the userId
+     * @return the User object
+     */
+    @Override
+    public User getUserFromId(String userId) {
+        return null;
+    }
+
+    /**
+     * Returns the User object with the username.
+     *
+     * @param username the username
+     * @return the User object
+     */
+    @Override
+    public User getUserFromUsername(String username) {
+        return null;
     }
 }

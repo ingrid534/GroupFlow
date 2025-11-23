@@ -11,18 +11,22 @@ import java.util.List;
  */
 public class ViewGroupTasksInteractor implements ViewGroupTasksInputBoundary {
     private final ViewGroupTasksDataAccessInterface dataAccess;
+    private final ViewGroupTasksGroupDataAccessInterface viewDataAccess;
     private final ViewGroupTasksOutputBoundary presenter;
 
     /**
      * Constructs an interactor.
      *
-     * @param dataAccess the data access object
-     * @param presenter  the output boundary
+     * @param dataAccess      the data access object
+     * @param presenter       the output boundary
+     * @param groupDataAccess the data access object for group
      */
     public ViewGroupTasksInteractor(ViewGroupTasksDataAccessInterface dataAccess,
-                                ViewGroupTasksOutputBoundary presenter) {
+                                    ViewGroupTasksOutputBoundary presenter,
+                                    ViewGroupTasksGroupDataAccessInterface groupDataAccess) {
         this.dataAccess = dataAccess;
         this.presenter = presenter;
+        this.viewDataAccess = groupDataAccess;
     }
 
     @Override
@@ -40,7 +44,7 @@ public class ViewGroupTasksInteractor implements ViewGroupTasksInputBoundary {
                     task.isCompleted(), task.getAssignees()));
         }
 
-        List<String> names = dataAccess.getMemberNames();
+        List<String> names = viewDataAccess.getMemberNames();
 
         presenter.present(
                 new ViewGroupTasksOutputData(dtos, names));
