@@ -62,8 +62,8 @@ public class CreateGroupTaskInteractor implements CreateGroupTaskInputBoundary {
         // 4. Optional: Assign users to the task
         List<String> assignees = inputData.getAssignees();
         if (assignees != null) {
-            for (String userId : assignees) {
-                User u = dataAccess.getUser(userId);
+            for (String username : assignees) {
+                User u = dataAccess.getUserFromUsername(username);
                 if (u != null) {
                     u.getTasks().add(task.getID());
                     dataAccess.saveUser(u);

@@ -57,8 +57,8 @@ public class EditGroupTasksInteractor implements EditGroupTasksInputBoundary {
             task.markIncomplete();
         }
 
-        List<String> newIds = inputData.getNewAssigneeUserIds();
-        if (newIds != null) {
+        List<String> newUsernames = inputData.getNewAssigneeUsernames();
+        if (newUsernames != null) {
 
             for (String oldId : task.getAssignees()) {
                 User u = dataAccess.getUser(oldId);
@@ -68,8 +68,8 @@ public class EditGroupTasksInteractor implements EditGroupTasksInputBoundary {
                 }
             }
 
-            for (String newId : newIds) {
-                User u = dataAccess.getUser(newId);
+            for (String username : newUsernames) {
+                User u = dataAccess.getUserFromUsername(username);
                 if (u != null) {
                     u.getTasks().add(task.getID());
                     dataAccess.saveUser(u);

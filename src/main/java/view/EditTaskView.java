@@ -4,16 +4,7 @@ import interface_adapter.editgrouptask.EditGroupTaskController;
 import interface_adapter.editgrouptask.EditGroupTaskState;
 import interface_adapter.editgrouptask.EditGroupTaskViewModel;
 
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
@@ -21,6 +12,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,7 +33,7 @@ public class EditTaskView extends JDialog implements PropertyChangeListener {
 
     private JTextField descriptionField;
     private JTextField dueDateField;
-    private JList<String> assigneeList;
+    private List<JCheckBox> assigneeCheckBoxes;
     private JCheckBox completedCheckBox;
     private JButton saveButton;
     private JButton cancelButton;
@@ -107,11 +99,18 @@ public class EditTaskView extends JDialog implements PropertyChangeListener {
         formPanel.add(new JLabel("New assignees (optional):"), gbc);
 
         gbc.gridx = 1;
-        assigneeList = new JList<>(memberNames.toArray(new String[0]));
-        assigneeList.setVisibleRowCount(6);
-        assigneeList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        JScrollPane listScroll = new JScrollPane(assigneeList);
-        gbc.fill = GridBagConstraints.BOTH;
+        assigneeCheckBoxes = new ArrayList<>();
+        JPanel checkboxPanel = new JPanel();
+        checkboxPanel.setLayout(new BoxLayout(checkboxPanel, BoxLayout.Y_AXIS));
+
+        for (String name : memberNames) {
+            JCheckBox cb = new JCheckBox(name);
+            assigneeCheckBoxes.add(cb);
+            checkboxPanel.add(cb);
+        }
+
+        JScrollPane listScroll = new JScrollPane(checkboxPanel);
+        listScroll.setPreferredSize(new java.awt.Dimension(200, 120));
         formPanel.add(listScroll, gbc);
 
         // Completed checkbox
@@ -155,9 +154,14 @@ public class EditTaskView extends JDialog implements PropertyChangeListener {
         }
 
         // If the user selects no assignees, treat it as "no change".
-        List<String> selectedAssignees = assigneeList.getSelectedValuesList();
+        List<String> selectedAssignees = new ArrayList<>();
+        for (JCheckBox cb : assigneeCheckBoxes) {
+            if (cb.isSelected()) {
+                selectedAssignees.add(cb.getText());
+            }
+        }
         if (selectedAssignees.isEmpty()) {
-            selectedAssignees = null;
+            selectedAssignees = null; // "no change"
         }
 
         Boolean completed = Boolean.valueOf(completedCheckBox.isSelected());

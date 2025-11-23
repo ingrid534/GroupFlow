@@ -34,6 +34,14 @@ public interface EditGroupTasksDataAccessInterface {
     User getUser(String userId);
 
     /**
+     * Returns the User object with the username.
+     *
+     * @param username the username
+     * @return the User object
+     */
+    User getUserFromUsername(String username);
+
+    /**
      * Saves the task with updated info (not sure if needed).
      *
      * @param task task to be saved

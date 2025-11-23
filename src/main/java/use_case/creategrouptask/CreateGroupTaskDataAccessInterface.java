@@ -4,8 +4,6 @@ import entity.group.Group;
 import entity.task.Task;
 import entity.user.User;
 
-import java.util.List;
-
 public interface CreateGroupTaskDataAccessInterface {
 
     /**
@@ -30,12 +28,12 @@ public interface CreateGroupTaskDataAccessInterface {
     String getGroupId();
 
     /**
-     * Returns the User object with the userId.
+     * Returns the User object with the username.
      *
-     * @param userId the userId
+     * @param username the username
      * @return the User object
      */
-    User getUser(String userId);
+    User getUserFromUsername(String username);
 
     /**
      * Saves the group with updated info (not sure if needed).

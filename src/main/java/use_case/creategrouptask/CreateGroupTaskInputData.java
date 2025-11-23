@@ -16,7 +16,7 @@ public class CreateGroupTaskInputData {
      *
      * @param description the description of the task
      * @param dueDate     the due date in yyyy-MM-dd format
-     * @param assignees   list of assignee ids
+     * @param assignees   list of assignee usernames
      */
     public CreateGroupTaskInputData(String description,
                                     String dueDate,

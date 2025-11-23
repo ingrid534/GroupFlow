@@ -12,25 +12,25 @@ public class EditGroupTasksInputData {
     private final String newDescription;
     private final String newDueDate;
     private final Boolean newCompleted;
-    private final List<String> newAssigneeIds;
+    private final List<String> newAssigneeUsernames;
 
     /**
      * Creates new input data for editing a task.
      *
-     * @param taskId         the task id to edit
-     * @param newDescription the new description, or {@code null} to keep
-     * @param newDueDate     the new due date, or {@code null} to keep/clear
-     * @param newCompleted   the new completion flag, or {@code null} to keep
-     * @param newAssigneeIds the new assignee user ids, or {@code null} to keep
+     * @param taskId               the task id to edit
+     * @param newDescription       the new description, or {@code null} to keep
+     * @param newDueDate           the new due date, or {@code null} to keep/clear
+     * @param newCompleted         the new completion flag, or {@code null} to keep
+     * @param newAssigneeUsernames the new assignee user names, or {@code null} to keep
      */
     public EditGroupTasksInputData(String taskId,
                                    String newDescription, String newDueDate,
-                                   Boolean newCompleted, List<String> newAssigneeIds) {
+                                   Boolean newCompleted, List<String> newAssigneeUsernames) {
         this.taskId = taskId;
         this.newDescription = newDescription;
         this.newDueDate = newDueDate;
         this.newCompleted = newCompleted;
-        this.newAssigneeIds = newAssigneeIds;
+        this.newAssigneeUsernames = newAssigneeUsernames;
     }
 
     public String getTaskId() {
@@ -49,7 +49,7 @@ public class EditGroupTasksInputData {
         return newCompleted;
     }
 
-    public List<String> getNewAssigneeUserIds() {
-        return newAssigneeIds;
+    public List<String> getNewAssigneeUsernames() {
+        return newAssigneeUsernames;
     }
 }
