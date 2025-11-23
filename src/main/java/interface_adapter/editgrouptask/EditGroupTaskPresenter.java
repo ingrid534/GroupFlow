@@ -1,5 +1,6 @@
 package interface_adapter.editgrouptask;
 
+import interface_adapter.viewtasks.ViewTasksViewModel;
 import use_case.editgrouptasks.EditGroupTasksOutputBoundary;
 import use_case.editgrouptasks.EditGroupTasksOutputData;
 
@@ -10,14 +11,17 @@ import use_case.editgrouptasks.EditGroupTasksOutputData;
 public class EditGroupTaskPresenter implements EditGroupTasksOutputBoundary {
 
     private final EditGroupTaskViewModel viewModel;
+    private final ViewTasksViewModel viewTasksViewModel;
 
     /**
      * Constructs an EditGroupTaskPresenter.
      *
-     * @param viewModel the ViewModel to update
+     * @param viewModel          the ViewModel to update
+     * @param viewTasksViewModel the viewTasksViewModel to update
      */
-    public EditGroupTaskPresenter(EditGroupTaskViewModel viewModel) {
+    public EditGroupTaskPresenter(EditGroupTaskViewModel viewModel, ViewTasksViewModel viewTasksViewModel) {
         this.viewModel = viewModel;
+        this.viewTasksViewModel = viewTasksViewModel;
     }
 
     @Override
@@ -29,5 +33,7 @@ public class EditGroupTaskPresenter implements EditGroupTasksOutputBoundary {
 
         viewModel.setState(state);
         viewModel.firePropertyChange("edit_result");
+
+        viewTasksViewModel.firePropertyChange();
     }
 }

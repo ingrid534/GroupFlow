@@ -65,6 +65,10 @@ public class ViewTasksView extends JPanel implements PropertyChangeListener {
      * @param evt the property change event fired by the ViewModel
      */
     public void propertyChange(PropertyChangeEvent evt) {
+        if ("state".equals(evt.getPropertyName())) {
+            viewTasksController.execute();
+        }
+
         if ("tasks".equals(evt.getPropertyName())) {
             refreshList();
         }

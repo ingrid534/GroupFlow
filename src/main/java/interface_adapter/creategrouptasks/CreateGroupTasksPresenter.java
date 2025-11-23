@@ -1,5 +1,6 @@
 package interface_adapter.creategrouptasks;
 
+import interface_adapter.viewtasks.ViewTasksViewModel;
 import use_case.creategrouptask.CreateGroupTaskOutputBoundary;
 import use_case.creategrouptask.CreateGroupTaskOutputData;
 
@@ -10,14 +11,17 @@ import use_case.creategrouptask.CreateGroupTaskOutputData;
 public class CreateGroupTasksPresenter implements CreateGroupTaskOutputBoundary {
 
     private final CreateGroupTasksViewModel viewModel;
+    private final ViewTasksViewModel viewTasksViewModel;
 
     /**
      * Constructs a CreateGroupTasksPresenter.
      *
-     * @param viewModel the ViewModel to update
+     * @param viewModel          the ViewModel to update
+     * @param viewTasksViewModel the viewTasksViewModel to update
      */
-    public CreateGroupTasksPresenter(CreateGroupTasksViewModel viewModel) {
+    public CreateGroupTasksPresenter(CreateGroupTasksViewModel viewModel, ViewTasksViewModel viewTasksViewModel) {
         this.viewModel = viewModel;
+        this.viewTasksViewModel = viewTasksViewModel;
     }
 
     @Override
@@ -29,5 +33,7 @@ public class CreateGroupTasksPresenter implements CreateGroupTaskOutputBoundary 
 
         viewModel.setState(state);
         viewModel.firePropertyChange("create_result");
+
+        viewTasksViewModel.firePropertyChange();
     }
 }
