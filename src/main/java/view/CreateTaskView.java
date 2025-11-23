@@ -5,11 +5,7 @@ import interface_adapter.creategrouptasks.CreateGroupTasksState;
 import interface_adapter.creategrouptasks.CreateGroupTasksViewModel;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Frame;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -17,7 +13,6 @@ import java.util.List;
 
 /**
  * Dialog window for creating a new task in a group.
- * <p>
  * Collects a short description, a due date, and a list of assignees, then
  * delegates the creation to the {@link CreateGroupTasksController}.
  * The {@link CreateGroupTasksViewModel} is observed to display success
@@ -66,65 +61,89 @@ public class CreateTaskView extends JDialog implements PropertyChangeListener {
     private void initComponents() {
         setLayout(new BorderLayout(8, 8));
 
-        JPanel formPanel = new JPanel(new GridBagLayout());
+        JPanel formPanel = buildFormPanel();
+        add(formPanel, BorderLayout.CENTER);
+
+        JPanel buttons = buildButtonsPanel();
+        add(buttons, BorderLayout.SOUTH);
+    }
+
+    private JPanel buildFormPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = baseGbc();
+
+        addDescriptionField(panel, gbc);
+        addDueDateField(panel, gbc);
+        addAssigneeCheckboxes(panel, gbc);
+
+        return panel;
+    }
+
+    private JPanel buildButtonsPanel() {
+        createButton = new JButton("Create");
+        cancelButton = new JButton("Cancel");
+
+        createButton.addActionListener(event -> onCreate());
+        cancelButton.addActionListener(event -> dispose());
+
+        JPanel buttons = new JPanel();
+        buttons.add(createButton);
+        buttons.add(cancelButton);
+
+        return buttons;
+    }
+
+    private GridBagConstraints baseGbc() {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(4, 4, 4, 4);
         gbc.anchor = GridBagConstraints.LINE_START;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 0;
         gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        return gbc;
+    }
 
-        // Description
-        formPanel.add(new JLabel("Description:"), gbc);
+    private void addDescriptionField(JPanel panel, GridBagConstraints gbc) {
+        panel.add(new JLabel("Description:"), gbc);
 
         gbc.gridx = 1;
         descriptionField = new JTextField(25);
-        formPanel.add(descriptionField, gbc);
+        panel.add(descriptionField, gbc);
 
-        // Due date
         gbc.gridx = 0;
         gbc.gridy++;
-        formPanel.add(new JLabel("Due date (yyyy-MM-dd HH:mm):"), gbc);
+    }
+
+    private void addDueDateField(JPanel panel, GridBagConstraints gbc) {
+        panel.add(new JLabel("Due date (yyyy-MM-dd HH:mm):"), gbc);
 
         gbc.gridx = 1;
         dueDateField = new JTextField(20);
-        formPanel.add(dueDateField, gbc);
+        panel.add(dueDateField, gbc);
 
-        // Assignees
         gbc.gridx = 0;
         gbc.gridy++;
-        gbc.anchor = GridBagConstraints.FIRST_LINE_START;
-        formPanel.add(new JLabel("Assign to:"), gbc);
+    }
+
+    private void addAssigneeCheckboxes(JPanel panel, GridBagConstraints gbc) {
+        panel.add(new JLabel("Assign to:"), gbc);
 
         gbc.gridx = 1;
-        assigneeCheckBoxes = new ArrayList<>();
+        gbc.anchor = GridBagConstraints.FIRST_LINE_START;
+
         JPanel checkboxPanel = new JPanel();
         checkboxPanel.setLayout(new BoxLayout(checkboxPanel, BoxLayout.Y_AXIS));
 
+        assigneeCheckBoxes = new ArrayList<>();
         for (String name : memberNames) {
             JCheckBox cb = new JCheckBox(name);
             assigneeCheckBoxes.add(cb);
             checkboxPanel.add(cb);
         }
 
-        JScrollPane listScroll = new JScrollPane(checkboxPanel);
-        listScroll.setPreferredSize(new java.awt.Dimension(200, 120));
-        formPanel.add(listScroll, gbc);
-
-        add(formPanel, BorderLayout.CENTER);
-
-        // Buttons panel
-        JPanel buttons = new JPanel();
-        createButton = new JButton("Create");
-        cancelButton = new JButton("Cancel");
-
-        createButton.addActionListener(e -> onCreate());
-        cancelButton.addActionListener(e -> dispose());
-
-        buttons.add(createButton);
-        buttons.add(cancelButton);
-
-        add(buttons, BorderLayout.SOUTH);
+        JScrollPane scroll = new JScrollPane(checkboxPanel);
+        scroll.setPreferredSize(new Dimension(200, 120));
+        panel.add(scroll, gbc);
     }
 
     /**

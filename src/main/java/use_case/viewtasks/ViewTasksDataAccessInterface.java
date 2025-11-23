@@ -1,6 +1,5 @@
 package use_case.viewtasks;
 
-import entity.group.Group;
 import entity.task.Task;
 import java.util.List;
 
@@ -14,7 +13,7 @@ public interface ViewTasksDataAccessInterface {
      *
      * @return a list of task IDs associated with the currently logged in user
      */
-    List<String> GetTasksForCurrentUser();
+    List<String> getTasksForCurrentUser();
 
     /**
      * Retrieves the full {@link Task} entity corresponding to the given task ID.
@@ -24,6 +23,4 @@ public interface ViewTasksDataAccessInterface {
      *         if no task with the given ID exists
      */
     Task getTask(String taskId);
-
-    void saveGroup(Group group);
 }

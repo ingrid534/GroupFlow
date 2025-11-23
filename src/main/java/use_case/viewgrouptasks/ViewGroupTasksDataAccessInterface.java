@@ -1,8 +1,6 @@
 package use_case.viewgrouptasks;
 
-import entity.group.Group;
 import entity.task.Task;
-import entity.user.User;
 
 import java.util.List;
 

@@ -192,40 +192,45 @@ public class AppBuilder {
         return this;
     }
 
+    /**
+     * Method to add the TaskView to dashboard.
+     *
+     * @return App builder
+     */
     public AppBuilder addGroupTasksUseCases() {
         viewGroupTasksViewModel = new ViewGroupTasksViewModel();
-        ViewGroupTasksOutputBoundary ViewPresenter =
+        ViewGroupTasksOutputBoundary viewPresenter =
                 new ViewGroupTasksPresenter(viewGroupTasksViewModel);
 
-        ViewGroupTasksInputBoundary ViewInteractor =
-                new ViewGroupTasksInteractor(taskDataAccessObject, ViewPresenter);
+        ViewGroupTasksInputBoundary viewInteractor =
+                new ViewGroupTasksInteractor(taskDataAccessObject, viewPresenter);
 
-        ViewGroupTasksController ViewController =
-                new ViewGroupTasksController(ViewInteractor);
+        ViewGroupTasksController viewController =
+                new ViewGroupTasksController(viewInteractor);
 
         editGroupTaskViewModel = new EditGroupTaskViewModel();
-        EditGroupTasksOutputBoundary EditPresenter =
+        EditGroupTasksOutputBoundary editPresenter =
                 new EditGroupTaskPresenter(editGroupTaskViewModel, viewTasksViewModel);
 
-        EditGroupTasksInputBoundary EditInteractor =
-                new EditGroupTasksInteractor(taskDataAccessObject, EditPresenter);
+        EditGroupTasksInputBoundary editInteractor =
+                new EditGroupTasksInteractor(taskDataAccessObject, editPresenter);
 
-        EditGroupTaskController EditController =
-                new EditGroupTaskController(EditInteractor);
+        EditGroupTaskController editController =
+                new EditGroupTaskController(editInteractor);
 
         createGroupTasksViewModel = new CreateGroupTasksViewModel();
-        CreateGroupTaskOutputBoundary CreatePresenter =
+        CreateGroupTaskOutputBoundary createPresenter =
                 new CreateGroupTasksPresenter(createGroupTasksViewModel, viewTasksViewModel);
 
-        CreateGroupTaskInputBoundary CreateInteractor =
-                new CreateGroupTaskInteractor(taskDataAccessObject, CreatePresenter, taskFactory);
+        CreateGroupTaskInputBoundary createInteractor =
+                new CreateGroupTaskInteractor(taskDataAccessObject, createPresenter, taskFactory);
 
-        CreateGroupTasksController CreateController =
-                new CreateGroupTasksController(CreateInteractor);
+        CreateGroupTasksController createController =
+                new CreateGroupTasksController(createInteractor);
 
-        this.dashboardView.setViewGroupTasksController(ViewController);
-        this.dashboardView.setEditGroupTaskController(EditController);
-        this.dashboardView.setCreateGroupTasksController(CreateController);
+        this.dashboardView.setViewGroupTasksController(viewController);
+        this.dashboardView.setEditGroupTaskController(editController);
+        this.dashboardView.setCreateGroupTasksController(createController);
         this.dashboardView.setCreateGroupTasksViewModel(createGroupTasksViewModel);
         this.dashboardView.setEditGroupTasksViewModel(editGroupTaskViewModel);
         this.dashboardView.setViewGroupTasksViewModel(viewGroupTasksViewModel);

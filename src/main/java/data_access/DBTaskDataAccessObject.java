@@ -8,8 +8,6 @@ import use_case.editgrouptasks.EditGroupTasksDataAccessInterface;
 import use_case.viewgrouptasks.ViewGroupTasksDataAccessInterface;
 import use_case.viewtasks.ViewTasksDataAccessInterface;
 
-import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -18,7 +16,7 @@ public class DBTaskDataAccessObject implements ViewTasksDataAccessInterface, Vie
 
     // Need to be implemented
     @Override
-    public List<String> GetTasksForCurrentUser() {
+    public List<String> getTasksForCurrentUser() {
         return new ArrayList<>();
     }
 
@@ -59,15 +57,15 @@ public class DBTaskDataAccessObject implements ViewTasksDataAccessInterface, Vie
 
     @Override
     public List<Task> getTasksForGroup() {
-       return new ArrayList<>();
+        return new ArrayList<>();
     }
 
     @Override
-    public void saveGroup(Group group){}
+    public void saveGroup(Group group) { }
 
     @Override
-    public void saveTask(Task task){}
+    public void saveTask(Task task) { }
 
     @Override
-    public void saveUser(User group){}
+    public void saveUser(User group) { }
 }

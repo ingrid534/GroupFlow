@@ -1,6 +1,5 @@
 package view;
 
-import interface_adapter.viewtasks.ViewTasksState;
 import interface_adapter.viewtasks.ViewTasksViewModel;
 import interface_adapter.viewtasks.ViewTasksController;
 import use_case.viewtasks.ViewTasksOutputData;

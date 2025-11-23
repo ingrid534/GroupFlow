@@ -21,7 +21,7 @@ public class ViewTasksInteractor implements ViewTasksInputBoundary {
 
     @Override
     public void execute() {
-        List<String> taskIds = taskAccessObject.GetTasksForCurrentUser();
+        List<String> taskIds = taskAccessObject.getTasksForCurrentUser();
         List<ViewTasksOutputData.TaskDTO> dtoList = new ArrayList<>();
 
         for (String taskId : taskIds) {

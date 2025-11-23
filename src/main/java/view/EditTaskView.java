@@ -5,11 +5,7 @@ import interface_adapter.editgrouptask.EditGroupTaskState;
 import interface_adapter.editgrouptask.EditGroupTaskViewModel;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Frame;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -17,7 +13,6 @@ import java.util.List;
 
 /**
  * Dialog window for editing an existing task in a group.
- *
  * Allows updating the description, due date, completion status and assignees.
  * Delegates to the {@link EditGroupTaskController} and observes the
  * {@link EditGroupTaskViewModel} for success or error messages. On success,
@@ -68,74 +63,101 @@ public class EditTaskView extends JDialog implements PropertyChangeListener {
     private void initComponents() {
         setLayout(new BorderLayout(8, 8));
 
-        JPanel formPanel = new JPanel(new GridBagLayout());
+        JPanel formPanel = buildFormPanel();
+        add(formPanel, BorderLayout.CENTER);
+
+        JPanel buttons = buildButtonsPanel();
+        add(buttons, BorderLayout.SOUTH);
+    }
+
+    private JPanel buildFormPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = baseGbc();
+
+        addDescriptionField(panel, gbc);
+        addDueDateField(panel, gbc);
+        addAssigneeCheckboxes(panel, gbc);
+        addCompletedCheckbox(panel, gbc);
+
+        return panel;
+    }
+
+    private JPanel buildButtonsPanel() {
+        saveButton = new JButton("Save");
+        cancelButton = new JButton("Cancel");
+
+        saveButton.addActionListener(event -> onSave());
+        cancelButton.addActionListener(event -> dispose());
+
+        JPanel buttons = new JPanel();
+        buttons.add(saveButton);
+        buttons.add(cancelButton);
+
+        return buttons;
+    }
+
+    private GridBagConstraints baseGbc() {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(4, 4, 4, 4);
         gbc.anchor = GridBagConstraints.LINE_START;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 0;
         gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        return gbc;
+    }
 
-        // Description (optional; empty means "no change")
-        formPanel.add(new JLabel("New description (optional):"), gbc);
+    private void addDescriptionField(JPanel panel, GridBagConstraints gbc) {
+        panel.add(new JLabel("New description (optional):"), gbc);
 
         gbc.gridx = 1;
         descriptionField = new JTextField(25);
-        formPanel.add(descriptionField, gbc);
+        panel.add(descriptionField, gbc);
 
-        // Due date (optional; empty means "no change")
         gbc.gridx = 0;
         gbc.gridy++;
-        formPanel.add(new JLabel("New due date (yyyy-MM-dd HH:mm, optional):"), gbc);
+    }
+
+    private void addDueDateField(JPanel panel, GridBagConstraints gbc) {
+        panel.add(new JLabel("New due date (yyyy-MM-dd HH:mm, optional):"), gbc);
 
         gbc.gridx = 1;
         dueDateField = new JTextField(20);
-        formPanel.add(dueDateField, gbc);
+        panel.add(dueDateField, gbc);
 
-        // Assignees (optional; empty list means no change)
         gbc.gridx = 0;
         gbc.gridy++;
-        gbc.anchor = GridBagConstraints.FIRST_LINE_START;
-        formPanel.add(new JLabel("New assignees (optional):"), gbc);
+    }
+
+    private void addAssigneeCheckboxes(JPanel panel, GridBagConstraints gbc) {
+        panel.add(new JLabel("New assignees (optional):"), gbc);
 
         gbc.gridx = 1;
-        assigneeCheckBoxes = new ArrayList<>();
+        gbc.anchor = GridBagConstraints.FIRST_LINE_START;
+
         JPanel checkboxPanel = new JPanel();
         checkboxPanel.setLayout(new BoxLayout(checkboxPanel, BoxLayout.Y_AXIS));
 
+        assigneeCheckBoxes = new ArrayList<>();
         for (String name : memberNames) {
             JCheckBox cb = new JCheckBox(name);
             assigneeCheckBoxes.add(cb);
             checkboxPanel.add(cb);
         }
 
-        JScrollPane listScroll = new JScrollPane(checkboxPanel);
-        listScroll.setPreferredSize(new java.awt.Dimension(200, 120));
-        formPanel.add(listScroll, gbc);
+        JScrollPane scroll = new JScrollPane(checkboxPanel);
+        scroll.setPreferredSize(new Dimension(200, 120));
+        panel.add(scroll, gbc);
 
-        // Completed checkbox
         gbc.gridx = 0;
         gbc.gridy++;
+    }
+
+    private void addCompletedCheckbox(JPanel panel, GridBagConstraints gbc) {
+        completedCheckBox = new JCheckBox("Mark as completed");
+
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.LINE_START;
-        completedCheckBox = new JCheckBox("Mark as completed");
-        // When unchecked, we still send "false" (explicit change).
-        formPanel.add(completedCheckBox, gbc);
-
-        add(formPanel, BorderLayout.CENTER);
-
-        // Buttons panel
-        JPanel buttons = new JPanel();
-        saveButton = new JButton("Save");
-        cancelButton = new JButton("Cancel");
-
-        saveButton.addActionListener(e -> onSave());
-        cancelButton.addActionListener(e -> dispose());
-
-        buttons.add(saveButton);
-        buttons.add(cancelButton);
-
-        add(buttons, BorderLayout.SOUTH);
+        panel.add(completedCheckBox, gbc);
     }
 
     /**
@@ -161,7 +183,7 @@ public class EditTaskView extends JDialog implements PropertyChangeListener {
             }
         }
         if (selectedAssignees.isEmpty()) {
-            selectedAssignees = null; // "no change"
+            selectedAssignees = null;
         }
 
         Boolean completed = Boolean.valueOf(completedCheckBox.isSelected());

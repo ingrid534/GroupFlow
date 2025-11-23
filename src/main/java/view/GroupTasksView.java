@@ -32,6 +32,7 @@ public class GroupTasksView extends JPanel implements PropertyChangeListener {
     private final CreateGroupTasksController createController;
 
     private final JPanel tasksListPanel = new JPanel();
+    private final JPanel topBarPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
     /**
      * Constructs a GroupTasksView.
@@ -66,6 +67,11 @@ public class GroupTasksView extends JPanel implements PropertyChangeListener {
 
         setLayout(new BorderLayout());
 
+        JButton createBtn = new JButton("Create Task");
+        createBtn.addActionListener(event -> openCreateDialog());
+        topBarPanel.add(createBtn);
+        add(topBarPanel, BorderLayout.NORTH);
+
         tasksListPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         tasksListPanel.setLayout(new BoxLayout(tasksListPanel, BoxLayout.Y_AXIS));
         tasksListPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -84,13 +90,6 @@ public class GroupTasksView extends JPanel implements PropertyChangeListener {
     private void refresh() {
         tasksListPanel.removeAll();
 
-        JButton createBtn = new JButton("Create Task");
-        createBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        createBtn.addActionListener(e -> openCreateDialog());
-        tasksListPanel.add(createBtn);
-
-        tasksListPanel.add(Box.createVerticalStrut(10)); // spacing
-
         List<ViewGroupTasksOutputData.TaskDTO> tasks = viewModel.getState().getTasks();
 
         if (tasks == null || tasks.isEmpty()) {
@@ -100,7 +99,7 @@ public class GroupTasksView extends JPanel implements PropertyChangeListener {
         } else {
             for (ViewGroupTasksOutputData.TaskDTO task : tasks) {
                 tasksListPanel.add(makeTaskRow(task));
-                tasksListPanel.add(Box.createVerticalStrut(6)); // spacing between tasks
+                tasksListPanel.add(Box.createVerticalStrut(6));
             }
         }
 
@@ -136,7 +135,7 @@ public class GroupTasksView extends JPanel implements PropertyChangeListener {
         JButton editBtn = new JButton("Edit");
         editBtn.setPreferredSize(new Dimension(60, 25));
         editBtn.setMaximumSize(new Dimension(60, 25));
-        editBtn.addActionListener(e -> openEditDialog(dto));
+        editBtn.addActionListener(event -> openEditDialog(dto));
         row.add(editBtn);
 
         return row;

@@ -3,8 +3,6 @@ package use_case.editgrouptasks;
 import entity.task.Task;
 import entity.user.User;
 
-import java.util.List;
-
 /**
  * Data access interface for editing group tasks.
  */
