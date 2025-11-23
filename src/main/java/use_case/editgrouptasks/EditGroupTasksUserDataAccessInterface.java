@@ -12,14 +12,6 @@ public interface EditGroupTasksUserDataAccessInterface {
     boolean isModerator();
 
     /**
-     * Returns the User object with the userId.
-     *
-     * @param userId the userId
-     * @return the User object
-     */
-    User getUserFromId(String userId);
-
-    /**
      * Returns the User object with the username.
      *
      * @param username the username

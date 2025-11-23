@@ -161,17 +161,6 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
     }
 
     /**
-     * Returns the User object with the userId.
-     *
-     * @param userId the userId
-     * @return the User object
-     */
-    @Override
-    public User getUserFromId(String userId) {
-        return null;
-    }
-
-    /**
      * Returns the User object with the username.
      *
      * @param username the username

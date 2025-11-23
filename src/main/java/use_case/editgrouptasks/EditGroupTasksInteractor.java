@@ -65,7 +65,7 @@ public class EditGroupTasksInteractor implements EditGroupTasksInputBoundary {
         if (newUsernames != null) {
 
             for (String oldId : task.getAssignees()) {
-                User u = userDataAccess.getUserFromId(oldId);
+                User u = userDataAccess.getUserFromUsername(oldId);
                 if (u != null) {
                     u.getTasks().remove(task.getID());
                     userDataAccess.save(u);
