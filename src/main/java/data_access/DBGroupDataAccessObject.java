@@ -65,6 +65,15 @@ public class DBGroupDataAccessObject implements CreateGroupDataAccessInterface,
         this.membershipsCollection = database.getCollection("memberships");
     }
 
+	/**
+	 * Saves a new group in the database.
+	 * A unique 6 character join code is generated and used as the group ID.
+	 * The group document includes the group name, join code, and type.
+	 * Note: this method only stores the group itself.
+	 * Any membership creation, including assigning the creator as moderator,
+	 * is handled by the Create Group use case through the Membership DAO.
+	 * @param group the Group entity to save
+	 */
     @Override
     public void save(Group group) {
         // Generate a unique 6 character join code
@@ -79,12 +88,6 @@ public class DBGroupDataAccessObject implements CreateGroupDataAccessInterface,
                 .append(GROUP_TYPE, group.getGroupType().name());
 
         groupsCollection.insertOne(doc);
-
-        // Note:
-        // We are only saving the group here.
-        // Creating and saving the creator's Membership (as moderator) is handled
-        // by the Create Group use case using the Membership DAO, so that
-        // business rules live in the interactor and not hidden inside this DAO.
     }
 
     private String generateUniqueJoinCode() {
@@ -112,6 +115,15 @@ public class DBGroupDataAccessObject implements CreateGroupDataAccessInterface,
         return existing != null;
     }
 
+	/**
+	 * Retrieves all groups that a given user belongs to.
+	 * This method looks up the memberships collection to find all entries
+	 * where the membership's "user" field matches the provided username.
+	 * For each membership, the corresponding group document is loaded
+	 * and converted into a Group entity through the GroupFactory.
+	 * @param username the username whose group memberships are requested
+	 * @return a list of Group entities the user is a member of
+	 */
     @Override
     public List<Group> getGroupsForUser(String username) {
         List<Group> result = new ArrayList<>();
@@ -140,7 +152,6 @@ public class DBGroupDataAccessObject implements CreateGroupDataAccessInterface,
 
             GroupType groupType = GroupType.valueOf(typeStr);
 
-            // Adjust argument order if your GroupFactory has a different signature
             Group group = groupFactory.create(name, joinCode, groupType);
 
             result.add(group);
