@@ -55,8 +55,7 @@ public class DBGroupDataAccessObject implements CreateGroupDataAccessInterface,
      *
      * @param groupFactory      A factory for creating Group entities.
      * @param connectionString  The MongoDB connection string.
-     * @param dbName            The name of the database to use.
-     */
+     * @param dbName            The name of the database to use.*/
     public DBGroupDataAccessObject(GroupFactory groupFactory, String connectionString, String dbName) {
         this.groupFactory = groupFactory;
         this.mongoClient = MongoClients.create(connectionString);
@@ -65,15 +64,15 @@ public class DBGroupDataAccessObject implements CreateGroupDataAccessInterface,
         this.membershipsCollection = database.getCollection("memberships");
     }
 
-	/**
-	 * Saves a new group in the database.
+    /**
+     * Saves a new group in the database.
 	 * A unique 6 character join code is generated and used as the group ID.
 	 * The group document includes the group name, join code, and type.
 	 * Note: this method only stores the group itself.
 	 * Any membership creation, including assigning the creator as moderator,
 	 * is handled by the Create Group use case through the Membership DAO.
 	 * @param group the Group entity to save
-	 */
+     * */
     @Override
     public void save(Group group) {
         // Generate a unique 6 character join code
@@ -115,8 +114,8 @@ public class DBGroupDataAccessObject implements CreateGroupDataAccessInterface,
         return existing != null;
     }
 
-	/**
-	 * Retrieves all groups that a given user belongs to.
+    /**
+     * Retrieves all groups that a given user belongs to.
 	 * This method looks up the memberships collection to find all entries
 	 * where the membership's "user" field matches the provided username.
 	 * For each membership, the corresponding group document is loaded
