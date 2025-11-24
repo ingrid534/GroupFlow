@@ -3,6 +3,7 @@ package use_case.create_group;
 import entity.group.Group;
 import entity.group.GroupFactory;
 import entity.group.GroupType;
+import entity.membership.Membership;
 import entity.user.User;
 import entity.membership.MembershipFactory;
 import entity.user.UserRole;
@@ -13,18 +14,22 @@ import entity.user.UserRole;
 
 public class CreateGroupInteractor implements CreateGroupInputBoundary {
     private final CreateGroupDataAccessInterface groupDataAccessObject;
-    private final LoggedInDataAccessInterface userDataAccessObject;
+    private final CreateGroupUserDataAccessInterface userDataAccessObject;
+    // TODO: change to interface
+    private final CreateGroupMembershipDataAccessInterface membershipDataAccessObject;
     private final CreateGroupOutputBoundary createGroupPresenter;
     private final GroupFactory groupFactory;
     private final MembershipFactory membershipFactory;
 
     public CreateGroupInteractor(CreateGroupDataAccessInterface groupDataAccessObject,
-                                 LoggedInDataAccessInterface userDataAccessObject,
+                                 CreateGroupUserDataAccessInterface userDataAccessObject,
+                                 CreateGroupMembershipDataAccessInterface membershipDataAccessObject,
                                  CreateGroupOutputBoundary createGroupOutputBoundary,
                                  GroupFactory groupFactory,
                                  MembershipFactory membershipFactory) {
         this.groupDataAccessObject = groupDataAccessObject;
         this.userDataAccessObject = userDataAccessObject;
+        this.membershipDataAccessObject = membershipDataAccessObject;
         this.createGroupPresenter = createGroupOutputBoundary;
         this.groupFactory = groupFactory;
         this.membershipFactory = membershipFactory;
@@ -40,15 +45,15 @@ public class CreateGroupInteractor implements CreateGroupInputBoundary {
         } else if (groupType == null) {
             createGroupPresenter.prepareFailView("Select a group type.");
         } else {
-            final Group group = groupFactory.create(groupName, groupType);
+            final Group group = groupFactory.create(groupName, "", groupType);
             groupDataAccessObject.save(group);
 
             final User groupCreator = userDataAccessObject.get(userDataAccessObject.getCurrentUsername());
 
-            // TODO: Add membership once we have ID's from DB
-            membershipFactory.create(groupCreator.getUserID(), group.getGroupID(), UserRole.MODERATOR);
+            final Membership membership = membershipFactory.create(groupCreator.getName(),
+                    group.getGroupID(), UserRole.MODERATOR, true);
 
-            // someDAO.save(membership)?
+            membershipDataAccessObject.save(membership);
 
             final CreateGroupOutputData createGroupOutputData = new CreateGroupOutputData(
                     group.getGroupID(), groupName, groupType

@@ -22,7 +22,8 @@ public class LoginPresenter implements LoginOutputBoundary {
     public LoginPresenter(ViewManagerModel viewManagerModel,
                           DashboardViewModel loggedInViewModel,
                           LoginViewModel loginViewModel,
-                          SignupViewModel signupViewModel, ViewTasksViewModel viewTasksViewModel) {
+                          SignupViewModel signupViewModel,
+                          ViewTasksViewModel viewTasksViewModel) {
         this.viewManagerModel = viewManagerModel;
         this.dashboardViewModel = loggedInViewModel;
         this.loginViewModel = loginViewModel;
@@ -32,18 +33,25 @@ public class LoginPresenter implements LoginOutputBoundary {
 
     @Override
     public void prepareSuccessView(LoginOutputData response) {
-        // On success, update the loggedInViewModel's state
+        // Update DashboardViewModel state
         final LoggedInState loggedInState = dashboardViewModel.getState();
         loggedInState.setUsername(response.getUsername());
+        loggedInState.setGroups(response.getGroups());
+        dashboardViewModel.setState(loggedInState);
+
+        // Update ViewTasksViewModel state
         final interface_adapter.viewtasks.LoggedInState loggedInStateView = viewTasksViewModel.getState();
         loggedInStateView.setUsername(response.getUsername());
+        viewTasksViewModel.setState(loggedInStateView);
+
+        // Notify views
         this.viewTasksViewModel.firePropertyChange();
         this.dashboardViewModel.firePropertyChange();
 
-        // and clear everything from the LoginViewModel's state
+        // Clear everything from the LoginViewModel state
         loginViewModel.setState(new LoginState());
 
-        // switch to the logged in view
+        // Switch to the dashboard view
         this.viewManagerModel.setState(dashboardViewModel.getViewName());
         this.viewManagerModel.firePropertyChange();
     }

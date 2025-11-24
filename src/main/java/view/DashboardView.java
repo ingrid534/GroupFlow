@@ -12,9 +12,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-import java.util.SortedSet;
 
 /**
  * Dashboard (formerly LoggedInView):.
@@ -42,10 +41,14 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     private JButton createGroup;
 
     // Main layout pieces
+    // groupsModel stores group IDs plus "Home"
     private final DefaultListModel<String> groupsModel = new DefaultListModel<>();
     private final JList<String> groupsList = new JList<>(groupsModel);
     private final CardLayout cards = new CardLayout();
     private final JPanel workArea = new JPanel(cards);
+
+    // Maps group IDs to their names
+    private final java.util.Map<String, String> groupIdToName = new java.util.HashMap<>();
 
     public DashboardView(DashboardViewModel dashboardViewModel, ViewTasksView viewTasksView) {
         this.dashboardViewModel = Objects.requireNonNull(dashboardViewModel);
@@ -74,9 +77,31 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
             }
         });
 
-        // TODO: switch to dynamic user data 1.
-        setGroups(List.of("Group 1", "Group 2", "Group 3"));
-        groupsList.setSelectedIndex(0);
+        groupsList.setCellRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(
+                    JList<?> list, Object value, int index,
+                    boolean isSelected, boolean cellHasFocus) {
+
+                String idOrHome = (String) value;
+                String displayText;
+
+                if (HOME.equals(idOrHome)) {
+                    displayText = HOME;
+                } else {
+                    String name = groupIdToName.get(idOrHome);
+                    if (name != null) {
+                        displayText = name;
+                    }
+                    else {
+                        displayText = idOrHome;
+                    }
+                }
+
+                return super.getListCellRendererComponent(
+                        list, displayText, index, isSelected, cellHasFocus);
+            }
+        });
     }
 
     private JComponent buildHeader() {
@@ -108,11 +133,6 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
         // Workspace (cards)
         workArea.setBorder(new EmptyBorder(0, 0, 0, 0));
         workArea.add(buildHomePanel(), HOME);
-
-        // TODO: switch to dynamic user data 2.
-        // for (String groupName : currentUser.getGroups()) {
-        // workArea.add(createGroupPanel(groupName), groupName);
-        // }
 
         JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sidebar, workArea);
         split.setDividerLocation(200);
@@ -150,13 +170,15 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
         return p;
     }
 
-    private JPanel createGroupPanel(String name) {
+    private JPanel createGroupPanel(String groupId) {
         final JPanel groupPanel = new JPanel(new BorderLayout());
+
+        final String groupName = groupIdToName.get(groupId);
 
         // Top header
         JPanel header = new JPanel(new BorderLayout());
         header.setBorder(new EmptyBorder(10, 10, 10, 10));
-        JLabel title = new JLabel(name + "  [code]");
+        JLabel title = new JLabel(groupName + ": [" + groupId + "]");
         title.setFont(title.getFont().deriveFont(Font.BOLD, 16f));
         header.add(title, BorderLayout.WEST);
         header.add(new JLabel("\uD83D\uDC64"), BorderLayout.EAST);
@@ -174,12 +196,12 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
             }
         });
 
-        tabs.addTab(HOME, placeholderPanel("Home panel for " + name));
-        tabs.addTab("People", new PeopleTabPanel(name));
-        tabs.addTab("Meets", placeholderPanel("Meetings tab for " + name));
-        tabs.addTab("Tasks", placeholderPanel("Tasks tab for " + name));
-        tabs.addTab("Sched", placeholderPanel("Schedule tab for " + name));
-        tabs.addTab("Optional", placeholderPanel("Optional tab for " + name));
+        tabs.addTab(HOME, placeholderPanel("Home panel for " + groupName));
+        tabs.addTab("People", new PeopleTabPanel(groupName));
+        tabs.addTab("Meets", placeholderPanel("Meetings tab for " + groupName));
+        tabs.addTab("Tasks", placeholderPanel("Tasks tab for " + groupName));
+        tabs.addTab("Sched", placeholderPanel("Schedule tab for " + groupName));
+        tabs.addTab("Optional", placeholderPanel("Optional tab for " + groupName));
         // initialize selected color (default white is hard to see)
         tabs.setForegroundAt(0, new Color(0x1E88E5));
 
@@ -196,44 +218,91 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
         return panel;
     }
 
-    // --- Public API for AppBuilder / Controllers ---------------------------
+    // --- Public API for AppBuilder and Controllers --------------------------
 
     public String getViewName() {
         return viewName;
     }
 
-    // TODO: add logout implementation
-    // public void setLogoutController(LogoutController c) {
-    // this.logoutController = c;
-    // }
+    /**
+     * Updates the list of groups in the sidebar and the corresponding cards
+     * in the work area.
+     * @param groups a map from group id to group name
+     */
+    public void setGroups(Map<String, String> groups) {
+        clearGroupData();
+        addHomeEntry();
+        loadGroups(groups);
+        syncWorkAreaWithModel();
+        selectInitialGroup();
+    }
 
     /**
-     * Allows the presenter to push the user's groups once loaded.
-     * 
-     * @param groups The list of groups to be pushed
+     * Clears all group related state, including the list model
+     * and the id to name map.
      */
-    // TODO: need to break this up into helper methods
-    public void setGroups(List<String> groups) {
+    private void clearGroupData() {
         groupsModel.clear();
-        // always pin Home on top
-        groupsModel.addElement(HOME);
+        groupIdToName.clear();
+    }
 
-        if (groups != null && !groups.isEmpty()) {
-            // sort + dedupe case-insensitively, and drop "Home"
-            SortedSet<String> sorted = new java.util.TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-            for (String g : groups) {
-                if (g != null && !HOME.equalsIgnoreCase(g)) {
-                    sorted.add(g);
-                }
-            }
-            // add sorted groups below Home
-            for (String g : sorted) {
-                groupsModel.addElement(g);
-            }
+    /**
+     * Adds the "Home" entry to the list model.
+     * This is always the first entry in the list.
+     */
+    private void addHomeEntry() {
+        groupsModel.addElement(HOME);
+    }
+
+    /**
+     * Loads groups from the provided map, sorts them by display name,
+     * populates the id to name map, and appends the group ids
+     * to the list model.
+     *
+     * @param groups a map from group id to group name, may be null or empty
+     */
+    private void loadGroups(Map<String, String> groups) {
+        if (groups == null || groups.isEmpty()) {
+            return;
         }
 
-        // sync workArea cards to match the model
-        // + remove cards that no longer exist in the model
+        java.util.List<Map.Entry<String, String>> entries =
+                new java.util.ArrayList<>(groups.entrySet());
+
+        // Sort by name, case-insensitive
+        entries.sort((entry1, entry2) -> {
+            String n1 = entry1.getValue();
+            String n2 = entry2.getValue();
+
+            if (n1 == null && n2 == null) {
+                return 0;
+            }
+            if (n1 == null) {
+                return 1;
+            }
+            if (n2 == null) {
+                return -1;
+            }
+
+            return String.CASE_INSENSITIVE_ORDER.compare(n1, n2);
+        });
+
+        for (Map.Entry<String, String> entry : entries) {
+            String id = entry.getKey();
+            String name = entry.getValue();
+            if (name != null && !HOME.equalsIgnoreCase(name)) {
+                groupIdToName.put(id, name);
+                groupsModel.addElement(id);
+            }
+        }
+    }
+
+    /**
+     * Ensures that the work area contains cards for each group id
+     * in the list model and removes any cards that no longer correspond
+     * to a list entry.
+     */
+    private void syncWorkAreaWithModel() {
         java.util.Set<String> wanted = new java.util.LinkedHashSet<>();
         for (int i = 0; i < groupsModel.size(); i++) {
             wanted.add(groupsModel.get(i));
@@ -270,9 +339,16 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
                 workArea.add(gp, key);
             }
         }
+    }
 
+    /**
+     * Selects the first entry in the groups list, if any,
+     * and shows the corresponding card in the work area.
+     */
+    private void selectInitialGroup() {
         if (groupsList.getModel().getSize() > 0) {
             groupsList.setSelectedIndex(0);
+            cards.show(workArea, groupsModel.get(0));
         }
     }
 
@@ -291,11 +367,13 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
         if ("state".equals(evt.getPropertyName())) {
             LoggedInState st = (LoggedInState) evt.getNewValue();
             usernameLabel.setText(st.getUsername());
+            if (st.getGroups() != null) {
+                setGroups(st.getGroups());
+            }
         } else if ("password".equals(evt.getPropertyName())) {
             LoggedInState st = (LoggedInState) evt.getNewValue();
             if (st.getPasswordError() == null) {
                 JOptionPane.showMessageDialog(this, "password updated for " + st.getUsername());
-                // passwordInputField.setText("");
             } else {
                 JOptionPane.showMessageDialog(this, st.getPasswordError());
             }
