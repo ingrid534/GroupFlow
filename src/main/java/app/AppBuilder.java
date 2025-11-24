@@ -112,7 +112,7 @@ public class AppBuilder {
         signupViewModel = new SignupViewModel();
         signupView = new SignupView(signupViewModel);
         cardPanel.add(signupView, signupView.getViewName());
-        viewSizes.put(signupView.getViewName(), new Dimension(420, 320));
+        viewSizes.put(signupView.getViewName(), new Dimension(420, 420));
         return this;
     }
 
@@ -125,7 +125,7 @@ public class AppBuilder {
         loginViewModel = new LoginViewModel();
         loginView = new LoginView(loginViewModel);
         cardPanel.add(loginView, loginView.getViewName());
-        viewSizes.put(loginView.getViewName(), new Dimension(420, 320));
+        viewSizes.put(loginView.getViewName(), new Dimension(420, 420));
         return this;
     }
 
