@@ -8,6 +8,10 @@ import entity.user.User;
 import entity.membership.MembershipFactory;
 import entity.user.UserRole;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * The CreateGroup Interactor.
  */
@@ -15,7 +19,6 @@ import entity.user.UserRole;
 public class CreateGroupInteractor implements CreateGroupInputBoundary {
     private final CreateGroupDataAccessInterface groupDataAccessObject;
     private final CreateGroupUserDataAccessInterface userDataAccessObject;
-    // TODO: change to interface
     private final CreateGroupMembershipDataAccessInterface membershipDataAccessObject;
     private final CreateGroupOutputBoundary createGroupPresenter;
     private final GroupFactory groupFactory;
@@ -54,9 +57,16 @@ public class CreateGroupInteractor implements CreateGroupInputBoundary {
                     group.getGroupID(), UserRole.MODERATOR, true);
 
             membershipDataAccessObject.save(membership);
+            List<Group> newGroups = groupDataAccessObject.getGroupsForUser(groupCreator.getName());
+            Map<String, String> newGroupHashMap = new HashMap<>();
+            for (Group newGroup : newGroups) {
+                newGroupHashMap.put(newGroup.getGroupID(), newGroup.getName());
+                System.out.println(newGroup.getName());
+            }
 
             final CreateGroupOutputData createGroupOutputData = new CreateGroupOutputData(
-                    group.getGroupID(), groupName, groupType
+                    group.getGroupID(), groupName, groupType, newGroupHashMap
+
             );
             createGroupPresenter.prepareSuccessView(createGroupOutputData);
         }

@@ -56,4 +56,5 @@ public class LoggedInState {
     public Map<String, String> getGroups() {
         return groups;
     }
+
 }

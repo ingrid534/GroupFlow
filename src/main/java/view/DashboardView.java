@@ -197,7 +197,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
         });
 
         tabs.addTab(HOME, placeholderPanel("Home panel for " + groupName));
-        tabs.addTab("People", new PeopleTabPanel(groupName));
+        tabs.addTab("People", new PeopleTabView(groupName));
         tabs.addTab("Meets", placeholderPanel("Meetings tab for " + groupName));
         tabs.addTab("Tasks", placeholderPanel("Tasks tab for " + groupName));
         tabs.addTab("Sched", placeholderPanel("Schedule tab for " + groupName));
@@ -377,7 +377,11 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
             } else {
                 JOptionPane.showMessageDialog(this, st.getPasswordError());
             }
+        } else if ("groups".equals(evt.getPropertyName())) {
+            LoggedInState st = (LoggedInState) evt.getNewValue();
+            setGroups(st.getGroups());
         }
+
     }
 
     public void setLogoutController(LogoutController logoutController) {

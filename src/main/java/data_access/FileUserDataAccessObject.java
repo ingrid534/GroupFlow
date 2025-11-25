@@ -17,6 +17,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -105,6 +106,11 @@ public class FileUserDataAccessObject implements SignupUserDataAccessInterface,
     public void save(Group group) {
         groups.put(group.getName(), group);
         this.save();
+    }
+
+    @Override
+    public List<Group> getGroupsForUser(String username) {
+        return List.of();
     }
 
     @Override
