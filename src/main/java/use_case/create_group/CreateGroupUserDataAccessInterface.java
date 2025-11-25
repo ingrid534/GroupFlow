@@ -6,7 +6,7 @@ import entity.user.User;
  * DAO interface for a LoggedIn user in the CreateGroup use case.
  * This interface defines the contract for accessing data related to the currently logged-in user.
  */
-public interface LoggedInDataAccessInterface {
+public interface CreateGroupUserDataAccessInterface {
 
     /**
      * Checks if the given username exists.

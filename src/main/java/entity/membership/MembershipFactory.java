@@ -12,9 +12,11 @@ public class MembershipFactory {
      * @param userID   User for membership.
      * @param groupID  Group for membership.
      * @param userRole Role of the user in the group.
+     * @param approved True if the user has been accepted into the group, false if
+     *                 they have only requested to join.
      * @return the new membership
      */
-    public Membership create(String userID, String groupID, UserRole userRole) {
-        return new Membership(userID, groupID, userRole);
+    public Membership create(String userID, String groupID, UserRole userRole, boolean approved) {
+        return new Membership(userID, groupID, userRole, approved);
     }
 }

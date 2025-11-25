@@ -2,6 +2,7 @@ package interface_adapter.create_group;
 
 import interface_adapter.ViewManagerModel;
 import interface_adapter.dashboard.DashboardViewModel;
+import interface_adapter.dashboard.LoggedInState;
 import use_case.create_group.CreateGroupOutputBoundary;
 import use_case.create_group.CreateGroupOutputData;
 
@@ -27,13 +28,11 @@ public class CreateGroupPresenter implements CreateGroupOutputBoundary {
         // clear everything from the state
         createGroupViewModel.setState(new CreateGroupState());
 
-        // Test to see we have the group data (TODO: Remove later)
-        System.out.println(response.getGroupName());
-        System.out.println(response.getGroupType());
-        System.out.println(response.getGroupID());
-
-        // TODO: Add the response to a DashboardState (e.g. append to a list of Groups) to dynamically show the groups
-        // dashboardViewModel.getState().addGroup(groupData)
+        // append to a list of Groups to dynamically show the groups
+        final LoggedInState loggedInState = dashboardViewModel.getState();
+        loggedInState.setGroups(response.getGroups());
+        dashboardViewModel.setState(loggedInState);
+        dashboardViewModel.firePropertyChange("groups");
     }
 
     @Override

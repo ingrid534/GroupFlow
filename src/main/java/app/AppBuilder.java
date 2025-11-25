@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 import data_access.DBGroupDataAccessObject;
+import data_access.DBMembershipDataAccessObject;
 import data_access.DBUserDataAccessObject;
 import data_access.DBTaskDataAccessObject;
 import entity.group.GroupFactory;
@@ -73,11 +74,17 @@ public class AppBuilder {
     private final String mongoDBConnectionString =
             "mongodb+srv://data_access:WCV3cDtZas1zWFTg@cluster0.pdhhga4.mongodb.net/?appName=Cluster0";
 
-    // TODO: Implement group DAO
-    final DBGroupDataAccessObject groupDataAccessObject = new DBGroupDataAccessObject();
-    final DBUserDataAccessObject userDataAccessObject = new DBUserDataAccessObject(userFactory,
-            mongoDBConnectionString, "group_flow");
-    // to be implemented
+    private final String dbName = "group_flow";
+
+    final DBGroupDataAccessObject groupDataAccessObject =
+            new DBGroupDataAccessObject(groupFactory, mongoDBConnectionString, dbName);
+    final DBUserDataAccessObject userDataAccessObject =
+            new DBUserDataAccessObject(userFactory,
+            mongoDBConnectionString, dbName);
+    final DBMembershipDataAccessObject membershipDataAccessObject =
+            new DBMembershipDataAccessObject(membershipFactory,
+                    mongoDBConnectionString, dbName);
+    // TODO: Implement task DAO
     final DBTaskDataAccessObject taskDataAccessObject = new DBTaskDataAccessObject();
 
     // DAO version using a shared external database
@@ -188,8 +195,8 @@ public class AppBuilder {
         final CreateGroupOutputBoundary createGroupOutputBoundary = new CreateGroupPresenter(viewManagerModel,
                 dashboardViewModel, createGroupViewModel);
         final CreateGroupInputBoundary createGroupInteractor = new CreateGroupInteractor(
-                groupDataAccessObject, userDataAccessObject, createGroupOutputBoundary, groupFactory,
-                membershipFactory);
+                groupDataAccessObject, userDataAccessObject, membershipDataAccessObject, createGroupOutputBoundary,
+                groupFactory, membershipFactory);
 
         CreateGroupController createGroupController = new CreateGroupController(createGroupInteractor);
         createGroupView.setCreateGroupController(createGroupController);
@@ -225,7 +232,7 @@ public class AppBuilder {
         final LoginOutputBoundary loginOutputBoundary = new LoginPresenter(viewManagerModel,
                 dashboardViewModel, loginViewModel, signupViewModel, viewTasksViewModel);
         final LoginInputBoundary loginInteractor = new LoginInteractor(
-                userDataAccessObject, loginOutputBoundary);
+                userDataAccessObject, groupDataAccessObject, loginOutputBoundary);
 
         final LoginController loginController = new LoginController(loginInteractor);
         loginView.setLoginController(loginController);
