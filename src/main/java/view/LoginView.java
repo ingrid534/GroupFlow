@@ -1,10 +1,8 @@
 package view;
 
-
 import interface_adapter.login.LoginController;
 import interface_adapter.login.LoginState;
 import interface_adapter.login.LoginViewModel;
-
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -17,115 +15,119 @@ import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-
 /**
  * The View for when the user is logging into the program.
  */
 public class LoginView extends JPanel implements ActionListener, PropertyChangeListener {
-
-
     private final String viewName = "log in";
     private final LoginViewModel loginViewModel;
 
-
     private final JTextField usernameInputField = new JTextField(20);
-    private final JLabel usernameLabel = new JLabel("Username");
-
 
     private final JPasswordField passwordInputField = new JPasswordField(20);
-    private final JLabel passwordLabel = new JLabel("Password");
-
 
     private final JLabel usernameErrorField = new JLabel();
-    private final JLabel passwordErrorField = new JLabel();
-
 
     private final JButton logIn;
     private final JButton toSignup;
-    private LoginController loginController = null;
-
+    private LoginController loginController;
 
     public LoginView(LoginViewModel loginViewModel) {
-
-
         this.loginViewModel = loginViewModel;
         this.loginViewModel.addPropertyChangeListener(this);
-
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(Color.WHITE);
         setBorder(new EmptyBorder(30, 50, 40, 50));
 
-
-        JLabel title = new JLabel("Log In");
-        title.setFont(new Font("SansSerif", Font.BOLD, 32));
-        title.setAlignmentX(Component.LEFT_ALIGNMENT);
-        title.setForeground(Color.BLACK);
-
-
-        JLabel usernameLabel = new JLabel("Username");
-        usernameLabel.setForeground(new Color(120, 120, 120));
-        usernameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-
-        JLabel passwordLabel = new JLabel("Password");
-        passwordLabel.setForeground(new Color(120, 120, 120));
-        passwordLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-
         styleField(usernameInputField);
         styleField(passwordInputField);
 
-
         logIn = new JButton("Login");
-        //logIn.setBackground(new Color(0, 150, 255));
-        //logIn.setForeground(Color.WHITE);
         logIn.setAlignmentX(Component.LEFT_ALIGNMENT);
-        //logIn.setFocusPainted(false);
-        //logIn.setFont(new Font("SansSerif", Font.BOLD, 15));
-        //logIn.setBorder(BorderFactory.createEmptyBorder(12, 20, 12, 20));
-
 
         toSignup = new JButton("Go to signup");
         toSignup.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-
-        this.add(title);
+        this.add(createTitleLabel());
         this.add(Box.createVerticalStrut(30));
 
-
-        this.add(usernameLabel);
+        this.add(createUsernameLabel());
         this.add(usernameInputField);
         this.add(Box.createVerticalStrut(20));
 
-
-        this.add(passwordLabel);
+        this.add(createPasswordLabel());
         this.add(passwordInputField);
         this.add(Box.createVerticalStrut(10));
-
 
         this.add(usernameErrorField);
         usernameErrorField.setForeground(Color.RED);
         usernameErrorField.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-
         this.add(Box.createVerticalStrut(10));
-
 
         this.add(logIn);
         this.add(Box.createVerticalStrut(20));
         this.add(toSignup);
 
+        actionListeners();
 
+        usernameInputField.getDocument().addDocumentListener(new DocumentListener() {
+            private void documentListenerHelper() {
+                final LoginState currentState = loginViewModel.getState();
+                currentState.setUsername(usernameInputField.getText());
+                loginViewModel.setState(currentState);
+            }
 
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                documentListenerHelper();
+            }
 
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                documentListenerHelper();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                documentListenerHelper();
+            }
+        });
+
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+
+        passwordInputField.getDocument().addDocumentListener(new DocumentListener() {
+            private void documentListenerHelper() {
+                final LoginState currentState = loginViewModel.getState();
+                currentState.setPassword(new String(passwordInputField.getPassword()));
+                loginViewModel.setState(currentState);
+            }
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                documentListenerHelper();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                documentListenerHelper();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                documentListenerHelper();
+            }
+        });
+
+    }
+
+    private void actionListeners() {
         logIn.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent evt) {
                         if (evt.getSource().equals(logIn)) {
                             final LoginState currentState = loginViewModel.getState();
-
-
                             loginController.execute(
                                     currentState.getUsername(),
                                     currentState.getPassword());
@@ -133,80 +135,38 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
                     }
                 });
 
-
-
-
         toSignup.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent evt) {
                         loginController.switchToSignupView();
                     }
                 });
-
-
-        usernameInputField.getDocument().addDocumentListener(new DocumentListener() {
-
-
-            private void documentListenerHelper() {
-                final LoginState currentState = loginViewModel.getState();
-                currentState.setUsername(usernameInputField.getText());
-                loginViewModel.setState(currentState);
-            }
-
-
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
-
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
-
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
-        });
-
-
-        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
-
-        passwordInputField.getDocument().addDocumentListener(new DocumentListener() {
-
-
-            private void documentListenerHelper() {
-                final LoginState currentState = loginViewModel.getState();
-                currentState.setPassword(new String(passwordInputField.getPassword()));
-                loginViewModel.setState(currentState);
-            }
-
-
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
-
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
-
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
-        });
-
-
     }
 
+    private JLabel createTitleLabel() {
+        JLabel title = new JLabel("Log In");
+        title.setFont(new Font("SansSerif", Font.BOLD, 32));
+        title.setAlignmentX(Component.LEFT_ALIGNMENT);
+        title.setForeground(Color.BLACK);
+
+        return title;
+    }
+
+    private JLabel createUsernameLabel() {
+        JLabel usernameLabel = new JLabel("Username");
+        usernameLabel.setForeground(new Color(120, 120, 120));
+        usernameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        return usernameLabel;
+    }
+
+    private JLabel createPasswordLabel() {
+        JLabel passwordLabel = new JLabel("Password");
+        passwordLabel.setForeground(new Color(120, 120, 120));
+        passwordLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        return passwordLabel;
+    }
 
     private void styleField(JTextField field) {
         field.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, new Color(200, 200, 200)));
@@ -215,7 +175,6 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
         field.setBackground(Color.WHITE);
         field.setAlignmentX(Component.LEFT_ALIGNMENT);
     }
-
 
     /**
      * React to a button click that results in evt.
@@ -226,7 +185,6 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
         System.out.println("Click " + evt.getActionCommand());
     }
 
-
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         final LoginState state = (LoginState) evt.getNewValue();
@@ -235,20 +193,15 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
         usernameErrorField.setText(state.getLoginError());
     }
 
-
     private void setFields(LoginState state) {
         usernameInputField.setText(state.getUsername());
     }
-
 
     public String getViewName() {
         return viewName;
     }
 
-
     public void setLoginController(LoginController loginController) {
         this.loginController = loginController;
     }
 }
-
-
