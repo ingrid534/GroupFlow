@@ -5,11 +5,11 @@ import entity.user.User;
 public interface EditGroupTasksUserDataAccessInterface {
 
     /**
-     * Returns whether the current logged in user is a moderator in the currentGroup.
+     * Return the current user.
      *
-     * @return whether user is moderator
+     * @return the User object
      */
-    boolean isModerator();
+    String getCurrentUsername();
 
     /**
      * Returns the User object with the username.

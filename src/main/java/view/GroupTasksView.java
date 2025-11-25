@@ -31,6 +31,8 @@ public class GroupTasksView extends JPanel implements PropertyChangeListener {
     private final EditGroupTaskController editController;
     private final CreateGroupTasksController createController;
 
+    private final String groupId;
+
     private final JPanel tasksListPanel = new JPanel();
     private final JPanel topBarPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
@@ -43,6 +45,7 @@ public class GroupTasksView extends JPanel implements PropertyChangeListener {
      * @param viewController   Controller for view tasks use case
      * @param editController   Controller for edit tasks use case
      * @param createController Controller for create tasks use case
+     * @param groupId          the groupId
      */
     public GroupTasksView(
             ViewGroupTasksViewModel viewModel,
@@ -50,12 +53,13 @@ public class GroupTasksView extends JPanel implements PropertyChangeListener {
             CreateGroupTasksViewModel createModel,
             ViewGroupTasksController viewController,
             EditGroupTaskController editController,
-            CreateGroupTasksController createController) {
+            CreateGroupTasksController createController, String groupId) {
 
         this.usernames = new ArrayList<>();
         this.viewModel = viewModel;
         this.editModel = editModel;
         this.createModel = createModel;
+        this.groupId = groupId;
 
         this.viewController = viewController;
         this.editController = editController;
@@ -68,7 +72,7 @@ public class GroupTasksView extends JPanel implements PropertyChangeListener {
         setLayout(new BorderLayout());
 
         JButton createBtn = new JButton("Create Task");
-        createBtn.addActionListener(event -> openCreateDialog());
+        createBtn.addActionListener(event -> openCreateDialog(groupId));
         topBarPanel.add(createBtn);
         add(topBarPanel, BorderLayout.NORTH);
 
@@ -83,7 +87,7 @@ public class GroupTasksView extends JPanel implements PropertyChangeListener {
         refresh();
 
         // load tasks immediately
-        viewController.execute();
+        viewController.execute(groupId);
     }
 
     /** Refreshes the UI according to the ViewModel state. */
@@ -135,7 +139,7 @@ public class GroupTasksView extends JPanel implements PropertyChangeListener {
         JButton editBtn = new JButton("Edit");
         editBtn.setPreferredSize(new Dimension(60, 25));
         editBtn.setMaximumSize(new Dimension(60, 25));
-        editBtn.addActionListener(event -> openEditDialog(dto));
+        editBtn.addActionListener(event -> openEditDialog(dto, groupId));
         row.add(editBtn);
 
         return row;
@@ -145,18 +149,21 @@ public class GroupTasksView extends JPanel implements PropertyChangeListener {
      * Opens the dialog window for creating a new task.
      * The dialog is responsible for collecting user input and invoking
      * the CreateGroupTasksController.
+     *
+     * @param groupid the group id
      */
-    private void openCreateDialog() {
-        new CreateTaskView(usernames, createController, createModel);
+    private void openCreateDialog(String groupid) {
+        new CreateTaskView(usernames, createController, createModel, groupid);
     }
 
     /**
      * Opens the dialog window for editing an existing task.
      *
-     * @param dto the task DTO to edit
+     * @param dto     the task DTO to edit
+     * @param groupid the group id
      */
-    private void openEditDialog(ViewGroupTasksOutputData.TaskDTO dto) {
-        new EditTaskView(dto.getId(), usernames, editController, editModel);
+    private void openEditDialog(ViewGroupTasksOutputData.TaskDTO dto, String groupid) {
+        new EditTaskView(dto.getId(), usernames, editController, editModel, groupid);
     }
 
     @Override
@@ -171,7 +178,7 @@ public class GroupTasksView extends JPanel implements PropertyChangeListener {
             refresh();
         } else if ("edit_result".equals(prop) || "create_result".equals(prop)) {
             // After a successful or failed edit/create, reload tasks from the use case.
-            viewController.execute();
+            viewController.execute(groupId);
         }
     }
 }

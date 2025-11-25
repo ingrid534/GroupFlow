@@ -1,6 +1,7 @@
 package interface_adapter.viewgrouptasks;
 
 import use_case.viewgrouptasks.ViewGroupTasksInputBoundary;
+import use_case.viewgrouptasks.ViewGroupTasksInputData;
 
 /**
  * Controller for the ViewGroupTasks use case.
@@ -21,8 +22,11 @@ public class ViewGroupTasksController {
 
     /**
      * Executes the ViewGroupTasks use case.
+     *
+     * @param groupId the group id
      */
-    public void execute() {
-        interactor.execute();
+    public void execute(String groupId) {
+        final ViewGroupTasksInputData inputData = new ViewGroupTasksInputData(groupId);
+        interactor.execute(inputData);
     }
 }

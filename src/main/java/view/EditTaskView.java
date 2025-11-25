@@ -22,6 +22,7 @@ public class EditTaskView extends JDialog implements PropertyChangeListener {
 
     private final String taskId;
     private final List<String> memberNames;
+    private final String groupId;
 
     private final EditGroupTaskController controller;
     private final EditGroupTaskViewModel viewModel;
@@ -40,12 +41,15 @@ public class EditTaskView extends JDialog implements PropertyChangeListener {
      * @param memberNames list of usernames that can be assigned this task
      * @param controller  controller for the edit-group-task use case
      * @param viewModel   ViewModel providing edit result feedback
+     * @param groupId     The group Id
      */
     public EditTaskView(String taskId, List<String> memberNames,
-                        EditGroupTaskController controller, EditGroupTaskViewModel viewModel) {
+                        EditGroupTaskController controller, EditGroupTaskViewModel viewModel,
+                        String groupId) {
         super((Frame) null, "Edit Task", true);
         this.taskId = taskId;
         this.memberNames = memberNames;
+        this.groupId = groupId;
         this.controller = controller;
         this.viewModel = viewModel;
 
@@ -190,7 +194,7 @@ public class EditTaskView extends JDialog implements PropertyChangeListener {
 
         saveButton.setEnabled(false);
         controller.execute(taskId,
-                newDescription, newDue, completed, selectedAssignees);
+                newDescription, newDue, completed, selectedAssignees, groupId);
     }
 
     /**

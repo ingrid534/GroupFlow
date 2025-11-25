@@ -14,25 +14,29 @@ public class EditGroupTasksInteractor implements EditGroupTasksInputBoundary {
     private final EditGroupTasksDataAccessInterface dataAccess;
     private final EditGroupTasksUserDataAccessInterface userDataAccess;
     private final EditGroupTasksOutputBoundary presenter;
+    private final EditGroupTasksMembershipDataAccessInterface membershipDataAccess;
 
     /**
      * Constructs an interactor.
      *
-     * @param dataAccess     the data access object
-     * @param presenter      the output boundary
-     * @param userDataAccess the user data access object
+     * @param dataAccess                    the data access object
+     * @param presenter                     the output boundary
+     * @param userDataAccess                the user data access object
+     * @param membershipDataAccessInterface the mamber data access object
      */
     public EditGroupTasksInteractor(EditGroupTasksDataAccessInterface dataAccess,
                                     EditGroupTasksOutputBoundary presenter,
-                                    EditGroupTasksUserDataAccessInterface userDataAccess) {
+                                    EditGroupTasksUserDataAccessInterface userDataAccess,
+                                    EditGroupTasksMembershipDataAccessInterface membershipDataAccessInterface) {
         this.dataAccess = dataAccess;
         this.userDataAccess = userDataAccess;
         this.presenter = presenter;
+        this.membershipDataAccess = membershipDataAccessInterface;
     }
 
     @Override
     public void execute(EditGroupTasksInputData inputData) {
-        if (!userDataAccess.isModerator()) {
+        if (!membershipDataAccess.get(userDataAccess.getCurrentUsername(), inputData.getGroupId()).isModerator()) {
             presenter.present(new EditGroupTasksOutputData(false,
                     "Only moderators can edit tasks."));
             return;

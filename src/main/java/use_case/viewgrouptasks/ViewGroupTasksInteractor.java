@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class ViewGroupTasksInteractor implements ViewGroupTasksInputBoundary {
     private final ViewGroupTasksDataAccessInterface dataAccess;
-    private final ViewGroupTasksGroupDataAccessInterface viewDataAccess;
+    private final ViewGroupTasksGroupDataAccessInterface groupDataAccess;
     private final ViewGroupTasksOutputBoundary presenter;
 
     /**
@@ -26,12 +26,12 @@ public class ViewGroupTasksInteractor implements ViewGroupTasksInputBoundary {
                                     ViewGroupTasksGroupDataAccessInterface groupDataAccess) {
         this.dataAccess = dataAccess;
         this.presenter = presenter;
-        this.viewDataAccess = groupDataAccess;
+        this.groupDataAccess = groupDataAccess;
     }
 
     @Override
-    public void execute() {
-        List<Task> tasks = dataAccess.getTasksForGroup();
+    public void execute(ViewGroupTasksInputData inputData) {
+        List<Task> tasks = dataAccess.getTasksForGroup(inputData.getGroupId());
 
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         List<ViewGroupTasksOutputData.TaskDTO> dtos = new ArrayList<>();
@@ -44,7 +44,7 @@ public class ViewGroupTasksInteractor implements ViewGroupTasksInputBoundary {
                     task.isCompleted(), task.getAssignees()));
         }
 
-        List<String> names = viewDataAccess.getMemberNames();
+        List<String> names = groupDataAccess.getGroup(inputData.getGroupId()).getMembers();
 
         presenter.present(
                 new ViewGroupTasksOutputData(dtos, names));

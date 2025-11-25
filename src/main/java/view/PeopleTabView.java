@@ -10,7 +10,7 @@ import java.awt.*;
  * Members can be assigned roles and removed, and pending invitations
  * can be accepted or declined.
  */
-public class PeopleTabPanel extends JPanel {
+public class PeopleTabView extends JPanel {
 
     /** Panel that lists current members. */
     private final JPanel membersListPanel = new JPanel();
@@ -29,7 +29,7 @@ public class PeopleTabPanel extends JPanel {
      *
      * @param groupName the name of the group (might have to change to the group object)
      */
-    public PeopleTabPanel(String groupName) {
+    public PeopleTabView(String groupName) {
         setLayout(new BorderLayout());
         setBorder(new EmptyBorder(10, 10, 10, 10));
 

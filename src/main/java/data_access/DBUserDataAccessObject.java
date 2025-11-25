@@ -9,13 +9,14 @@ import com.mongodb.client.result.UpdateResult;
 import entity.user.User;
 import entity.user.UserFactory;
 import use_case.change_password.ChangePasswordUserDataAccessInterface;
-import use_case.create_group.LoggedInDataAccessInterface;
+import use_case.create_group.CreateGroupUserDataAccessInterface;
 import use_case.creategrouptask.CreateGroupTaskUserDataAccessInterface;
 import use_case.editgrouptasks.EditGroupTasksUserDataAccessInterface;
 import use_case.login.LoginUserDataAccessInterface;
 import use_case.logout.LogoutUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
 import org.bson.Document;
+import use_case.viewtasks.ViewTasksUserDataAccessInterface;
 
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.set;
@@ -29,9 +30,10 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
         LoginUserDataAccessInterface,
         ChangePasswordUserDataAccessInterface,
         LogoutUserDataAccessInterface,
-        LoggedInDataAccessInterface,
-        EditGroupTasksUserDataAccessInterface,
-        CreateGroupTaskUserDataAccessInterface {
+        CreateGroupUserDataAccessInterface,
+        ViewTasksUserDataAccessInterface,
+        CreateGroupTaskUserDataAccessInterface,
+        EditGroupTasksUserDataAccessInterface {
 
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
@@ -147,16 +149,5 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
         if (result.getMatchedCount() == 0) {
             throw new RuntimeException("User not found: " + user.getName());
         }
-    }
-
-    // TODO
-    /**
-     * Returns whether the current logged in user is a moderator in the currentGroup.
-     *
-     * @return whether user is moderator
-     */
-    @Override
-    public boolean isModerator() {
-        return true;
     }
 }

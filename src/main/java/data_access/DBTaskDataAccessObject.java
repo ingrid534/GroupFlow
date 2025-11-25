@@ -14,7 +14,7 @@ public class DBTaskDataAccessObject implements ViewTasksDataAccessInterface, Vie
 
     // Need to be implemented
     @Override
-    public List<Task> getTasksForCurrentUser() {
+    public List<Task> getTasksForUser(String username) {
         return new ArrayList<>();
     }
 
@@ -24,7 +24,7 @@ public class DBTaskDataAccessObject implements ViewTasksDataAccessInterface, Vie
     }
 
     @Override
-    public List<Task> getTasksForGroup() {
+    public List<Task> getTasksForGroup(String groupId) {
         return new ArrayList<>();
     }
 

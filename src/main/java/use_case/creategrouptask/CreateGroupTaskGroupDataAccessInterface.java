@@ -5,18 +5,12 @@ import entity.group.Group;
 public interface CreateGroupTaskGroupDataAccessInterface {
 
     /**
-     * Returns the current selected group object.
+     * Returns the group object with group id.
      *
+     * @param groupId the group id
      * @return the Group object
      */
-    Group getCurrentGroup();
-
-    /**
-     * Returns the current selected group id.
-     *
-     * @return the Group id
-     */
-    String getGroupId();
+    Group getGroup(String groupId);
 
     /**
      * Saves the group with updated info (not sure if needed).

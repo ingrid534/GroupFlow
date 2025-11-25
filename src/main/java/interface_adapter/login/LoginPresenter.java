@@ -29,15 +29,19 @@ public class LoginPresenter implements LoginOutputBoundary {
 
     @Override
     public void prepareSuccessView(LoginOutputData response) {
-        // On success, update the loggedInViewModel's state
+        // Update DashboardViewModel state
         final LoggedInState loggedInState = dashboardViewModel.getState();
         loggedInState.setUsername(response.getUsername());
+        loggedInState.setGroups(response.getGroups());
+        dashboardViewModel.setState(loggedInState);
+
+        // Notify views
         this.dashboardViewModel.firePropertyChange();
 
-        // and clear everything from the LoginViewModel's state
+        // Clear everything from the LoginViewModel state
         loginViewModel.setState(new LoginState());
 
-        // switch to the logged in view
+        // Switch to the dashboard view
         this.viewManagerModel.setState(dashboardViewModel.getViewName());
         this.viewManagerModel.firePropertyChange();
     }

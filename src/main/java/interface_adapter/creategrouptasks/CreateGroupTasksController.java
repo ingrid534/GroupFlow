@@ -28,13 +28,14 @@ public class CreateGroupTasksController {
      * @param description Description of the task
      * @param dueDate     Due date string (nullable)
      * @param assigneeIds List of user IDs assigned to the task
+     * @param groupId     The group Id
      */
     public void execute(String description,
                         String dueDate,
-                        List<String> assigneeIds) {
+                        List<String> assigneeIds, String groupId) {
 
         CreateGroupTaskInputData inputData =
-                new CreateGroupTaskInputData(description, dueDate, assigneeIds);
+                new CreateGroupTaskInputData(description, dueDate, assigneeIds, groupId);
 
         interactor.execute(inputData);
     }

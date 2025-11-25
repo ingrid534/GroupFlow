@@ -13,6 +13,7 @@ public class EditGroupTasksInputData {
     private final String newDueDate;
     private final Boolean newCompleted;
     private final List<String> newAssigneeUsernames;
+    private final String groupId;
 
     /**
      * Creates new input data for editing a task.
@@ -22,15 +23,22 @@ public class EditGroupTasksInputData {
      * @param newDueDate           the new due date, or {@code null} to keep/clear
      * @param newCompleted         the new completion flag, or {@code null} to keep
      * @param newAssigneeUsernames the new assignee user names, or {@code null} to keep
+     * @param groupId              the group Id of the group
      */
     public EditGroupTasksInputData(String taskId,
                                    String newDescription, String newDueDate,
-                                   Boolean newCompleted, List<String> newAssigneeUsernames) {
+                                   Boolean newCompleted, List<String> newAssigneeUsernames,
+                                   String groupId) {
         this.taskId = taskId;
         this.newDescription = newDescription;
         this.newDueDate = newDueDate;
         this.newCompleted = newCompleted;
         this.newAssigneeUsernames = newAssigneeUsernames;
+        this.groupId = groupId;
+    }
+
+    public String getGroupId() {
+        return groupId;
     }
 
     public String getTaskId() {

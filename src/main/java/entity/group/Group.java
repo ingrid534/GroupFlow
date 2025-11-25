@@ -3,7 +3,6 @@ package entity.group;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.UUID;
 
 import entity.membership.Membership;
 import entity.user.UserRole;
@@ -14,7 +13,7 @@ import entity.user.UserRole;
  * Memberships act as a link between a Group and a User.
  */
 public class Group {
-    private final String groupID;
+    private String groupID;
     private String name;
     private List<Membership> memberships;
     private List<String> tasks;
@@ -27,12 +26,13 @@ public class Group {
      * granted the Moderator role.
      *
      * @param name      the group name
+     * @param groupId   the group join code (id)
      * @param groupType the group type
      *
      */
-    public Group(String name, GroupType groupType) {
+    public Group(String name, String groupId, GroupType groupType) {
         // Temporary until we set up a DB
-        this.groupID = UUID.randomUUID().toString();
+        this.groupID = groupId;
         this.name = name;
         this.groupType = groupType;
         this.memberships = new ArrayList<>();
@@ -60,7 +60,7 @@ public class Group {
         final List<String> users = new ArrayList<>();
 
         for (Membership m : memberships) {
-            users.add(m.getUser());
+            users.add(m.getUsername());
         }
 
         return users;
@@ -85,7 +85,7 @@ public class Group {
     public String getModerator() throws NoSuchElementException {
         for (Membership m : memberships) {
             if (m.isModerator()) {
-                return m.getUser();
+                return m.getUsername();
             }
         }
         throw new NoSuchElementException("No moderator in this group.");
@@ -128,6 +128,10 @@ public class Group {
         this.groupType = groupType;
     }
 
+    public void setGroupId(String groupId) {
+        this.groupID = groupId;
+    }
+
     /**
      * Adds the given membership to this group.
      * 
@@ -156,7 +160,7 @@ public class Group {
      */
     public Boolean isMember(String userID) {
         for (Membership m : memberships) {
-            if (userID.equals(m.getUser())) {
+            if (userID.equals(m.getUsername())) {
                 return true;
             }
         }
@@ -181,7 +185,7 @@ public class Group {
         Membership target = null;
 
         for (Membership m : memberships) {
-            if (userID.equals(m.getUser())) {
+            if (userID.equals(m.getUsername())) {
                 target = m;
             }
         }

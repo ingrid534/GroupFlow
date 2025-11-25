@@ -11,7 +11,8 @@ public interface ViewTasksDataAccessInterface {
     /**
      * Returns a list of task IDs that are assigned to the specified user.
      *
-     * @return a list of task IDs associated with the currently logged in user
+     * @param username the username
+     * @return a list of task IDs associated with the given user name
      */
-    List<Task> getTasksForCurrentUser();
+    List<Task> getTasksForUser(String username);
 }

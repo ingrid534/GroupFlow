@@ -13,7 +13,8 @@ public interface ViewGroupTasksDataAccessInterface {
     /**
      * Returns all tasks that belong to the current group.
      *
+     * @param groupId the group id
      * @return the list of tasks for that group (never {@code null})
      */
-    List<Task> getTasksForGroup();
+    List<Task> getTasksForGroup(String groupId);
 }

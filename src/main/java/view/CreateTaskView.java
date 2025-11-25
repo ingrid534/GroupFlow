@@ -21,6 +21,7 @@ import java.util.List;
 public class CreateTaskView extends JDialog implements PropertyChangeListener {
 
     private final List<String> memberNames;
+    private final String groupId;
 
     private final CreateGroupTasksController controller;
     private final CreateGroupTasksViewModel viewModel;
@@ -37,13 +38,15 @@ public class CreateTaskView extends JDialog implements PropertyChangeListener {
      * @param memberNames list of usernames that can be assigned this task
      * @param controller  controller for the create-group-tasks use case
      * @param viewModel   ViewModel providing creation result feedback
+     * @param groupId     The group id
      */
     public CreateTaskView(List<String> memberNames,
                           CreateGroupTasksController controller,
-                          CreateGroupTasksViewModel viewModel) {
+                          CreateGroupTasksViewModel viewModel, String groupId) {
         super((Frame) null, "Create Task", true);
 
         this.memberNames = memberNames;
+        this.groupId = groupId;
         this.controller = controller;
         this.viewModel = viewModel;
 
@@ -174,7 +177,7 @@ public class CreateTaskView extends JDialog implements PropertyChangeListener {
 
         // Delegate to the use case via controller.
         createButton.setEnabled(false);
-        controller.execute(description, due, selectedAssignees);
+        controller.execute(description, due, selectedAssignees, groupId);
     }
 
     /**

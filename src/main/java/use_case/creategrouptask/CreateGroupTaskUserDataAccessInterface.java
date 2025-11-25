@@ -3,12 +3,6 @@ package use_case.creategrouptask;
 import entity.user.User;
 
 public interface CreateGroupTaskUserDataAccessInterface {
-    /**
-     * Returns whether the current logged in user is a moderator in the currentGroup.
-     *
-     * @return whether user is moderator
-     */
-    boolean isModerator();
 
     /**
      * Returns the User object with the username.
@@ -17,6 +11,13 @@ public interface CreateGroupTaskUserDataAccessInterface {
      * @return the User object
      */
     User get(String username);
+
+    /**
+     * Return the current user.
+     *
+     * @return the User object
+     */
+    String getCurrentUsername();
 
     /**
      * Saves the user with updated info (not sure if needed).
