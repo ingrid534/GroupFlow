@@ -17,7 +17,7 @@ public interface EditGroupTasksUserDataAccessInterface {
      * @param username the username
      * @return the User object
      */
-    User getUserFromUsername(String username);
+    User get(String username);
 
     /**
      * Saves the user with updated info (not sure if needed).

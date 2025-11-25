@@ -159,15 +159,4 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
     public boolean isModerator() {
         return true;
     }
-
-    /**
-     * Returns the User object with the username.
-     *
-     * @param username the username
-     * @return the User object
-     */
-    @Override
-    public User getUserFromUsername(String username) {
-        return null;
-    }
 }
