@@ -8,6 +8,7 @@ import entity.group.Group;
 import entity.group.GroupFactory;
 import entity.group.GroupType;
 import use_case.create_group.CreateGroupDataAccessInterface;
+import use_case.join_group.JoinGroupUserDataAccessInterface;
 import use_case.login.LoginGroupsDataAccessInterface;
 import org.bson.Document;
 
@@ -26,7 +27,7 @@ import static com.mongodb.client.model.Filters.eq;
  * </p>
  */
 public class DBGroupDataAccessObject implements CreateGroupDataAccessInterface,
-        LoginGroupsDataAccessInterface {
+        LoginGroupsDataAccessInterface, JoinGroupUserDataAccessInterface {
 
     private static final String GROUP_NAME = "name";
     private static final String GROUP_CODE = "joinCode";
@@ -112,6 +113,14 @@ public class DBGroupDataAccessObject implements CreateGroupDataAccessInterface,
                 .projection(new Document("_id", 1))
                 .first();
         return existing != null;
+    }
+
+    @Override
+    public boolean groupCodeExists(String code) {
+        if (code == null) {
+            return false;
+        }
+        return joinCodeExists(code);
     }
 
     /**
