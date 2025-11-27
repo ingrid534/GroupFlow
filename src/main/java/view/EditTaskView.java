@@ -227,6 +227,7 @@ public class EditTaskView extends JDialog implements PropertyChangeListener {
 
     @Override
     public void dispose() {
+        this.viewModel.removePropertyChangeListener(this);
         super.dispose();
     }
 }
