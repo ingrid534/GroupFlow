@@ -4,6 +4,7 @@ import interface_adapter.create_group.CreateGroupController;
 import interface_adapter.dashboard.DashboardViewModel;
 import interface_adapter.dashboard.LoggedInState;
 import interface_adapter.logout.LogoutController;
+import interface_adapter.joingroup.JoinGroupController;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -34,11 +35,13 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     // Controllers
     private LogoutController logoutController;
     private CreateGroupController createGroupController;
+    private interface_adapter.joingroup.JoinGroupController joinGroupController;
 
     // Header widgets
     private final JLabel usernameLabel = new JLabel();
     private JButton logoutButton;
     private JButton createGroup;
+    private JButton joinGroup;
 
     // Main layout pieces
     // groupsModel stores group IDs plus "Home"
@@ -159,7 +162,11 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
 
         p.add(new JLabel("Welcome! Select a group to view its workspace."), BorderLayout.NORTH);
         createGroup = new JButton("Create Group");
-        p.add(createGroup);
+        p.add(createGroup, BorderLayout.CENTER);
+
+        joinGroup = new JButton("Join Group");
+        p.add(joinGroup, BorderLayout.SOUTH);
+
         createGroup.addActionListener(
                 evt -> {
                     if (evt.getSource().equals(createGroup)) {
@@ -167,6 +174,28 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
                     }
                 }
         );
+
+        joinGroup.addActionListener(evt -> {
+            if (joinGroupController != null) {
+                String code = JOptionPane.showInputDialog(
+                        this,
+                        "Enter Group ID:",
+                        "Join Group",
+                        JOptionPane.PLAIN_MESSAGE
+                );
+                if (code != null && !code.trim().isEmpty()) {
+                    joinGroupController.execute(code.trim());
+                    // Optional little UX touch:
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "Join request sent to the group owner.",
+                            "Request Sent",
+                            JOptionPane.INFORMATION_MESSAGE
+                    );
+                }
+            }
+        });
+
         return p;
     }
 
@@ -391,4 +420,9 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     public void setCreateGroupController(CreateGroupController createGroupController) {
         this.createGroupController = createGroupController;
     }
+
+    public void setJoinGroupController(JoinGroupController joinGroupController) {
+        this.joinGroupController = joinGroupController;
+    }
+
 }

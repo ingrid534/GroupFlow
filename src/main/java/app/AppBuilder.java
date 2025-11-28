@@ -19,6 +19,13 @@ import interface_adapter.create_group.CreateGroupController;
 import interface_adapter.create_group.CreateGroupPresenter;
 import interface_adapter.create_group.CreateGroupViewModel;
 import interface_adapter.dashboard.DashboardViewModel;
+import interface_adapter.joingroup.JoinGroupController;
+import interface_adapter.joingroup.JoinGroupPresenter;
+import interface_adapter.joingroup.JoinGroupViewModel;
+import use_case.join_group.JoinGroupInputBoundary;
+import use_case.join_group.JoinGroupInteractor;
+import use_case.join_group.JoinGroupOutputBoundary;
+import view.JoinGroupView;
 import interface_adapter.logged_in.ChangePasswordController;
 import interface_adapter.logged_in.ChangePasswordPresenter;
 import interface_adapter.logged_in.LoggedInViewModel;
@@ -101,6 +108,8 @@ public class AppBuilder {
     private LoginView loginView;
     private DashboardView dashboardView;
     private CreateGroupView createGroupView;
+    private JoinGroupView joinGroupView;
+    private JoinGroupViewModel joinGroupViewModel;
 
     private JFrame application;
     private ViewTasksView viewTasksView;
@@ -145,6 +154,22 @@ public class AppBuilder {
         loggedInViewModel = new LoggedInViewModel();
         loggedInView = new LoggedInView(loggedInViewModel);
         cardPanel.add(loggedInView, loggedInView.getViewName());
+        return this;
+    }
+
+    /**
+     * Method to add the Join Group View.
+     *
+     * @return App Builder
+     */
+    public AppBuilder addJoinGroupView() {
+        joinGroupViewModel = new JoinGroupViewModel();
+        joinGroupView = new JoinGroupView(joinGroupViewModel);
+
+        cardPanel.add(joinGroupView, joinGroupView.getViewName());
+        // pick a reasonable size; tweak if needed
+        viewSizes.put(joinGroupView.getViewName(), new Dimension(420, 320));
+
         return this;
     }
 
@@ -236,6 +261,34 @@ public class AppBuilder {
 
         final LoginController loginController = new LoginController(loginInteractor);
         loginView.setLoginController(loginController);
+        return this;
+    }
+
+    /**
+     * Method to add the Join Group Use Case.
+     *
+     * @return App Builder
+     */
+    public AppBuilder addJoinGroupUseCase() {
+        final JoinGroupOutputBoundary joinGroupOutputBoundary =
+                new JoinGroupPresenter(joinGroupViewModel, dashboardViewModel, viewManagerModel);
+
+        final JoinGroupInputBoundary joinGroupInteractor =
+                new JoinGroupInteractor(
+                        joinGroupOutputBoundary,
+                        groupDataAccessObject,
+                        userDataAccessObject,
+                        membershipDataAccessObject,
+                        membershipFactory
+                );
+
+        final JoinGroupController joinGroupController =
+                new JoinGroupController(joinGroupInteractor);
+
+        // Wire controller into the join-group view
+        joinGroupView.setJoinGroupController(joinGroupController);
+        dashboardView.setJoinGroupController(joinGroupController);
+
         return this;
     }
 

@@ -17,11 +17,13 @@ public class Main {
                 .addViewTasksUseCase()
                 .addDashboardView()
                 .addCreateGroupView()
+                .addJoinGroupView()
                 .addSignupUseCase()
                 .addLoginUseCase()
                 .addLogoutUseCase()
                 // .addChangePasswordUseCase()
                 .addCreateGroupUseCase()
+                .addJoinGroupUseCase()
                 .build();
 
         application.pack();
