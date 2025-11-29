@@ -10,6 +10,7 @@ import entity.membership.MembershipFactory;
 import entity.user.UserRole;
 import org.bson.Document;
 import use_case.create_group.CreateGroupMembershipDataAccessInterface;
+import use_case.manage_members.remove_member.RemoveMemberDataAccessInterface;
 import use_case.manage_members.view_members.ViewMembersMembershipDataAccessInterface;
 import use_case.manage_members.view_pending.ViewPendingMembershipDataAccessInterface;
 
@@ -32,7 +33,8 @@ public class DBMembershipDataAccessObject implements CreateGroupMembershipDataAc
         ViewMembersMembershipDataAccessInterface,
         ViewPendingMembershipDataAccessInterface,
         CreateGroupTasksMembershipDataAccessInterface, 
-        EditGroupTasksMembershipDataAccessInterface {
+        EditGroupTasksMembershipDataAccessInterface,
+        RemoveMemberDataAccessInterface {
 
     private static final String USER_FIELD = "user";
     private static final String GROUP_FIELD = "group";
@@ -131,6 +133,20 @@ public class DBMembershipDataAccessObject implements CreateGroupMembershipDataAc
         }
 
         return result;
+    }
+
+    /**
+     * Removes the membership record for the specified user in the given group.
+     * If no such membership exists, the method completes silently.
+     *
+     * @param groupID  the ID of the group the user is being removed from
+     * @param username the username of the member to remove
+     */
+    @Override
+    public void removeMembership(String groupID, String username) {
+        membershipsCollection.deleteOne(
+                and(eq(USER_FIELD, username), eq(GROUP_FIELD, groupID))
+        );
     }
 
     /**

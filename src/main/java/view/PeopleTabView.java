@@ -3,6 +3,7 @@ package view;
 import entity.user.UserRole;
 import interface_adapter.manage_members.ManageMembersState;
 import interface_adapter.manage_members.PeopleTabViewModel;
+import interface_adapter.manage_members.remove_member.RemoveMemberController;
 import interface_adapter.manage_members.view_members.ViewMembersController;
 import interface_adapter.manage_members.view_pending.ViewPendingController;
 
@@ -19,39 +20,45 @@ import java.util.Objects;
 
 /**
  * A panel representing the "People" tab of a group UI.
- * Displays group members and pending invitations.
- * Members can be assigned roles and removed, and pending invitations
+ * Displays group members and pending membership requests.
+ * Members can be assigned roles and removed, and pending requests
  * can be accepted or declined.
  */
 public class PeopleTabView extends JPanel implements ActionListener, PropertyChangeListener {
 
     /** Panel that lists current members. */
     private final JPanel membersListPanel = new JPanel();
-    /** Panel that lists pending invitations. */
+    /** Panel that lists pending membership requests. */
     private final JPanel pendingListPanel = new JPanel();
     /** Available roles a member can have. */
     private final String[] roles = {"Member", "Admin", "Moderator"};
 
     /** Fixed height for each row/item in the lists. */
     private static final int ROW_HEIGHT = 35;
-    /** Split pane dividing members list from pending invitations (if visible). */
+    /** Split pane dividing members list from pending requests (if visible). */
     private final JSplitPane split;
 
     // Controllers
     private ViewMembersController viewMembersController;
     private ViewPendingController viewPendingController;
+    private RemoveMemberController removeMemberController;
 
     private final PeopleTabViewModel peopleTabViewModel;
 
     private final String groupID;
+    private final String currentUsername;
+
+    /** Role of the current user in this group, if known. */
+    private UserRole currentUserRole;
 
     /**
-     * Creates a new PeopleTabPanel for a given group name.
+     * Creates a new PeopleTabView for a given group.
      *
-     * @param peopleTabViewModel ..
-     * @param groupID the name of the group (might have to change to the group id)
+     * @param peopleTabViewModel the view model backing this tab
+     * @param groupID the unique identifier of the group
+     * @param currentUsername the username of the current user
      */
-    public PeopleTabView(PeopleTabViewModel peopleTabViewModel, String groupID) {
+    public PeopleTabView(PeopleTabViewModel peopleTabViewModel, String groupID, String currentUsername) {
         this.peopleTabViewModel = Objects.requireNonNull(peopleTabViewModel);
         this.peopleTabViewModel.addPropertyChangeListener(this);
 
@@ -59,14 +66,17 @@ public class PeopleTabView extends JPanel implements ActionListener, PropertyCha
         setBorder(new EmptyBorder(10, 10, 10, 10));
 
         this.groupID = groupID;
+        this.currentUsername = currentUsername;
+
+        // Top bar with Refresh button
+        addRefreshButton();
 
         split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         split.setResizeWeight(1.0);
         split.setDividerSize(4);
 
         // Create Members panel
-        JPanel membersPanel;
-        membersPanel = createListPanel(
+        JPanel membersPanel = createListPanel(
                 "Members",
                 membersListPanel,
                 new String[]{"Name A-Z", "Name Z-A", "Role"}
@@ -75,6 +85,21 @@ public class PeopleTabView extends JPanel implements ActionListener, PropertyCha
         split.setLeftComponent(membersPanel);
         split.setRightComponent(null);
         add(split, BorderLayout.CENTER);
+    }
+
+    private void addRefreshButton() {
+        JPanel topBar = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JButton refreshButton = new JButton("Refresh");
+        refreshButton.addActionListener(event -> {
+            if (viewMembersController != null) {
+                viewMembersController.execute(groupID);
+            }
+            if (viewPendingController != null) {
+                viewPendingController.execute(groupID);
+            }
+        });
+        topBar.add(refreshButton);
+        add(topBar, BorderLayout.NORTH);
     }
 
     /**
@@ -107,39 +132,71 @@ public class PeopleTabView extends JPanel implements ActionListener, PropertyCha
     }
 
     /**
+     * Parses a role string into a UserRole enum, ignoring case and extra spaces.
+     *
+     * @param role the role string, may be null
+     * @return the matched UserRole or null if no match
+     */
+    private UserRole parseUserRole(String role) {
+        if (role == null) {
+            return null;
+        }
+        String normalized = role.trim();
+        for (UserRole userRole : UserRole.values()) {
+            if (userRole.name().equalsIgnoreCase(normalized)) {
+                return userRole;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Adds a member row to the members list.
      *
-     * @param name the member's display name
+     * @param name the member display name
      * @param role the current role assigned to the member
      */
     public void addMember(String name, String role) {
-        JPanel row = createRowPanel();
+        final JPanel row = createRowPanel();
+
+        boolean isCurrentUser = name != null && name.equalsIgnoreCase(currentUsername);
 
         final JLabel nameLabel = new JLabel(name);
-        JComboBox<UserRole> roleDropdown = new JComboBox<>(UserRole.values());
 
-        // Safely match String role to a UserRole, ignoring case and extra spaces
-        UserRole matchedRole = null;
-        if (role != null) {
-            String normalized = role.trim();
-            for (UserRole userRole : UserRole.values()) {
-                if (userRole.name().equalsIgnoreCase(normalized)) {
-                    matchedRole = userRole;
-                    break;
-                }
-            }
+        // Highlight the current user
+        if (isCurrentUser) {
+            nameLabel.setText(name + " (You)");
+            nameLabel.setFont(nameLabel.getFont().deriveFont(Font.BOLD));
         }
 
+        JComboBox<UserRole> roleDropdown = new JComboBox<>(UserRole.values());
+
+        // Match role string to UserRole
+        UserRole matchedRole = parseUserRole(role);
         if (matchedRole != null) {
             roleDropdown.setSelectedItem(matchedRole);
         }
 
         JButton removeBtn = new JButton("\u2716");
         removeBtn.addActionListener(event -> {
-            membersListPanel.remove(row);
-            membersListPanel.revalidate();
-            membersListPanel.repaint();
+            removeMemberController.execute(groupID, name);
         });
+
+        // Permission rules
+        if (isCurrentUser) {
+            // No self removal from this tab
+            removeBtn.setEnabled(false);
+            removeBtn.setToolTipText("");
+            // If current user is only a member, also do not let them change their own role here
+            if (currentUserRole == UserRole.MEMBER) {
+                roleDropdown.setEnabled(false);
+            }
+        } else if (currentUserRole == UserRole.MEMBER) {
+            // Plain members cannot manage other users
+            roleDropdown.setEnabled(false);
+            removeBtn.setEnabled(false);
+            removeBtn.setToolTipText("Members cannot remove other users.");
+        }
 
         addComponentsToRow(row, nameLabel, roleDropdown, removeBtn);
 
@@ -158,20 +215,43 @@ public class PeopleTabView extends JPanel implements ActionListener, PropertyCha
      */
     public void setMembers(Map<String, String> members) {
         membersListPanel.removeAll();
+        currentUserRole = null;
+
+        if (members == null || members.isEmpty()) {
+            membersListPanel.revalidate();
+            membersListPanel.repaint();
+            return;
+        }
+
+        // First pass: find the current user's role
+        for (Map.Entry<String, String> entry : members.entrySet()) {
+            String name = entry.getKey();
+            String role = entry.getValue();
+
+            if (name != null && name.equalsIgnoreCase(currentUsername)) {
+                currentUserRole = parseUserRole(role);
+                break;
+            }
+        }
+
+        // Second pass: build all rows
         for (Map.Entry<String, String> entry : members.entrySet()) {
             this.addMember(entry.getKey(), entry.getValue());
-        } // for entry
-    } // setMembers
+        }
+
+        membersListPanel.revalidate();
+        membersListPanel.repaint();
+    }
 
     /**
-     * Adds a user to the pending-invitations list.
+     * Adds a user to the pending membership requests list.
      * If the pending panel does not yet exist, it is created.
      *
-     * @param username the username of the invited person
+     * @param username the username of the user who requested to join
      */
     public void addPending(String username) {
 
-        // Create pending section if needed.
+        // Create pending section if needed
         if (split.getRightComponent() == null) {
             JPanel pendingPanel = createListPanel(
                     "Pending Requests",
@@ -196,6 +276,15 @@ public class PeopleTabView extends JPanel implements ActionListener, PropertyCha
         JButton declineBtn = new JButton("\u2716");
         declineBtn.setForeground(new Color(220, 20, 60));
         declineBtn.addActionListener(event -> removePendingRow(row));
+
+        // Plain members cannot manage pending requests
+        if (currentUserRole == UserRole.MEMBER) {
+            acceptBtn.setEnabled(false);
+            declineBtn.setEnabled(false);
+            String tip = "Members cannot manage pending requests.";
+            acceptBtn.setToolTipText(tip);
+            declineBtn.setToolTipText(tip);
+        }
 
         addComponentsToRow(row, nameLabel, acceptBtn, declineBtn);
 
@@ -228,11 +317,14 @@ public class PeopleTabView extends JPanel implements ActionListener, PropertyCha
 
         for (String entry : pending) {
             this.addPending(entry);
-        } // for entry
-    } // setPending
+        }
+
+        pendingListPanel.revalidate();
+        pendingListPanel.repaint();
+    }
 
     /**
-     * Creates a consistent row panel for members or pending invites.
+     * Creates a consistent row panel for members or pending requests.
      *
      * @return a standard formatted row panel
      */
@@ -273,8 +365,8 @@ public class PeopleTabView extends JPanel implements ActionListener, PropertyCha
     }
 
     /**
-     * Removes a pending invitation row and cleans up spacing/fillers.
-     * If no pending invites remain, the entire pending panel is removed.
+     * Removes a pending request row and cleans up spacing fillers.
+     * If no pending requests remain, the entire pending panel is removed.
      *
      * @param row the row panel to remove
      */
@@ -294,7 +386,7 @@ public class PeopleTabView extends JPanel implements ActionListener, PropertyCha
         pendingListPanel.revalidate();
         pendingListPanel.repaint();
 
-        // If no pending invites left, remove the right panel entirely
+        // If no pending requests left, remove the right panel entirely
         if (pendingListPanel.getComponentCount() == 0 && split.getRightComponent() != null) {
             split.setRightComponent(null);
             split.setDividerLocation(1.0);
@@ -310,7 +402,6 @@ public class PeopleTabView extends JPanel implements ActionListener, PropertyCha
      */
     public void setViewMembersController(ViewMembersController viewMembersController) {
         this.viewMembersController = viewMembersController;
-        // Immediately load members for this group
         this.viewMembersController.execute(groupID);
     }
 
@@ -323,13 +414,22 @@ public class PeopleTabView extends JPanel implements ActionListener, PropertyCha
      */
     public void setViewPendingController(ViewPendingController viewPendingController) {
         this.viewPendingController = viewPendingController;
-        // Immediately load members for this group
         this.viewPendingController.execute(groupID);
+    }
+
+    /**
+     * Sets the controller responsible for removing a member from the group.
+     * This method simply assigns the controller and does not trigger any actions by itself.
+     *
+     * @param removeMemberController the controller that handles the Remove Member use case
+     */
+    public void setRemoveMemberController(RemoveMemberController removeMemberController) {
+        this.removeMemberController = removeMemberController;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-
+        // No button actions wired through ActionListener directly yet
     }
 
     @Override
@@ -340,7 +440,6 @@ public class PeopleTabView extends JPanel implements ActionListener, PropertyCha
         } else if ("pending".equals(evt.getPropertyName())) {
             ManageMembersState st = (ManageMembersState) evt.getNewValue();
             setPending(st.getPending());
-        } // if
-    } // propertyChange
-
+        }
+    }
 }

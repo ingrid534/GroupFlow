@@ -17,6 +17,7 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 
 /**
@@ -133,7 +134,8 @@ public class DBGroupDataAccessObject implements CreateGroupDataAccessInterface,
         // For now, this DAO also looks into the memberships collection so we can
         // answer "which groups does this user belong to".
         // If needed, this could be moved into a Membership DAO and composed in an interactor.
-        for (Document membershipDoc : membershipsCollection.find(eq("user", username))) {
+        for (Document membershipDoc : membershipsCollection.find(
+                and(eq("user", username), eq("approved", true)))) {
 
             String joinCode = membershipDoc.getString("group");
             if (joinCode == null) {
