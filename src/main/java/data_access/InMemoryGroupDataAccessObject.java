@@ -1,7 +1,6 @@
 package data_access;
 
 import entity.group.Group;
-import entity.membership.Membership;
 import use_case.create_group.CreateGroupDataAccessInterface;
 import use_case.creategrouptask.CreateGroupTaskGroupDataAccessInterface;
 import use_case.login.LoginGroupsDataAccessInterface;

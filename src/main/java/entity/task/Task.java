@@ -122,8 +122,11 @@ public class Task {
      *         and the due date has passed; otherwise {@code false}.
      */
     public boolean isOverdue() {
-        return !completed
-                && dueDate.isBefore(LocalDateTime.now());
+        if (this.hasDueDate()) {
+            return !completed
+                    && dueDate.isBefore(LocalDateTime.now());
+        }
+        return false;
     }
 
     /**

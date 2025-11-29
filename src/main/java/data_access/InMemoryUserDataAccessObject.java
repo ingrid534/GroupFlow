@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import entity.user.User;
+import use_case.viewtasks.ViewTasksUserDataAccessInterface;
 
 /**
  * In-memory implementation of the DAO for storing user data. This
@@ -21,6 +22,7 @@ public class InMemoryUserDataAccessObject implements SignupUserDataAccessInterfa
         LoginUserDataAccessInterface,
         ChangePasswordUserDataAccessInterface,
         LogoutUserDataAccessInterface,
+        ViewTasksUserDataAccessInterface,
         CreateGroupTaskUserDataAccessInterface,
         EditGroupTasksUserDataAccessInterface {
 

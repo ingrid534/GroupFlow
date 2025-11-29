@@ -62,7 +62,9 @@ public class EditGroupTasksInteractor implements EditGroupTasksInputBoundary {
             if (inputData.getNewCompleted()) {
                 task.markCompleted();
             }
-            task.markIncomplete();
+            else {
+                task.markIncomplete();
+            }
         }
 
         List<String> newUsernames = inputData.getNewAssigneeUsernames();
@@ -86,5 +88,7 @@ public class EditGroupTasksInteractor implements EditGroupTasksInputBoundary {
 
             dataAccess.saveTask(task);
         }
+
+        presenter.present(new EditGroupTasksOutputData(true, "Task updated successfully."));
     }
 }

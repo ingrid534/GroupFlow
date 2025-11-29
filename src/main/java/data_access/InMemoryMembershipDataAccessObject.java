@@ -25,36 +25,38 @@ public class InMemoryMembershipDataAccessObject implements CreateGroupMembership
     }
 
     public static class Keys {
-        private final String USER_ID;
-        private final String GROUP_ID;
+        private final String username;
+        private final String groupId;
 
         public Keys(String userID, String groupID) {
-            this.USER_ID = userID;
-            this.GROUP_ID = groupID;
+            this.username = userID;
+            this.groupId = groupID;
         }
 
         public String getUserID() {
-            return USER_ID;
+            return username;
         }
 
         public String getGroupID() {
-            return GROUP_ID;
+            return groupId;
         }
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof Keys)) return false;
+            if (this == o) {
+                return true;
+            }
+            if (!(o instanceof Keys)) {
+                return false;
+            }
             Keys keys = (Keys) o;
-            return USER_ID.equals(keys.USER_ID) &&
-                    GROUP_ID.equals(keys.GROUP_ID);
+            return username.equals(keys.username)
+                    && groupId.equals(keys.groupId);
         }
 
         @Override
         public int hashCode() {
-            return java.util.Objects.hash(USER_ID, GROUP_ID);
+            return java.util.Objects.hash(username, groupId);
         }
     }
-
-
 }
