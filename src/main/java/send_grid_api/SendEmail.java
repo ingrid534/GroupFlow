@@ -1,4 +1,4 @@
-package SendGridAPI;
+package send_grid_api;
 
 import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Content;
@@ -15,7 +15,7 @@ import java.nio.file.Path;
 /**
  * Class to send an email using SendGrid API.
  */
-public class SendMail {
+public class SendEmail implements SendEmailInterface {
     private static String api_key;
     private static final String SENDGRID_URL = "https://api.sendgrid.com/v3/mail/send";
     private static final OkHttpClient CLIENT = new OkHttpClient();
@@ -26,17 +26,12 @@ public class SendMail {
      * Initializes API key to key provided in api_key.txt.
      * @throws RuntimeException if key failed to load.
      */
-    public SendMail() {
+    public SendEmail() {
         try {
             api_key = Files.readString(Path.of("config/api_key.txt")).trim();
         } catch (IOException ex) {
             throw new RuntimeException("Failed to load API key", ex);
         }
-    }
-
-    public enum EmailType {
-        NEW_TASK,
-        GROUP_INVITE
     }
 
     /**
@@ -47,7 +42,7 @@ public class SendMail {
      * @throws RuntimeException If API key not found.
      */
     public static void main(String[] args) throws IOException {   
-        SendMail test = new SendMail();
+        SendEmail test = new SendEmail();
         test.sendEmail("ingridflorea6@gmail.com", EmailType.GROUP_INVITE);
     }
 
@@ -131,9 +126,11 @@ public class SendMail {
      * Sends email with SendGrid API.
      * @param recipient The user to send email to.
      * @param type The type of email notification to send.
+     * @return Status code for client request.
      * @throws IOException in case of JSON marshall error.
      */
-    public void sendEmail(String recipient, EmailType type) throws IOException {
+    public int sendEmail(String recipient, EmailType type) throws IOException {
+
         Request request = buildRequest(recipient, type);
 
         try {
@@ -145,6 +142,7 @@ public class SendMail {
             } else {
                 System.err.println("Email failed to send " + status);
             }
+            return status;
 
         } catch (IOException ex) {
             throw ex;
