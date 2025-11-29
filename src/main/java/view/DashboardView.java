@@ -1,12 +1,18 @@
 package view;
 
 import interface_adapter.create_group.CreateGroupController;
+import interface_adapter.creategrouptasks.CreateGroupTasksController;
+import interface_adapter.creategrouptasks.CreateGroupTasksViewModel;
 import interface_adapter.dashboard.DashboardViewModel;
 import interface_adapter.dashboard.LoggedInState;
+import interface_adapter.editgrouptask.EditGroupTaskController;
+import interface_adapter.editgrouptask.EditGroupTaskViewModel;
 import interface_adapter.logout.LogoutController;
 import interface_adapter.manage_members.PeopleTabViewModel;
 import interface_adapter.manage_members.view_members.ViewMembersControllerFactory;
 import interface_adapter.manage_members.view_pending.ViewPendingControllerFactory;
+import interface_adapter.viewgrouptasks.ViewGroupTasksController;
+import interface_adapter.viewgrouptasks.ViewGroupTasksViewModel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -30,6 +36,9 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     private final String viewName = "dashboard";
     private final DashboardViewModel dashboardViewModel;
     private static final String HOME = "Home";
+    private ViewGroupTasksViewModel viewGroupTasksViewModel;
+    private EditGroupTaskViewModel editGroupTasksViewModel;
+    private CreateGroupTasksViewModel createGroupTasksViewModel;
 
     // Views
     private ViewTasksView viewTasksView;
@@ -37,6 +46,9 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     // Controllers
     private LogoutController logoutController;
     private CreateGroupController createGroupController;
+    private ViewGroupTasksController viewGroupTasksController;
+    private EditGroupTaskController editGroupTaskController;
+    private CreateGroupTasksController createGroupTasksController;
 
     // Header widgets
     private final JLabel usernameLabel = new JLabel();
@@ -212,6 +224,19 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
         tabs.setForegroundAt(0, new Color(0x1E88E5));
 
         groupPanel.add(tabs, BorderLayout.CENTER);
+
+        tabs.addChangeListener(event -> {
+            int index = tabs.getSelectedIndex();
+            String tabTitle = tabs.getTitleAt(index);
+
+            if ("Tasks".equals(tabTitle)) {
+                Component current = tabs.getComponentAt(index);
+
+                if (current instanceof JPanel || current instanceof JScrollPane) {
+                    tabs.setComponentAt(index, buildGroupTasksTab(groupId));
+                }
+            }
+        });
         return groupPanel;
     }
 
@@ -423,5 +448,43 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
 
     public void setViewPendingControllerFactory(ViewPendingControllerFactory factory) {
         this.viewPendingControllerFactory = factory;
+    public void setViewGroupTasksController(ViewGroupTasksController controller) {
+        this.viewGroupTasksController = controller;
+    }
+
+    public void setEditGroupTaskController(EditGroupTaskController controller) {
+        this.editGroupTaskController = controller;
+    }
+
+    public void setCreateGroupTasksController(CreateGroupTasksController controller) {
+        this.createGroupTasksController = controller;
+    }
+
+    public void setViewGroupTasksViewModel(ViewGroupTasksViewModel viewModel) {
+        this.viewGroupTasksViewModel = viewModel;
+    }
+
+    public void setEditGroupTasksViewModel(EditGroupTaskViewModel viewModel) {
+        this.editGroupTasksViewModel = viewModel;
+    }
+
+    public void setCreateGroupTasksViewModel(CreateGroupTasksViewModel viewModel) {
+        this.createGroupTasksViewModel = viewModel;
+    }
+
+    private JPanel buildGroupTasksTab(String groupId) {
+        if (viewGroupTasksViewModel == null
+                || editGroupTasksViewModel == null
+                || createGroupTasksViewModel == null
+                || viewGroupTasksController == null
+                || editGroupTaskController == null
+                || createGroupTasksController == null) {
+
+            JPanel p = new JPanel();
+            p.add(new JLabel("Tasks system not initialized yet."));
+            return p;
+        }
+        return new GroupTasksView(viewGroupTasksViewModel, editGroupTasksViewModel, createGroupTasksViewModel,
+                viewGroupTasksController, editGroupTaskController, createGroupTasksController, groupId);
     }
 }
