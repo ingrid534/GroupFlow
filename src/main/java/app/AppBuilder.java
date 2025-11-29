@@ -34,6 +34,9 @@ import interface_adapter.login.LoginPresenter;
 import interface_adapter.login.LoginViewModel;
 import interface_adapter.logout.LogoutController;
 import interface_adapter.logout.LogoutPresenter;
+import interface_adapter.manage_members.PeopleTabViewModel;
+import interface_adapter.manage_members.view_members.ViewMembersControllerFactory;
+import interface_adapter.manage_members.view_pending.ViewPendingControllerFactory;
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
@@ -83,6 +86,7 @@ public class AppBuilder {
     final MembershipFactory membershipFactory = new MembershipFactory();
     final TaskFactory taskFactory = new TaskFactory();
     final ViewManagerModel viewManagerModel = new ViewManagerModel();
+    final PeopleTabViewModel peopleTabViewModel = new PeopleTabViewModel();
     ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
 
     private final java.util.Map<String, Dimension> viewSizes = new java.util.HashMap<>();
@@ -121,6 +125,7 @@ public class AppBuilder {
     private LoginView loginView;
     private DashboardView dashboardView;
     private CreateGroupView createGroupView;
+    private PeopleTabView peopleTabView;
     private GroupTasksView groupTasksView;
     private ViewGroupTasksViewModel viewGroupTasksViewModel;
     private EditGroupTaskViewModel editGroupTaskViewModel;
@@ -156,6 +161,7 @@ public class AppBuilder {
         loginViewModel = new LoginViewModel();
         loginView = new LoginView(loginViewModel);
         cardPanel.add(loginView, loginView.getViewName());
+        viewSizes.put(loginView.getViewName(), new Dimension(420, 320));
         viewSizes.put(loginView.getViewName(), new Dimension(420, 320));
         return this;
     }
@@ -275,6 +281,34 @@ public class AppBuilder {
         dashboardView.setCreateGroupController(createGroupController);
 
         createGroupView.hookCreateGroupModalOpen(application);
+
+        return this;
+    }
+
+    /**
+     * Method to add the View Members Use case.
+     *
+     * @return App builder.
+     */
+    public AppBuilder addViewMembersUseCase() {
+        ViewMembersControllerFactory factory =
+                new ViewMembersControllerFactory(membershipDataAccessObject);
+
+        dashboardView.setViewMembersControllerFactory(factory);
+
+        return this;
+    }
+
+    /**
+     * Method to add the View Pending Use case.
+     *
+     * @return App builder.
+     */
+    public AppBuilder addViewPendingUseCase() {
+        ViewPendingControllerFactory factory =
+                new ViewPendingControllerFactory(membershipDataAccessObject);
+
+        dashboardView.setViewPendingControllerFactory(factory);
 
         return this;
     }
