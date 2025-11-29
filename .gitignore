@@ -45,3 +45,9 @@ users.csv
 /data/db/
 /data/log/
 mongod.log
+
+# Google Calendar API
+resources/client_secret.json
+
+# API key file
+config/api_key.txt
