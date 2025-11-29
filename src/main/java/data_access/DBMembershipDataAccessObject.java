@@ -10,6 +10,11 @@ import entity.membership.MembershipFactory;
 import entity.user.UserRole;
 import org.bson.Document;
 import use_case.create_group.CreateGroupMembershipDataAccessInterface;
+import use_case.manage_members.view_members.ViewMembersMembershipDataAccessInterface;
+import use_case.manage_members.view_pending.ViewPendingMembershipDataAccessInterface;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
@@ -21,7 +26,9 @@ import static com.mongodb.client.model.Filters.eq;
  * Assumes Membership has a constructor that matches the factory signature used
  * by MembershipFactory (for example create(userID, groupID, role, approved)).
  */
-public class DBMembershipDataAccessObject implements CreateGroupMembershipDataAccessInterface {
+public class DBMembershipDataAccessObject implements CreateGroupMembershipDataAccessInterface,
+        ViewMembersMembershipDataAccessInterface,
+        ViewPendingMembershipDataAccessInterface {
 
     private static final String USER_FIELD = "user";
     private static final String GROUP_FIELD = "group";
@@ -97,5 +104,49 @@ public class DBMembershipDataAccessObject implements CreateGroupMembershipDataAc
 
         // Use the factory to create the membership instance
         return membershipFactory.create(user, group, role, approved);
+    }
+
+    /**
+     * Retrieves all approved memberships that belong to the specified group.
+     *
+     * @param groupID the ID of the group whose members should be returned
+     * @return a list of Membership objects for that group
+     */
+    public List<Membership> getMembembersForGroup(String groupID) {
+        List<Membership> result = new ArrayList<>();
+
+        for (Document doc : membershipsCollection.find(and(eq(GROUP_FIELD, groupID), eq(APPROVED_FIELD, true)))) {
+            String user = doc.getString(USER_FIELD);
+            String group = doc.getString(GROUP_FIELD);
+            UserRole role = UserRole.valueOf(doc.getString(ROLE_FIELD));
+            boolean approved = doc.getBoolean(APPROVED_FIELD, false);
+
+            // Use the factory to create the membership instance
+            result.add(membershipFactory.create(user, group, role, approved));
+        }
+
+        return result;
+    }
+
+    /**
+     * Retrieves all pending membership requests for the specified group.
+     *
+     * @param groupID the ID of the group
+     * @return a list of pending Memberships for that group
+     */
+    public List<Membership> getPendingForGroup(String groupID) {
+        List<Membership> result = new ArrayList<>();
+
+        for (Document doc : membershipsCollection.find(and(eq(GROUP_FIELD, groupID), eq(APPROVED_FIELD, false)))) {
+            String user = doc.getString(USER_FIELD);
+            String group = doc.getString(GROUP_FIELD);
+            UserRole role = UserRole.valueOf(doc.getString(ROLE_FIELD));
+            boolean approved = doc.getBoolean(APPROVED_FIELD, false);
+
+            // Use the factory to create the membership instance
+            result.add(membershipFactory.create(user, group, role, approved));
+        }
+
+        return result;
     }
 }
