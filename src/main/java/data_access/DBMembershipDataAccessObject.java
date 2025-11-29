@@ -10,6 +10,8 @@ import entity.membership.MembershipFactory;
 import entity.user.UserRole;
 import org.bson.Document;
 import use_case.create_group.CreateGroupMembershipDataAccessInterface;
+import use_case.creategrouptask.CreateGroupTasksMembershipDataAccessInterface;
+import use_case.editgrouptasks.EditGroupTasksMembershipDataAccessInterface;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
@@ -21,7 +23,8 @@ import static com.mongodb.client.model.Filters.eq;
  * Assumes Membership has a constructor that matches the factory signature used
  * by MembershipFactory (for example create(userID, groupID, role, approved)).
  */
-public class DBMembershipDataAccessObject implements CreateGroupMembershipDataAccessInterface {
+public class DBMembershipDataAccessObject implements CreateGroupMembershipDataAccessInterface,
+        CreateGroupTasksMembershipDataAccessInterface, EditGroupTasksMembershipDataAccessInterface {
 
     private static final String USER_FIELD = "user";
     private static final String GROUP_FIELD = "group";
@@ -81,6 +84,7 @@ public class DBMembershipDataAccessObject implements CreateGroupMembershipDataAc
      * @return The Membership object if found.
      * @throws RuntimeException If membership is not found.
      */
+    @Override
     public Membership get(String userID, String groupID) {
         final Document doc = membershipsCollection.find(
                 and(eq(USER_FIELD, userID), eq(GROUP_FIELD, groupID))

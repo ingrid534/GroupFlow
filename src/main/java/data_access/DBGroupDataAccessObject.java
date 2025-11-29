@@ -8,8 +8,10 @@ import entity.group.Group;
 import entity.group.GroupFactory;
 import entity.group.GroupType;
 import use_case.create_group.CreateGroupDataAccessInterface;
+import use_case.creategrouptask.CreateGroupTaskGroupDataAccessInterface;
 import use_case.login.LoginGroupsDataAccessInterface;
 import org.bson.Document;
+import use_case.viewgrouptasks.ViewGroupTasksGroupDataAccessInterface;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -26,7 +28,8 @@ import static com.mongodb.client.model.Filters.eq;
  * </p>
  */
 public class DBGroupDataAccessObject implements CreateGroupDataAccessInterface,
-        LoginGroupsDataAccessInterface {
+        LoginGroupsDataAccessInterface,
+        CreateGroupTaskGroupDataAccessInterface, ViewGroupTasksGroupDataAccessInterface {
 
     private static final String GROUP_NAME = "name";
     private static final String GROUP_CODE = "joinCode";
@@ -159,4 +162,8 @@ public class DBGroupDataAccessObject implements CreateGroupDataAccessInterface,
         return result;
     }
 
+    @Override
+    public Group getGroup(String groupId) {
+        return null;
+    }
 }
