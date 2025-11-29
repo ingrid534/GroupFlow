@@ -18,6 +18,7 @@ import interface_adapter.ViewManagerModel;
 import interface_adapter.create_group.CreateGroupController;
 import interface_adapter.create_group.CreateGroupPresenter;
 import interface_adapter.create_group.CreateGroupViewModel;
+import interface_adapter.create_schedule.CreateScheduleViewModel;
 import interface_adapter.dashboard.DashboardViewModel;
 import interface_adapter.logged_in.ChangePasswordController;
 import interface_adapter.logged_in.ChangePasswordPresenter;
@@ -101,6 +102,8 @@ public class AppBuilder {
     private LoginView loginView;
     private DashboardView dashboardView;
     private CreateGroupView createGroupView;
+    private CreateScheduleView createScheduleView;
+    private CreateScheduleViewModel createScheduleViewModel;
 
     private JFrame application;
     private ViewTasksView viewTasksView;
@@ -270,6 +273,16 @@ public class AppBuilder {
 
         final LogoutController logoutController = new LogoutController(logoutInteractor);
         dashboardView.setLogoutController(logoutController);
+        return this;
+    }
+
+    /**
+     * Adds create schedule use case to application (Not done).
+     * @return this builder
+     */
+    public AppBuilder addCreateScheduleView() {
+        createScheduleViewModel = new CreateScheduleViewModel();
+        createScheduleView = new CreateScheduleView(createScheduleViewModel);
         return this;
     }
 

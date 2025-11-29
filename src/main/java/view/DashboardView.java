@@ -200,7 +200,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
         tabs.addTab("People", new PeopleTabView(groupName));
         tabs.addTab("Meets", placeholderPanel("Meetings tab for " + groupName));
         tabs.addTab("Tasks", placeholderPanel("Tasks tab for " + groupName));
-        tabs.addTab("Sched", placeholderPanel("Schedule tab for " + groupName));
+        tabs.addTab("Sched", new ScheduleTabView("Schedule tab for " + groupName));
         tabs.addTab("Optional", placeholderPanel("Optional tab for " + groupName));
         // initialize selected color (default white is hard to see)
         tabs.setForegroundAt(0, new Color(0x1E88E5));

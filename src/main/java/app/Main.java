@@ -22,6 +22,7 @@ public class Main {
                 .addLogoutUseCase()
                 // .addChangePasswordUseCase()
                 .addCreateGroupUseCase()
+                .addCreateScheduleView()
                 .build();
 
         application.pack();
