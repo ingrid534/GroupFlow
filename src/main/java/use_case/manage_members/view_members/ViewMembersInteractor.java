@@ -20,7 +20,7 @@ public class ViewMembersInteractor implements ViewMembersInputBoundary {
     public void execute(ViewMembersInputData viewMembersInputData) {
         final String groupId = viewMembersInputData.getGroupId();
 
-        List<Membership> members = membershipDataAccessObject.getMembembersForGroup(groupId);
+        List<Membership> members = membershipDataAccessObject.getMembersForGroup(groupId);
         Map<String, String> newMembersHashMap = new HashMap<>();
         for (Membership member : members) {
             newMembersHashMap.put(member.getUsername(), member.getRole().toString());

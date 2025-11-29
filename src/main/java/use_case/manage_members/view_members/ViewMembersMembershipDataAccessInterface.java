@@ -11,5 +11,5 @@ public interface ViewMembersMembershipDataAccessInterface {
      * @param groupID the ID of the group whose members should be returned
      * @return a list of Membership objects for that group
      */
-    List<Membership> getMembembersForGroup(String groupID);
+    List<Membership> getMembersForGroup(String groupID);
 }

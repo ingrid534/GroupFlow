@@ -117,7 +117,7 @@ public class DBMembershipDataAccessObject implements CreateGroupMembershipDataAc
      * @param groupID the ID of the group whose members should be returned
      * @return a list of Membership objects for that group
      */
-    public List<Membership> getMembembersForGroup(String groupID) {
+    public List<Membership> getMembersForGroup(String groupID) {
         List<Membership> result = new ArrayList<>();
 
         for (Document doc : membershipsCollection.find(and(eq(GROUP_FIELD, groupID), eq(APPROVED_FIELD, true)))) {

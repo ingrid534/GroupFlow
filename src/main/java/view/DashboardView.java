@@ -448,6 +448,8 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
 
     public void setViewPendingControllerFactory(ViewPendingControllerFactory factory) {
         this.viewPendingControllerFactory = factory;
+    }
+
     public void setViewGroupTasksController(ViewGroupTasksController controller) {
         this.viewGroupTasksController = controller;
     }
