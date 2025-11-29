@@ -35,18 +35,6 @@ public class SendEmail implements SendEmailInterface {
     }
 
     /**
-     * Main class to send emails.
-     * 
-     * @param args args
-     * @throws IOException If response not sent? not sure.
-     * @throws RuntimeException If API key not found.
-     */
-    public static void main(String[] args) throws IOException {   
-        SendEmail test = new SendEmail();
-        test.sendEmail("ingridflorea6@gmail.com", EmailType.GROUP_INVITE);
-    }
-
-    /**
      * Creates a Mail object for a task assigned notification.
      * @param recipient The email of the user that was assigned a task.
      * @return Mail object for email to send.
