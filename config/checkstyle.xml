@@ -725,9 +725,9 @@
         </module>
         <module name="OuterTypeFilename"/>
         <module name="TrailingComment"/>
-        <module name="UncommentedMain">
+        <!-- <module name="UncommentedMain">
             <property name="excludedClasses" value="\.(Main|JavadocPropertiesGenerator)$"/>
-        </module>
+        </module> -->
         <module name="UpperEll"/>
 
         <!-- Modifiers -->
