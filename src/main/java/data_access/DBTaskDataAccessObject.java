@@ -171,8 +171,9 @@ public class DBTaskDataAccessObject implements ViewTasksDataAccessInterface, Vie
                 task.setID(taskID);
             } else {
                 // Existing task, update
+                Document updateDoc = new Document("$set", taskDoc);
                 ObjectId id = new ObjectId(task.getID());
-                taskCollection.replaceOne(eq(TASK_ID_FIELD, id), taskDoc);
+                taskCollection.updateOne(eq(TASK_ID_FIELD, id), updateDoc);
             }
         } catch (MongoWriteException mwe) {
             throw new RuntimeException("Failed to save/update task: " + mwe.getMessage(), mwe);

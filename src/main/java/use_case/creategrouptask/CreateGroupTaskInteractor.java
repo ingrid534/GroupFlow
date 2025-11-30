@@ -60,8 +60,6 @@ public class CreateGroupTaskInteractor implements CreateGroupTaskInputBoundary {
             return;
         }
 
-        System.out.println(group.getMembers());
-
         Task task;
 
         List<String> assignees = inputData.getAssignees();

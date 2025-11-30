@@ -162,4 +162,14 @@ public class Task {
     public void removeAssignee(String userID) {
         assignees.remove(userID);
     }
+
+    /**
+     * Updates a new list of assignees for this task.
+     *
+     * @param assignees the new list of assigned users.
+     */
+    public void setAssignees(List<String> assignees) {
+        this.assignees.clear();
+        this.assignees.addAll(assignees);
+    }
 }
