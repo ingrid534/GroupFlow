@@ -7,8 +7,12 @@ import java.awt.Dimension;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
+import interface_adapter.create_schedule.CreateScheduleController;
+
 public class ScheduleTabView extends JPanel {
-    private final JButton addSched = new JButton("Add Your Availability");
+    private final JButton createSched = new JButton("Add Your Availability");
+
+    private CreateScheduleController createScheduleController;
 
     public ScheduleTabView(String groupName) {
         setLayout(new BorderLayout());
@@ -23,14 +27,11 @@ public class ScheduleTabView extends JPanel {
      * Make the button where user can input availability.
      */
     public void addCreateSchedButton() {
-        addSched.setAlignmentY(Component.TOP_ALIGNMENT);
-        addSched.setMaximumSize(new Dimension(180, 20));
-        add(addSched);
+        createSched.setAlignmentY(Component.TOP_ALIGNMENT);
+        createSched.setMaximumSize(new Dimension(180, 20));
+        add(createSched);
 
-        // TODO: implement createScheduleController.
-        // addSched.addActionListener(evt -> {
-        //     createScheduleController.openCreateScheduleModal();
-        // });
+        createSched.addActionListener(evt -> createScheduleController.openScheduleModal());
     }
 
     /**

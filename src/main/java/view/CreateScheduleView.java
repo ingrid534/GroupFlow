@@ -12,7 +12,7 @@ import javax.swing.JPanel;
 
 import interface_adapter.create_schedule.CreateScheduleViewModel;
 
-public class CreateScheduleView extends JPanel{
+public class CreateScheduleView extends JPanel {
 
     private final String viewName = "create schedule";
     private final CreateScheduleViewModel createScheduleViewModel;
