@@ -1,11 +1,13 @@
 package interface_adapter.create_schedule;
 
+import java.awt.Color;
+
 public class CreateScheduleState {
-    private boolean[][] masterSchedule;
+    private Color[][] masterSchedule;
     private boolean openModal;
     private String error = "";
 
-    public boolean[][] getMasterSched() {
+    public Color[][] getMasterSched() {
         return masterSchedule;
     }
 
@@ -17,7 +19,7 @@ public class CreateScheduleState {
         return error;
     }
 
-    public void setMasterSchedule(boolean[][] masterSchedule) {
+    public void setMasterSchedule(Color[][] masterSchedule) {
         this.masterSchedule = masterSchedule;
     } 
 
