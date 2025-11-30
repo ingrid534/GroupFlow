@@ -55,6 +55,10 @@ public class ViewTasksView extends JPanel implements PropertyChangeListener {
         }
     }
 
+    /**
+     * Calls execute method of the controller.
+     *
+     */
     public void execute() {
         viewTasksController.execute();
     }

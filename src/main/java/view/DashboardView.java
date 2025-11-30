@@ -216,7 +216,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
             tasksHeader.add(tasksLabel, BorderLayout.WEST);
 
             JButton refreshButton = new JButton("Refresh");
-            refreshButton.addActionListener(e -> viewTasksView.execute());
+            refreshButton.addActionListener(event -> viewTasksView.execute());
             tasksHeader.add(refreshButton, BorderLayout.EAST);
 
             rightPanel.add(tasksHeader, BorderLayout.NORTH);
