@@ -1,5 +1,6 @@
 package interface_adapter.manage_members;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,11 +10,14 @@ public class ManageMembersState {
 
     // Maps members' usernames to their roles
     private Map<String, String> members;
+    // List of usernames of users who requested to join
+    private ArrayList<String> pending;
 
     public ManageMembersState(ManageMembersState copy) {
         username = copy.username;
         groupId = copy.groupId;
         members = copy.members;
+        pending = copy.pending;
     }
 
     // Because of the previous copy constructor, the default constructor must be explicit.
@@ -21,6 +25,7 @@ public class ManageMembersState {
         this.username = "";
         this.groupId = "";
         this.members = new HashMap<>();
+        this.pending = new ArrayList<>();
     }
 
     public String getUsername() {
@@ -35,6 +40,10 @@ public class ManageMembersState {
         return members;
     }
 
+    public ArrayList<String> getPending() {
+        return pending;
+    }
+
     public void setUsername(String username) {
         this.username = username;
     }
@@ -45,6 +54,10 @@ public class ManageMembersState {
 
     public void setMembers(Map<String, String> members) {
         this.members = members;
+    }
+
+    public void setPending(ArrayList<String> pending) {
+        this.pending = pending;
     }
 
 }

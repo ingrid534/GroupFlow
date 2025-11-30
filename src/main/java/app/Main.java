@@ -22,6 +22,8 @@ public class Main {
                 .addLogoutUseCase()
                 // .addChangePasswordUseCase()
                 .addCreateGroupUseCase()
+                .addViewMembersUseCase()
+                .addViewPendingUseCase()
                 .addGroupTasksUseCases()
                 .build();
 

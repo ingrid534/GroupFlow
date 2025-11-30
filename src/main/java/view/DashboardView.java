@@ -8,6 +8,9 @@ import interface_adapter.dashboard.LoggedInState;
 import interface_adapter.editgrouptask.EditGroupTaskController;
 import interface_adapter.editgrouptask.EditGroupTaskViewModel;
 import interface_adapter.logout.LogoutController;
+import interface_adapter.manage_members.PeopleTabViewModel;
+import interface_adapter.manage_members.view_members.ViewMembersControllerFactory;
+import interface_adapter.manage_members.view_pending.ViewPendingControllerFactory;
 import interface_adapter.viewgrouptasks.ViewGroupTasksController;
 import interface_adapter.viewgrouptasks.ViewGroupTasksViewModel;
 
@@ -58,6 +61,9 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     private final JList<String> groupsList = new JList<>(groupsModel);
     private final CardLayout cards = new CardLayout();
     private final JPanel workArea = new JPanel(cards);
+
+    private ViewMembersControllerFactory viewMembersControllerFactory;
+    private ViewPendingControllerFactory viewPendingControllerFactory;
 
     // Maps group IDs to their names
     private final java.util.Map<String, String> groupIdToName = new java.util.HashMap<>();
@@ -209,7 +215,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
         });
 
         tabs.addTab(HOME, placeholderPanel("Home panel for " + groupName));
-        tabs.addTab("People", new PeopleTabView(groupName));
+        tabs.addTab("People", createPeopleTab(groupId));
         tabs.addTab("Meets", placeholderPanel("Meetings tab for " + groupName));
         tabs.addTab("Tasks", placeholderPanel("Tasks tab for " + groupName));
         tabs.addTab("Sched", placeholderPanel("Schedule tab for " + groupName));
@@ -233,6 +239,25 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
         });
         return groupPanel;
     }
+
+    private PeopleTabView createPeopleTab(String groupId) {
+        PeopleTabViewModel vm = new PeopleTabViewModel();
+        PeopleTabView view = new PeopleTabView(vm, groupId);
+
+        if (viewMembersControllerFactory != null) {
+            view.setViewMembersController(
+                    viewMembersControllerFactory.create(vm)
+            );
+        }
+
+        if (viewPendingControllerFactory != null) {
+            view.setViewPendingController(
+                    viewPendingControllerFactory.create(vm)
+            );
+        }
+
+        return view;
+    } // createPeopleTab
 
     private JPanel placeholderPanel(String text) {
         JPanel panel = new JPanel(new BorderLayout());
@@ -415,6 +440,14 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
 
     public void setCreateGroupController(CreateGroupController createGroupController) {
         this.createGroupController = createGroupController;
+    }
+
+    public void setViewMembersControllerFactory(ViewMembersControllerFactory factory) {
+        this.viewMembersControllerFactory = factory;
+    }
+
+    public void setViewPendingControllerFactory(ViewPendingControllerFactory factory) {
+        this.viewPendingControllerFactory = factory;
     }
 
     public void setViewGroupTasksController(ViewGroupTasksController controller) {
