@@ -15,11 +15,11 @@ import use_case.manage_members.respond_request.RespondRequestDataAccessInterface
 import use_case.manage_members.update_role.UpdateRoleDataAccessInterface;
 import use_case.manage_members.view_members.ViewMembersMembershipDataAccessInterface;
 import use_case.manage_members.view_pending.ViewPendingMembershipDataAccessInterface;
+import use_case.creategrouptask.CreateGroupTasksMembershipDataAccessInterface;
+import use_case.editgrouptasks.EditGroupTasksMembershipDataAccessInterface;
 
 import java.util.ArrayList;
 import java.util.List;
-import use_case.creategrouptask.CreateGroupTasksMembershipDataAccessInterface;
-import use_case.editgrouptasks.EditGroupTasksMembershipDataAccessInterface;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
@@ -34,7 +34,7 @@ import static com.mongodb.client.model.Filters.eq;
 public class DBMembershipDataAccessObject implements CreateGroupMembershipDataAccessInterface,
         ViewMembersMembershipDataAccessInterface,
         ViewPendingMembershipDataAccessInterface,
-        CreateGroupTasksMembershipDataAccessInterface, 
+        CreateGroupTasksMembershipDataAccessInterface,
         EditGroupTasksMembershipDataAccessInterface,
         RemoveMemberDataAccessInterface,
         RespondRequestDataAccessInterface,
@@ -113,7 +113,6 @@ public class DBMembershipDataAccessObject implements CreateGroupMembershipDataAc
         UserRole role = UserRole.valueOf(doc.getString(ROLE_FIELD));
         boolean approved = doc.getBoolean(APPROVED_FIELD, false);
 
-        // Use the factory to create the membership instance
         return membershipFactory.create(user, group, role, approved);
     }
 
@@ -132,7 +131,27 @@ public class DBMembershipDataAccessObject implements CreateGroupMembershipDataAc
             UserRole role = UserRole.valueOf(doc.getString(ROLE_FIELD));
             boolean approved = doc.getBoolean(APPROVED_FIELD, false);
 
-            // Use the factory to create the membership instance
+            result.add(membershipFactory.create(user, group, role, approved));
+        }
+
+        return result;
+    }
+
+    /**
+     * Retrieves all pending membership requests for the specified group.
+     *
+     * @param groupID the ID of the group
+     * @return a list of pending Memberships for that group
+     */
+    public List<Membership> getPendingForGroup(String groupID) {
+        List<Membership> result = new ArrayList<>();
+
+        for (Document doc : membershipsCollection.find(and(eq(GROUP_FIELD, groupID), eq(APPROVED_FIELD, false)))) {
+            String user = doc.getString(USER_FIELD);
+            String group = doc.getString(GROUP_FIELD);
+            UserRole role = UserRole.valueOf(doc.getString(ROLE_FIELD));
+            boolean approved = doc.getBoolean(APPROVED_FIELD, false);
+
             result.add(membershipFactory.create(user, group, role, approved));
         }
 
@@ -159,42 +178,6 @@ public class DBMembershipDataAccessObject implements CreateGroupMembershipDataAc
     }
 
     /**
-     * Removes the membership record for the specified user in the given group.
-     * If no such membership exists, the method completes silently.
-     *
-     * @param groupID  the ID of the group the user is being removed from
-     * @param username the username of the member to remove
-     */
-    @Override
-    public void removeMembership(String groupID, String username) {
-        membershipsCollection.deleteOne(
-                and(eq(USER_FIELD, username), eq(GROUP_FIELD, groupID))
-        );
-    }
-
-    /**
-     * Retrieves all pending membership requests for the specified group.
-     *
-     * @param groupID the ID of the group
-     * @return a list of pending Memberships for that group
-     */
-    public List<Membership> getPendingForGroup(String groupID) {
-        List<Membership> result = new ArrayList<>();
-
-        for (Document doc : membershipsCollection.find(and(eq(GROUP_FIELD, groupID), eq(APPROVED_FIELD, false)))) {
-            String user = doc.getString(USER_FIELD);
-            String group = doc.getString(GROUP_FIELD);
-            UserRole role = UserRole.valueOf(doc.getString(ROLE_FIELD));
-            boolean approved = doc.getBoolean(APPROVED_FIELD, false);
-
-            // Use the factory to create the membership instance
-            result.add(membershipFactory.create(user, group, role, approved));
-        }
-
-        return result;
-    }
-
-    /**
      * Updates a pending membership request for the given group and user.
      * If {@code accepted} is true, the user's membership record is updated to an
      * accepted/active state. If {@code accepted} is false, the user's pending
@@ -207,7 +190,6 @@ public class DBMembershipDataAccessObject implements CreateGroupMembershipDataAc
     @Override
     public void updateMembership(String groupID, String username, boolean accepted) {
         if (accepted) {
-            // Set approved to true for this pending membership
             membershipsCollection.updateOne(
                     and(
                             eq(USER_FIELD, username),
@@ -217,7 +199,6 @@ public class DBMembershipDataAccessObject implements CreateGroupMembershipDataAc
                     new Document("$set", new Document(APPROVED_FIELD, true))
             );
         } else {
-            // Declined: remove the pending membership record
             membershipsCollection.deleteOne(
                     and(
                             eq(USER_FIELD, username),
@@ -226,5 +207,19 @@ public class DBMembershipDataAccessObject implements CreateGroupMembershipDataAc
                     )
             );
         }
+    }
+
+    /**
+     * Removes the membership record for the specified user in the given group.
+     * If no such membership exists, the method completes silently.
+     *
+     * @param groupID  the ID of the group the user is being removed from
+     * @param username the username of the member to remove
+     */
+    @Override
+    public void removeMembership(String groupID, String username) {
+        membershipsCollection.deleteOne(
+                and(eq(USER_FIELD, username), eq(GROUP_FIELD, groupID))
+        );
     }
 }
