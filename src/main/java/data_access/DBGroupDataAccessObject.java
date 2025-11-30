@@ -1,6 +1,9 @@
 package data_access;
 
+import com.mongodb.MongoWriteException;
 import com.mongodb.client.*;
+import com.mongodb.client.result.UpdateResult;
+
 import entity.group.Group;
 import entity.group.GroupFactory;
 import entity.group.GroupType;
@@ -8,6 +11,7 @@ import entity.membership.Membership;
 import entity.membership.MembershipFactory;
 import entity.user.UserRole;
 import use_case.create_group.CreateGroupDataAccessInterface;
+import use_case.create_schedule.CreateScheduleGroupDataAccessInterface;
 import use_case.creategrouptask.CreateGroupTaskGroupDataAccessInterface;
 import use_case.login.LoginGroupsDataAccessInterface;
 import org.bson.Document;
@@ -19,6 +23,7 @@ import java.util.List;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.set;
 
 /**
  * A MongoDB-based implementation of all user-related data access operations.
@@ -30,11 +35,13 @@ import static com.mongodb.client.model.Filters.eq;
  */
 public class DBGroupDataAccessObject implements CreateGroupDataAccessInterface,
         LoginGroupsDataAccessInterface,
-        CreateGroupTaskGroupDataAccessInterface, ViewGroupTasksGroupDataAccessInterface {
+        CreateGroupTaskGroupDataAccessInterface, ViewGroupTasksGroupDataAccessInterface,
+        CreateScheduleGroupDataAccessInterface {
 
     private static final String GROUP_NAME = "name";
     private static final String GROUP_CODE = "joinCode";
     private static final String GROUP_TYPE = "type";
+    private static final String SCHEDULE = "groupSchedule";
 
     private static final String MEMBERSHIP_GROUP_NAME_FIELD = "group";
     private static final String MEMBERSHIP_USERNAME_FIELD = "user";
@@ -49,6 +56,8 @@ public class DBGroupDataAccessObject implements CreateGroupDataAccessInterface,
     private final MongoClient mongoClient;
     private final MongoDatabase database;
     private final MongoCollection<Document> groupsCollection;
+
+    private String currentGroupID;
 
     /**
      * Note: this DAO also reads from the "memberships" collection in order to
@@ -93,13 +102,19 @@ public class DBGroupDataAccessObject implements CreateGroupDataAccessInterface,
 
         // We use the join code as the group identifier in the database.
         group.setGroupId(joinCode);
+        List<List<Integer>> dbSchedule = convertScheduleToDB(group.getMasterSchedule());
 
         Document doc = new Document()
                 .append(GROUP_NAME, group.getName())
                 .append(GROUP_CODE, joinCode)
-                .append(GROUP_TYPE, group.getGroupType().name());
+                .append(GROUP_TYPE, group.getGroupType().name())
+                .append(SCHEDULE, dbSchedule);
 
-        groupsCollection.insertOne(doc);
+        try {
+            groupsCollection.insertOne(doc);
+        } catch (MongoWriteException mwe) {
+            throw new RuntimeException("Failed to save group: " + mwe.getMessage(), mwe);
+        }
     }
 
     private String generateUniqueJoinCode() {
@@ -184,6 +199,27 @@ public class DBGroupDataAccessObject implements CreateGroupDataAccessInterface,
 
     }
 
+    @Override public void setCurrentGroupID(String groupID) {
+        currentGroupID = groupID;
+    }
+
+    @Override
+    public String getCurrentGroupID() {
+        return currentGroupID;
+    }
+
+    @Override
+    public void saveMasterSchedule(Group group) {
+        final int[][] groupSchedule = group.getMasterSchedule();
+        final UpdateResult result = groupsCollection.updateOne(
+                eq(GROUP_CODE, group.getGroupID()),
+                set(SCHEDULE, convertScheduleToDB(groupSchedule)));
+
+        if (result.getMatchedCount() == 0) {
+            throw new RuntimeException("Group not found " + group.getGroupID());
+        }
+    }
+
     /**
      * Extracts a Group object from a MongoDB document.
      *
@@ -196,7 +232,13 @@ public class DBGroupDataAccessObject implements CreateGroupDataAccessInterface,
         String typeStr = groupDoc.getString(GROUP_TYPE);
         GroupType groupType = GroupType.valueOf(typeStr);
 
+        // supress unchecked type warning for casting
+        @SuppressWarnings("unchecked")
+        List<List<Integer>> schedule = (List<List<Integer>>) groupDoc.get(SCHEDULE);
+
+        int[][] masterSchedule = convertToArrayFromDB(schedule);
         Group group = groupFactory.create(name, joinCode, groupType);
+        group.setMasterSchedule(masterSchedule);
 
         FindIterable<Document> membershipDocs = membershipsCollection.find(
                 eq(MEMBERSHIP_GROUP_NAME_FIELD, joinCode)
@@ -228,6 +270,42 @@ public class DBGroupDataAccessObject implements CreateGroupDataAccessInterface,
 
             group.addMembership(membership);
         }
+    }
+
+    /**
+     * Convert the 2D array to a nested List to be stored in Mongo.
+     * @param schedule the schedule to be converted
+     * @return the nested list representing group schedule
+     */
+    private List<List<Integer>> convertScheduleToDB(int[][] schedule) {
+        List<List<Integer>> result = new ArrayList<List<Integer>>(schedule.length);
+        for (int[] i: schedule) {
+            List<Integer> list = new ArrayList<Integer>(i.length);
+            for (int j: i) {
+                list.add(j);
+            }
+            result.add(list);
+        }
+
+        return result;
+
+    }
+
+    /**
+     * Convert db schedule back to 2D array.
+     * @param db_schedule the schedule taken from mongo.
+     * @return the 2D array representing group schedule.
+     */
+    private int[][] convertToArrayFromDB(List<List<Integer>> db_schedule) {
+        int[][] result = new int[db_schedule.size()][db_schedule.get(0).size()];
+
+        for (int i = 0; i < result.length; i++) {
+            for (int j = 0; j < result[i].length; j++) {
+                result[i][j] = db_schedule.get(i).get(j);
+            }
+        }
+
+        return result;
     }
 
 }
