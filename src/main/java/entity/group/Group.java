@@ -61,7 +61,9 @@ public class Group {
         final List<String> users = new ArrayList<>();
 
         for (Membership m : memberships) {
-            users.add(m.getUsername());
+            if (m.isApproved()) {
+                users.add(m.getUsername());
+            }
         }
 
         return users;
