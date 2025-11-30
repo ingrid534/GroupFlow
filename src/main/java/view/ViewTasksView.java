@@ -32,11 +32,6 @@ public class ViewTasksView extends JPanel implements PropertyChangeListener {
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
         add(scrollPane, BorderLayout.CENTER);
-
-        viewTasksController.execute();
-
-        // Optional: initial render if there are already tasks in the view model
-        refreshList();
     }
 
     private void refreshList() {

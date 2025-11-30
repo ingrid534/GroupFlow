@@ -33,7 +33,7 @@ public class ViewGroupTasksInteractor implements ViewGroupTasksInputBoundary {
     public void execute(ViewGroupTasksInputData inputData) {
         List<Task> tasks = dataAccess.getTasksForGroup(inputData.getGroupId());
 
-        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         List<ViewGroupTasksOutputData.TaskDTO> dtos = new ArrayList<>();
 
         for (Task task : tasks) {

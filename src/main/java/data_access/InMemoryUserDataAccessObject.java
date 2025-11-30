@@ -2,6 +2,8 @@ package data_access;
 
 import use_case.change_password.ChangePasswordUserDataAccessInterface;
 import use_case.create_group.CreateGroupUserDataAccessInterface;
+import use_case.creategrouptask.CreateGroupTaskUserDataAccessInterface;
+import use_case.editgrouptasks.EditGroupTasksUserDataAccessInterface;
 import use_case.login.LoginUserDataAccessInterface;
 import use_case.logout.LogoutUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
@@ -10,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import entity.user.User;
+import use_case.viewtasks.ViewTasksUserDataAccessInterface;
 
 /**
  * In-memory implementation of the DAO for storing user data. This
@@ -20,7 +23,10 @@ public class InMemoryUserDataAccessObject implements SignupUserDataAccessInterfa
         LoginUserDataAccessInterface,
         ChangePasswordUserDataAccessInterface,
         CreateGroupUserDataAccessInterface,
-        LogoutUserDataAccessInterface {
+        LogoutUserDataAccessInterface,
+        ViewTasksUserDataAccessInterface,
+        CreateGroupTaskUserDataAccessInterface,
+        EditGroupTasksUserDataAccessInterface {
 
     private final Map<String, User> users = new HashMap<>();
 
