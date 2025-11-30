@@ -84,7 +84,7 @@ public class EditGroupTasksInteractor implements EditGroupTasksInputBoundary {
                 }
             }
 
-            dataAccess.saveTask(task);
+            dataAccess.upsertTask(task);
         }
     }
 }

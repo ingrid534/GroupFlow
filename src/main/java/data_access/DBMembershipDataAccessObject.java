@@ -70,6 +70,7 @@ public class DBMembershipDataAccessObject implements CreateGroupMembershipDataAc
                 .append(APPROVED_FIELD, membership.isApproved());
 
         try {
+            System.out.println("succesfully saved membership" + membership.getUsername() + " " + membership.getGroup());
             membershipsCollection.insertOne(doc);
         } catch (MongoWriteException mwe) {
             throw new RuntimeException("Failed to save membership: " + mwe.getMessage(), mwe);

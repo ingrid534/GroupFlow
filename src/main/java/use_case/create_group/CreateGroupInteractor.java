@@ -66,7 +66,6 @@ public class CreateGroupInteractor implements CreateGroupInputBoundary {
 
             final CreateGroupOutputData createGroupOutputData = new CreateGroupOutputData(
                     group.getGroupID(), groupName, groupType, newGroupHashMap
-
             );
             createGroupPresenter.prepareSuccessView(createGroupOutputData);
         }

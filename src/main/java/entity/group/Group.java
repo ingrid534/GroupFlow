@@ -9,7 +9,7 @@ import entity.user.UserRole;
 
 /**
  * A simple entity representing a group. Groups have IDs, names, memberships,
- * and tpes.
+ * and types.
  * Memberships act as a link between a Group and a User.
  */
 public class Group {

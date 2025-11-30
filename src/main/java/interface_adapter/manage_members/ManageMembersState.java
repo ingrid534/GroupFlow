@@ -1,4 +1,4 @@
-package interface_adapter.view_members;
+package interface_adapter.manage_members;
 
 import java.util.HashMap;
 import java.util.Map;

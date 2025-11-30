@@ -16,9 +16,9 @@ public interface EditGroupTasksDataAccessInterface {
     Task getTask(String taskId);
 
     /**
-     * Saves the task with updated info (not sure if needed).
+     * Saves the task with updated info.
      *
      * @param task task to be saved
      */
-    void saveTask(Task task);
+    void upsertTask(Task task);
 }
