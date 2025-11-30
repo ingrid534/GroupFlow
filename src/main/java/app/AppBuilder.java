@@ -158,7 +158,7 @@ public class AppBuilder {
         signupViewModel = new SignupViewModel();
         signupView = new SignupView(signupViewModel);
         cardPanel.add(signupView, signupView.getViewName());
-        viewSizes.put(signupView.getViewName(), new Dimension(420, 320));
+        viewSizes.put(signupView.getViewName(), new Dimension(420, 460));
         return this;
     }
 
@@ -171,8 +171,7 @@ public class AppBuilder {
         loginViewModel = new LoginViewModel();
         loginView = new LoginView(loginViewModel);
         cardPanel.add(loginView, loginView.getViewName());
-        viewSizes.put(loginView.getViewName(), new Dimension(420, 320));
-        viewSizes.put(loginView.getViewName(), new Dimension(420, 320));
+        viewSizes.put(loginView.getViewName(), new Dimension(420, 420));
         return this;
     }
 
@@ -473,7 +472,7 @@ public class AppBuilder {
         application.setLocationRelativeTo(null);
 
         // minimum size so tiny views don’t collapse
-        application.setMinimumSize(new Dimension(400, 300));
+        application.setMinimumSize(new Dimension(400, 460));
 
         return application;
     }

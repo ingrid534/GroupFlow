@@ -21,7 +21,9 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
     private final String viewName = "sign up";
 
     private final SignupViewModel signupViewModel;
+
     private final JTextField usernameInputField = new JTextField(20);
+    private final JTextField emailInputField = new JTextField(20);
 
     private final JPasswordField passwordInputField = new JPasswordField(20);
     private final JPasswordField repeatPasswordInputField = new JPasswordField(20);
@@ -40,6 +42,7 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
         setBorder(new EmptyBorder(30, 50, 40, 50));
 
         styleField(usernameInputField);
+        styleField(emailInputField);
         styleField(passwordInputField);
         styleField(repeatPasswordInputField);
 
@@ -52,15 +55,19 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
         this.add(createTitleLabel());
         this.add(Box.createVerticalStrut(30));
 
-        this.add(createUsernameLabel());
+        this.add(createFieldLabel("Username"));
         this.add(usernameInputField);
         this.add(Box.createVerticalStrut(20));
 
-        this.add(createPasswordLabel());
+        this.add(createFieldLabel("Email"));
+        this.add(emailInputField);
+        this.add(Box.createVerticalStrut(20));
+
+        this.add(createFieldLabel("Password"));
         this.add(passwordInputField);
         this.add(Box.createVerticalStrut(20));
 
-        this.add(createRepeatPasswordLabel());
+        this.add(createFieldLabel("Confirm Password"));
         this.add(repeatPasswordInputField);
         this.add(Box.createVerticalStrut(20));
 
@@ -71,11 +78,14 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
         actionListeners();
         // Check similarity to previous
 
-        addUsernameListener();
-        addPasswordListener();
-        addRepeatPasswordListener();
+        addFieldListener("username", usernameInputField);
+        addFieldListener("email", emailInputField);
+        addFieldListener("password", passwordInputField);
+        addFieldListener("repeat password", repeatPasswordInputField);
 
     }
+
+
 
     private JLabel createTitleLabel() {
         final JLabel title = new JLabel("Sign Up");
@@ -86,29 +96,13 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
         return title;
     }
 
-    private JLabel createUsernameLabel() {
-        JLabel usernameLabel = new JLabel("Username");
-        usernameLabel.setForeground(new Color(120, 120, 120));
-        usernameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+    private JLabel createFieldLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setForeground(new Color(120, 120, 120));
+        label.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        return usernameLabel;
-    }
+        return label;    }
 
-    private JLabel createPasswordLabel() {
-        JLabel passwordLabel = new JLabel("Password");
-        passwordLabel.setForeground(new Color(120, 120, 120));
-        passwordLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        return passwordLabel;
-    }
-
-    private JLabel createRepeatPasswordLabel() {
-        JLabel confirmPasswordLabel = new JLabel("Confirm Password");
-        confirmPasswordLabel.setForeground(new Color(120, 120, 120));
-        confirmPasswordLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        return confirmPasswordLabel;
-    }
 
     private void actionListeners() {
         signUp.addActionListener(
@@ -117,6 +111,7 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
                     public void actionPerformed(ActionEvent evt) {
                         if (evt.getSource().equals(signUp)) {
                             final SignupState currentState = signupViewModel.getState();
+                            // TODO: Pass in email to interactor
                             signupController.execute(
                                     currentState.getUsername(),
                                     currentState.getPassword(),
@@ -144,61 +139,13 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
         field.setAlignmentX(Component.LEFT_ALIGNMENT);
     }
 
-    private void addUsernameListener() {
-        usernameInputField.getDocument().addDocumentListener(new DocumentListener() {
+
+    private void addFieldListener(String fieldName, JTextField field) {
+        field.getDocument().addDocumentListener(new DocumentListener() {
+
             private void documentListenerHelper() {
                 final SignupState currentState = signupViewModel.getState();
-                currentState.setUsername(usernameInputField.getText());
-                signupViewModel.setState(currentState);
-            }
-
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
-        });
-    }
-
-    private void addPasswordListener() {
-        passwordInputField.getDocument().addDocumentListener(new DocumentListener() {
-            private void documentListenerHelper() {
-                final SignupState currentState = signupViewModel.getState();
-                currentState.setPassword(new String(passwordInputField.getPassword()));
-                signupViewModel.setState(currentState);
-            }
-
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
-        });
-    }
-
-    private void addRepeatPasswordListener() {
-        repeatPasswordInputField.getDocument().addDocumentListener(new DocumentListener() {
-            private void documentListenerHelper() {
-                final SignupState currentState = signupViewModel.getState();
-                currentState.setRepeatPassword(new String(repeatPasswordInputField.getPassword()));
+                currentState.setField(fieldName, field.getText());
                 signupViewModel.setState(currentState);
             }
 

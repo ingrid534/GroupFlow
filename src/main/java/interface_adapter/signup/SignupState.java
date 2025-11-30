@@ -5,11 +5,31 @@ package interface_adapter.signup;
  */
 public class SignupState {
     private String username = "";
+    private String email = "";
+    private String emailError = "";
     private String usernameError;
     private String password = "";
     private String passwordError;
     private String repeatPassword = "";
     private String repeatPasswordError;
+
+    public void setField(String fieldName, String fieldText) {
+        switch (fieldName) {
+            case "username":
+                setUsername(fieldText);
+                break;
+            case "email":
+                setPassword(fieldText);
+                break;
+            case "password":
+                setPassword(fieldText);
+                break;
+            case "repeat password":
+                setRepeatPassword(fieldText);
+                break;
+        }
+
+    }
 
     public String getUsername() {
         return username;
@@ -66,5 +86,13 @@ public class SignupState {
                 + ", password='" + password + '\''
                 + ", repeatPassword='" + repeatPassword + '\''
                 + '}';
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
