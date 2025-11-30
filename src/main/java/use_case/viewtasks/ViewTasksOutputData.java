@@ -37,10 +37,6 @@ public class ViewTasksOutputData {
             this.groupId = groupId;
         }
 
-        public String getTaskId() {
-            return taskId;
-        }
-
         public String getDescription() {
             return description;
         }

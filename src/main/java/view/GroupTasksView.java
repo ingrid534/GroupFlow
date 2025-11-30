@@ -128,6 +128,12 @@ public class GroupTasksView extends JPanel implements PropertyChangeListener {
         String text = dto.getDescription();
         if (dto.getDueDateString() != null && !dto.getDueDateString().isEmpty()) {
             text += " (due " + dto.getDueDateString() + ")";
+            if (dto.isCompleted()) {
+                text += " (completed)";
+            }
+            else {
+                text += " (not completed)";
+            }
         }
         JLabel label = new JLabel(text);
         row.add(label);
@@ -163,7 +169,7 @@ public class GroupTasksView extends JPanel implements PropertyChangeListener {
      * @param groupid the group id
      */
     private void openEditDialog(ViewGroupTasksOutputData.TaskDTO dto, String groupid) {
-        new EditTaskView(dto.getId(), usernames, editController, editModel, groupid);
+        new EditTaskView(dto.getId(), usernames, editController, editModel, groupid, dto);
     }
 
     @Override
