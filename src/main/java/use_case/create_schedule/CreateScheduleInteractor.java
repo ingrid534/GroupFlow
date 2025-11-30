@@ -2,10 +2,7 @@ package use_case.create_schedule;
 
 import entity.group.Group;
 import entity.membership.Membership;
-import entity.schedule.Schedule;
 import entity.user.User;
-import use_case.create_group.CreateGroupDataAccessInterface;
-import use_case.create_group.CreateGroupOutputBoundary;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +15,6 @@ public class CreateScheduleInteractor implements CreateScheduleInputBoundary {
     private final CreateScheduleOutputBoundary createSchedulePresenter;
     private final DBMembershipDataAccessObject membershipDataAccessObject;
 
-    // TODO: Add constructor with DAI, output boundary
     public CreateScheduleInteractor(CreateScheduleUserDataAccessInterface userDataAccessObject,
                                     CreateScheduleGroupDataAccessInterface groupDataAccessObject,
                                     CreateScheduleOutputBoundary createScheduleOutputBoundary,
@@ -32,17 +28,16 @@ public class CreateScheduleInteractor implements CreateScheduleInputBoundary {
     
     @Override
     public void execute(CreateScheduleInputData createScheduleInputData) {
-        // TODO: make user DAO implement createScheduleUser DAI
-        final String userID = userDataAccessObject.get(userDataAccessObject.getCurrentUsername()).getUserID();
+        final User user = userDataAccessObject.get(userDataAccessObject.getCurrentUsername());
 
-        // add method to return current group ID in group DAO
-        final String groupID = groupDataAccessObject.getCurrentGroup();
+        // get id of current group
+        final String groupID = groupDataAccessObject.getCurrentGroupID();
 
+        // save user schedule in db
         final boolean[][] availabilityGrid = createScheduleInputData.getAvailabilityGrid();
 
-        // Uncomment once implemented. Save each user's own availability in the db so they can reuse across groups.
-        // TODO: update user DAO to save schedule in db
-        userDataAccessObject.saveSchedule(availabilityGrid);
+        user.setSchedule(availabilityGrid);
+        userDataAccessObject.saveSchedule(user);
 
         // look through all the users in this group to get all their availabilities
         List<User> allUsers = new ArrayList<>();
@@ -52,15 +47,13 @@ public class CreateScheduleInteractor implements CreateScheduleInputBoundary {
             allUsers.add(newUser);
         }
 
-        // go through the group schedule array and recalculate availability
-        // TODO: need to implement getGroupByID method in group DAO
         Group group = groupDataAccessObject.getGroup(groupID);
         
         // update master sched with user schedule
         // add method to get user schedule in user entity
         int[][] masterSchedule = new int[7][12];
-        for (User user: allUsers) {
-            boolean[][] userSched = user.getSchedule();
+        for (User member: allUsers) {
+            boolean[][] userSched = member.getSchedule();
 
             for (int i = 0; i < userSched.length; i++) {
                 for (int j = 0; j < userSched[i].length; j++) {
@@ -72,15 +65,15 @@ public class CreateScheduleInteractor implements CreateScheduleInputBoundary {
             }
         }
 
-        groupDataAccessObject.saveMasterShedule(masterSchedule);
+        groupDataAccessObject.saveMasterSchedule(group);
         final CreateScheduleOutputData createScheduleOutputData = 
             new CreateScheduleOutputData(masterSchedule, group.getSize());
+        createSchedulePresenter.prepareSuccessView(createScheduleOutputData);
 
     }
 
     @Override
     public void openCreateScheduleModal() {
-        System.out.println("i'm still working on it....");
         createSchedulePresenter.openCreateScheduleModal();
     }
 }

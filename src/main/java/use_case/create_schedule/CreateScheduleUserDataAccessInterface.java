@@ -16,4 +16,10 @@ public interface CreateScheduleUserDataAccessInterface {
      * @param user the user to save the new schedule for
      */
     void saveSchedule(User user);
+
+    /**
+     * Get the username of the current user.
+     * @return the username of current user.
+     */
+    String getCurrentUsername();
 }
