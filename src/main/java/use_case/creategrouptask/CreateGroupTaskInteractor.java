@@ -62,17 +62,21 @@ public class CreateGroupTaskInteractor implements CreateGroupTaskInputBoundary {
 
         Task task;
 
+        List<String> assignees = inputData.getAssignees();
+
         if (inputData.getDueDate() != null && !inputData.getDueDate().isEmpty()) {
             LocalDateTime due = LocalDate.parse(inputData.getDueDate()).atStartOfDay();
-            task = taskFactory.createWithDeadline(inputData.getDescription(), inputData.getGroupId(), due);
+            task = taskFactory.createWithDeadline("", inputData.getDescription(), inputData.getGroupId(),
+                    false, assignees, due);
         } else {
-            task = taskFactory.createWithoutDeadline(inputData.getDescription(), inputData.getGroupId());
+            task = taskFactory.createWithoutDeadline("", inputData.getDescription(), inputData.getGroupId(),
+                    false, assignees);
         }
 
-        group.addTask(task.getID());
+        // save task to get the mongo generated ID
+        dataAccess.upsertTask(task);
 
         // 4. Optional: Assign users to the task
-        List<String> assignees = inputData.getAssignees();
         if (assignees != null) {
             for (String username : assignees) {
                 User u = userDataAccess.get(username);
@@ -83,8 +87,10 @@ public class CreateGroupTaskInteractor implements CreateGroupTaskInputBoundary {
             }
         }
 
+        group.addTask(task.getID());
+
         groupDataAccess.save(group);
-        dataAccess.saveTask(task);
+
         presenter.present(new CreateGroupTaskOutputData(true,
                 "Task created successfully."));
     }

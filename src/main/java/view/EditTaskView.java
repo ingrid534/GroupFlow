@@ -186,6 +186,7 @@ public class EditTaskView extends JDialog implements PropertyChangeListener {
                 selectedAssignees.add(cb.getText());
             }
         }
+
         if (selectedAssignees.isEmpty()) {
             selectedAssignees = null;
         }
