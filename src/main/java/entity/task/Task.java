@@ -139,9 +139,11 @@ public class Task {
      *         and the due date has passed; otherwise {@code false}.
      */
     public boolean isOverdue() {
-        return !completed
-                && dueDate != null
-                && dueDate.isBefore(LocalDateTime.now());
+        if (this.hasDueDate()) {
+            return !completed
+                    && dueDate.isBefore(LocalDateTime.now());
+        }
+        return false;
     }
 
     /**
@@ -169,6 +171,9 @@ public class Task {
      * @param assignees the new list of assigned users.
      */
     public void setAssignees(List<String> assignees) {
+        if (assignees == null) {
+            return;
+        }
         this.assignees.clear();
         this.assignees.addAll(assignees);
     }
