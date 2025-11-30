@@ -210,9 +210,16 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
             JPanel rightPanel = new JPanel(new BorderLayout());
             rightPanel.setBorder(new EmptyBorder(0, 12, 0, 0));
 
-            JLabel tasks = new JLabel("Your Tasks:");
-            tasks.setBorder(new EmptyBorder(0, 0, 8, 0));
-            rightPanel.add(tasks, BorderLayout.NORTH);
+            JPanel tasksHeader = new JPanel(new BorderLayout());
+            tasksHeader.setBorder(new EmptyBorder(0, 0, 8, 0));
+            JLabel tasksLabel = new JLabel("Your Tasks:");
+            tasksHeader.add(tasksLabel, BorderLayout.WEST);
+
+            JButton refreshButton = new JButton("Refresh");
+            refreshButton.addActionListener(e -> viewTasksView.execute());
+            tasksHeader.add(refreshButton, BorderLayout.EAST);
+
+            rightPanel.add(tasksHeader, BorderLayout.NORTH);
 
             rightPanel.add(viewTasksView, BorderLayout.CENTER);
 

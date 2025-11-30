@@ -224,7 +224,7 @@ public class AppBuilder {
     public AppBuilder addGroupTasksUseCases() {
         viewGroupTasksViewModel = new ViewGroupTasksViewModel();
         ViewGroupTasksOutputBoundary viewPresenter =
-                new ViewGroupTasksPresenter(viewGroupTasksViewModel);
+                new ViewGroupTasksPresenter(viewGroupTasksViewModel, viewTasksViewModel);
 
         ViewGroupTasksInputBoundary viewInteractor =
                 new ViewGroupTasksInteractor(taskDataAccessObject, viewPresenter, groupDataAccessObject);
@@ -234,7 +234,7 @@ public class AppBuilder {
 
         editGroupTaskViewModel = new EditGroupTaskViewModel();
         EditGroupTasksOutputBoundary editPresenter =
-                new EditGroupTaskPresenter(editGroupTaskViewModel, viewTasksViewModel);
+                new EditGroupTaskPresenter(editGroupTaskViewModel);
 
         EditGroupTasksInputBoundary editInteractor =
                 new EditGroupTasksInteractor(taskDataAccessObject, editPresenter, userDataAccessObject,
@@ -245,7 +245,7 @@ public class AppBuilder {
 
         createGroupTasksViewModel = new CreateGroupTasksViewModel();
         CreateGroupTaskOutputBoundary createPresenter =
-                new CreateGroupTasksPresenter(createGroupTasksViewModel, viewTasksViewModel);
+                new CreateGroupTasksPresenter(createGroupTasksViewModel);
 
         CreateGroupTaskInputBoundary createInteractor =
                 new CreateGroupTaskInteractor(taskDataAccessObject, createPresenter, taskFactory,
