@@ -36,6 +36,7 @@ import interface_adapter.logout.LogoutController;
 import interface_adapter.logout.LogoutPresenter;
 import interface_adapter.manage_members.PeopleTabViewModel;
 import interface_adapter.manage_members.remove_member.RemoveMemberControllerFactory;
+import interface_adapter.manage_members.respond_request.RespondRequestControllerFactory;
 import interface_adapter.manage_members.view_members.ViewMembersControllerFactory;
 import interface_adapter.manage_members.view_pending.ViewPendingControllerFactory;
 import interface_adapter.signup.SignupController;
@@ -324,6 +325,20 @@ public class AppBuilder {
                 new RemoveMemberControllerFactory(membershipDataAccessObject);
 
         dashboardView.setRemoveMemberControllerFactory(factory);
+
+        return this;
+    }
+
+    /**
+     * Method to add the Respond Request Use case.
+     *
+     * @return App builder.
+     */
+    public AppBuilder addRespondRequestUseCase() {
+        RespondRequestControllerFactory factory =
+                new RespondRequestControllerFactory(membershipDataAccessObject);
+
+        dashboardView.setRespondRequestControllerFactory(factory);
 
         return this;
     }

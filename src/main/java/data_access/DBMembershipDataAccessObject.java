@@ -11,6 +11,7 @@ import entity.user.UserRole;
 import org.bson.Document;
 import use_case.create_group.CreateGroupMembershipDataAccessInterface;
 import use_case.manage_members.remove_member.RemoveMemberDataAccessInterface;
+import use_case.manage_members.respond_request.RespondRequestDataAccessInterface;
 import use_case.manage_members.view_members.ViewMembersMembershipDataAccessInterface;
 import use_case.manage_members.view_pending.ViewPendingMembershipDataAccessInterface;
 
@@ -34,7 +35,8 @@ public class DBMembershipDataAccessObject implements CreateGroupMembershipDataAc
         ViewPendingMembershipDataAccessInterface,
         CreateGroupTasksMembershipDataAccessInterface, 
         EditGroupTasksMembershipDataAccessInterface,
-        RemoveMemberDataAccessInterface {
+        RemoveMemberDataAccessInterface,
+        RespondRequestDataAccessInterface {
 
     private static final String USER_FIELD = "user";
     private static final String GROUP_FIELD = "group";
@@ -169,5 +171,39 @@ public class DBMembershipDataAccessObject implements CreateGroupMembershipDataAc
         }
 
         return result;
+    }
+
+    /**
+     * Updates a pending membership request for the given group and user.
+     * If {@code accepted} is true, the user's membership record is updated to an
+     * accepted/active state. If {@code accepted} is false, the user's pending
+     * membership record is removed entirely.
+     *
+     * @param groupID  the ID of the group whose membership request is being updated
+     * @param username the username of the member whose request is being processed
+     * @param accepted true to accept the request, false to decline and remove it
+     */
+    @Override
+    public void updateMembership(String groupID, String username, boolean accepted) {
+        if (accepted) {
+            // Set approved to true for this pending membership
+            membershipsCollection.updateOne(
+                    and(
+                            eq(USER_FIELD, username),
+                            eq(GROUP_FIELD, groupID),
+                            eq(APPROVED_FIELD, false)
+                    ),
+                    new Document("$set", new Document(APPROVED_FIELD, true))
+            );
+        } else {
+            // Declined: remove the pending membership record
+            membershipsCollection.deleteOne(
+                    and(
+                            eq(USER_FIELD, username),
+                            eq(GROUP_FIELD, groupID),
+                            eq(APPROVED_FIELD, false)
+                    )
+            );
+        }
     }
 }

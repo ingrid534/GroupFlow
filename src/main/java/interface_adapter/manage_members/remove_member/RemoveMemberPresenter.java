@@ -13,9 +13,7 @@ public class RemoveMemberPresenter implements RemoveMemberOutputBoundary {
     }
 
     /**
-     * Prepares the success view for the View Members use case.
-     * This method updates the PeopleTabViewModel with the retrieved members
-     * and fires a property change so the People tab can refresh its display.
+     * Prepares the success view for the Remove Member use case.
      *
      * @param outputData the output data containing the group's members
      */

@@ -10,6 +10,7 @@ import interface_adapter.editgrouptask.EditGroupTaskViewModel;
 import interface_adapter.logout.LogoutController;
 import interface_adapter.manage_members.PeopleTabViewModel;
 import interface_adapter.manage_members.remove_member.RemoveMemberControllerFactory;
+import interface_adapter.manage_members.respond_request.RespondRequestControllerFactory;
 import interface_adapter.manage_members.view_members.ViewMembersControllerFactory;
 import interface_adapter.manage_members.view_pending.ViewPendingControllerFactory;
 import interface_adapter.viewgrouptasks.ViewGroupTasksController;
@@ -66,6 +67,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     private ViewMembersControllerFactory viewMembersControllerFactory;
     private ViewPendingControllerFactory viewPendingControllerFactory;
     private RemoveMemberControllerFactory removeMemberControllerFactory;
+    private RespondRequestControllerFactory respondRequestControllerFactory;
 
     // Maps group IDs to their names
     private final java.util.Map<String, String> groupIdToName = new java.util.HashMap<>();
@@ -261,6 +263,12 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
         if (removeMemberControllerFactory != null) {
             view.setRemoveMemberController(
                     removeMemberControllerFactory.create(vm)
+            );
+        }
+
+        if (respondRequestControllerFactory != null) {
+            view.setRespondRequestController(
+                    respondRequestControllerFactory.create(vm)
             );
         }
 
@@ -461,6 +469,10 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
 
     public void setRemoveMemberControllerFactory(RemoveMemberControllerFactory factory) {
         this.removeMemberControllerFactory = factory;
+    }
+
+    public void setRespondRequestControllerFactory(RespondRequestControllerFactory factory) {
+        this.respondRequestControllerFactory = factory;
     }
 
     public void setViewGroupTasksController(ViewGroupTasksController controller) {

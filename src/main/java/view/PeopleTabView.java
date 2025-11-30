@@ -4,6 +4,7 @@ import entity.user.UserRole;
 import interface_adapter.manage_members.ManageMembersState;
 import interface_adapter.manage_members.PeopleTabViewModel;
 import interface_adapter.manage_members.remove_member.RemoveMemberController;
+import interface_adapter.manage_members.respond_request.RespondRequestController;
 import interface_adapter.manage_members.view_members.ViewMembersController;
 import interface_adapter.manage_members.view_pending.ViewPendingController;
 
@@ -42,6 +43,7 @@ public class PeopleTabView extends JPanel implements ActionListener, PropertyCha
     private ViewMembersController viewMembersController;
     private ViewPendingController viewPendingController;
     private RemoveMemberController removeMemberController;
+    private RespondRequestController respondRequestController;
 
     private final PeopleTabViewModel peopleTabViewModel;
 
@@ -262,20 +264,17 @@ public class PeopleTabView extends JPanel implements ActionListener, PropertyCha
             split.setDividerLocation(0.6);
         }
 
-        JPanel row = createRowPanel();
+        final JPanel row = createRowPanel();
 
         final JLabel nameLabel = new JLabel(username);
 
         JButton acceptBtn = new JButton("\u2714");
         acceptBtn.setForeground(new Color(3, 120, 3));
-        acceptBtn.addActionListener(event -> {
-            addMember(username, roles[0]);
-            removePendingRow(row);
-        });
+        acceptBtn.addActionListener(event -> respondRequestController.execute(groupID, username, true));
 
         JButton declineBtn = new JButton("\u2716");
         declineBtn.setForeground(new Color(220, 20, 60));
-        declineBtn.addActionListener(event -> removePendingRow(row));
+        declineBtn.addActionListener(event -> respondRequestController.execute(groupID, username, false));
 
         // Plain members cannot manage pending requests
         if (currentUserRole == UserRole.MEMBER) {
@@ -425,6 +424,16 @@ public class PeopleTabView extends JPanel implements ActionListener, PropertyCha
      */
     public void setRemoveMemberController(RemoveMemberController removeMemberController) {
         this.removeMemberController = removeMemberController;
+    }
+
+    /**
+     * Sets the controller responsible for handling responses to join requests.
+     * This only stores the controller reference and does not trigger any action by itself.
+     *
+     * @param respondRequestController the controller that processes approving or declining a join request
+     */
+    public void setRespondRequestController(RespondRequestController respondRequestController) {
+        this.respondRequestController = respondRequestController;
     }
 
     @Override

@@ -17,12 +17,12 @@ public class RemoveMemberControllerFactory {
     }
 
     /**
-     * Creates a fully wired ViewMembersController for the given PeopleTabViewModel.
+     * Creates a fully wired RemoveMemberController for the given PeopleTabViewModel.
      * This method sets up the presenter and interactor so that the controller can
      * retrieve members for a specific group and update the People tab UI.
      *
      * @param viewModel the view model that will be updated with retrieved member data
-     * @return a new ViewMembersController wired to the appropriate interactor and presenter
+     * @return a new RemoveMemberController wired to the appropriate interactor and presenter
      */
     public RemoveMemberController create(PeopleTabViewModel viewModel) {
         RemoveMemberPresenter presenter = new RemoveMemberPresenter(viewModel);
