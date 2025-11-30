@@ -6,8 +6,9 @@ import entity.task.Task;
 import entity.task.TaskFactory;
 import entity.user.User;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 /**
@@ -69,9 +70,16 @@ public class CreateGroupTaskInteractor implements CreateGroupTaskInputBoundary {
         List<String> assignees = inputData.getAssignees();
 
         if (inputData.getDueDate() != null && !inputData.getDueDate().isEmpty()) {
-            LocalDateTime due = LocalDate.parse(inputData.getDueDate()).atStartOfDay();
-            task = taskFactory.createWithDeadline("", inputData.getDescription(), inputData.getGroupId(),
-                    false, assignees, due);
+            try {
+                LocalDateTime due = LocalDateTime.parse(inputData.getDueDate(),
+                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+                );
+                task = taskFactory.createWithDeadline("", inputData.getDescription(), inputData.getGroupId(),
+                        false, assignees, due);
+            } catch (DateTimeParseException exception) {
+                presenter.present(new CreateGroupTaskOutputData(false, "Invalid date."));
+                return;
+            }
         } else {
             task = taskFactory.createWithoutDeadline("", inputData.getDescription(), inputData.getGroupId(),
                     false, assignees);

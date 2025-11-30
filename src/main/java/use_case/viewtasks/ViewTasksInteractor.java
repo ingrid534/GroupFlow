@@ -12,7 +12,7 @@ public class ViewTasksInteractor implements ViewTasksInputBoundary {
     private final ViewTasksOutputBoundary presenter;
 
     private static final DateTimeFormatter DATE_FORMATTER =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     public ViewTasksInteractor(ViewTasksDataAccessInterface taskAccessObject,
                                ViewTasksOutputBoundary presenter,

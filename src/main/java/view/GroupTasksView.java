@@ -169,8 +169,7 @@ public class GroupTasksView extends JPanel implements PropertyChangeListener {
      * @param groupid the group id
      */
     private void openEditDialog(ViewGroupTasksOutputData.TaskDTO dto, String groupid) {
-        new EditTaskView(dto.getId(), usernames, editController, editModel, groupid, dto.getDescription(),
-                dto.getDueDateString(), dto.getAssigneeUserIds(), dto.isCompleted());
+        new EditTaskView(dto.getId(), usernames, editController, editModel, groupid, dto);
     }
 
     @Override

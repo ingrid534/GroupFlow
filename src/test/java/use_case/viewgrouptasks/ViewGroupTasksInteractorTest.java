@@ -3,17 +3,20 @@ package use_case.viewgrouptasks;
 import data_access.InMemoryGroupDataAccessObject;
 import data_access.InMemoryTaskDataAccessObject;
 import entity.group.Group;
+import entity.group.GroupType;
+import entity.membership.Membership;
 import entity.task.Task;
+import entity.user.UserRole;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ViewGroupTasksInteractorTest {
+
     private static class TestPresenter implements ViewGroupTasksOutputBoundary {
         private ViewGroupTasksOutputData received;
 
@@ -22,175 +25,164 @@ public class ViewGroupTasksInteractorTest {
             this.received = outputData;
         }
 
-        ViewGroupTasksOutputData getReceived() {
+        public ViewGroupTasksOutputData getReceived() {
             return received;
         }
     }
 
+    // ------------------------------------------------------------
+    //                      TESTS
+    // ------------------------------------------------------------
+
     @Test
     void testNoTasksForGroup() {
-        // Arrange
         InMemoryTaskDataAccessObject taskDAO = new InMemoryTaskDataAccessObject();
         InMemoryGroupDataAccessObject groupDAO = new InMemoryGroupDataAccessObject();
 
-        // Group with no tasks and no members
-        Group group = new Group("Study Group", "g1", null);
-        groupDAO.save(group);
+        Group g = new Group("Study Group", "g1", GroupType.STUDY);
+        groupDAO.save(g);
 
         TestPresenter presenter = new TestPresenter();
         ViewGroupTasksInteractor interactor =
                 new ViewGroupTasksInteractor(taskDAO, presenter, groupDAO);
 
-        ViewGroupTasksInputData inputData = new ViewGroupTasksInputData("g1");
+        interactor.execute(new ViewGroupTasksInputData("g1"));
 
-        // Act
-        interactor.execute(inputData);
+        ViewGroupTasksOutputData out = presenter.getReceived();
+        assertNotNull(out);
 
-        // Assert
-        ViewGroupTasksOutputData output = presenter.getReceived();
-        assertNotNull(output);
-        assertTrue(output.getTasks().isEmpty(),
-                "Expected no tasks for an empty group");
-        assertNotNull(output.getNames());
-        assertTrue(output.getNames().isEmpty());
-        // We don't need to assert on member names; they should just be an empty list.
+        assertTrue(out.getTasks().isEmpty());
+        assertTrue(out.getNames().isEmpty());
     }
 
     @Test
     void testSingleTaskWithDueDate() {
-        // Arrange
         InMemoryTaskDataAccessObject taskDAO = new InMemoryTaskDataAccessObject();
         InMemoryGroupDataAccessObject groupDAO = new InMemoryGroupDataAccessObject();
 
-        Group group = new Group("Project Group", "g2", null);
-        groupDAO.save(group);
+        Group g = new Group("Project Group", "g2", GroupType.PROJECT);
+        g.addMembership(new Membership("alice", "g2", UserRole.MEMBER, true));
+        g.addMembership(new Membership("bob", "g2", UserRole.MEMBER, true));
+        groupDAO.save(g);
 
         LocalDateTime due = LocalDateTime.of(2030, 5, 10, 12, 0);
-        Task task = new Task("Write report", "g2", due);
-        task.addAssignee("alice");
-        task.addAssignee("bob");
-        taskDAO.saveTask(task);
+
+        Task task = new Task(
+                "id1",
+                "Write report",
+                "g2",
+                false,
+                new ArrayList<>(Arrays.asList("alice", "bob")),
+                due
+        );
+        taskDAO.upsertTask(task);
 
         TestPresenter presenter = new TestPresenter();
         ViewGroupTasksInteractor interactor =
                 new ViewGroupTasksInteractor(taskDAO, presenter, groupDAO);
 
-        ViewGroupTasksInputData inputData = new ViewGroupTasksInputData("g2");
+        interactor.execute(new ViewGroupTasksInputData("g2"));
 
-        // Act
-        interactor.execute(inputData);
+        ViewGroupTasksOutputData out = presenter.getReceived();
+        assertNotNull(out);
 
-        // Assert
-        ViewGroupTasksOutputData output = presenter.getReceived();
-        assertNotNull(output);
+        assertEquals(1, out.getTasks().size());
 
-        List<ViewGroupTasksOutputData.TaskDTO> tasks = output.getTasks();
-        assertEquals(1, tasks.size());
+        ViewGroupTasksOutputData.TaskDTO dto = out.getTasks().get(0);
 
-        ViewGroupTasksOutputData.TaskDTO dto = tasks.get(0);
-        assertEquals(task.getID(), dto.getId());
+        assertEquals("id1", dto.getId());
         assertEquals("Write report", dto.getDescription());
         assertFalse(dto.isCompleted());
-        assertEquals(task.getAssignees(), dto.getAssigneeUserIds());
+        assertEquals(Arrays.asList("alice", "bob"), dto.getAssigneeUserIds());
 
-        String expectedDate = due.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        assertEquals(expectedDate, dto.getDueDateString());
+        String expected = due.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        assertEquals(expected, dto.getDueDateString());
+
+        assertEquals(Arrays.asList("alice", "bob"), out.getNames());
     }
 
     @Test
-    void testTaskWithNoDueDateUsesFallbackString() {
-        // Arrange
+    void testTaskWithNoDueDate() {
         InMemoryTaskDataAccessObject taskDAO = new InMemoryTaskDataAccessObject();
         InMemoryGroupDataAccessObject groupDAO = new InMemoryGroupDataAccessObject();
 
-        Group group = new Group("No Date Group", "g3", null);
-        groupDAO.save(group);
+        Group g = new Group("No Date Group", "g3", GroupType.STUDY);
+        g.addMembership(new Membership("charlie", "g3", UserRole.MEMBER, true));
+        groupDAO.save(g);
 
-        // Use constructor without due date → dueDate = null → Optional.empty()
-        Task task = new Task("Open-ended task", "g3");
-        task.addAssignee("charlie");
-        taskDAO.saveTask(task);
+        Task task = new Task(
+                "id2",
+                "Open-ended task",
+                "g3",
+                false,
+                new ArrayList<>(Collections.singletonList("charlie"))
+        );
+        taskDAO.upsertTask(task);
 
         TestPresenter presenter = new TestPresenter();
         ViewGroupTasksInteractor interactor =
                 new ViewGroupTasksInteractor(taskDAO, presenter, groupDAO);
 
-        ViewGroupTasksInputData inputData = new ViewGroupTasksInputData("g3");
+        interactor.execute(new ViewGroupTasksInputData("g3"));
 
-        // Act
-        interactor.execute(inputData);
+        ViewGroupTasksOutputData out = presenter.getReceived();
 
-        // Assert
-        ViewGroupTasksOutputData output = presenter.getReceived();
-        assertNotNull(output);
+        assertNotNull(out);
+        assertEquals(1, out.getTasks().size());
 
-        List<ViewGroupTasksOutputData.TaskDTO> tasks = output.getTasks();
-        assertEquals(1, tasks.size());
+        ViewGroupTasksOutputData.TaskDTO dto = out.getTasks().get(0);
 
-        ViewGroupTasksOutputData.TaskDTO dto = tasks.get(0);
         assertEquals("Open-ended task", dto.getDescription());
         assertEquals("No due date", dto.getDueDateString());
-        assertEquals(task.getAssignees(), dto.getAssigneeUserIds());
+        assertEquals(Collections.singletonList("charlie"), dto.getAssigneeUserIds());
+
+        assertEquals(Collections.singletonList("charlie"), out.getNames());
     }
 
     @Test
     void testMultipleTasksForGroupIncludingCompleted() {
-        // Arrange
         InMemoryTaskDataAccessObject taskDAO = new InMemoryTaskDataAccessObject();
         InMemoryGroupDataAccessObject groupDAO = new InMemoryGroupDataAccessObject();
 
-        Group group = new Group("Mixed Group", "g4", null);
-        groupDAO.save(group);
+        Group g = new Group("Mixed Group", "g4", GroupType.STUDY);
+        g.addMembership(new Membership("user1", "g4", UserRole.MEMBER, true));
+        g.addMembership(new Membership("user2", "g4", UserRole.MEMBER, true));
+        g.addMembership(new Membership("user3", "g4", UserRole.MEMBER, true));
+        groupDAO.save(g);
 
-        // Task 1: future due date, not completed
         LocalDateTime f1 = LocalDateTime.now().plusDays(3);
-        Task t1 = new Task("Task A", "g4", f1);
-        t1.addAssignee("user1");
+        Task t1 = new Task("id3", "Task A", "g4", false,
+                new ArrayList<>(Collections.singletonList("user1")), f1);
 
-        // Task 2: future due date, completed
         LocalDateTime f2 = LocalDateTime.now().plusDays(1);
-        Task t2 = new Task("Task B", "g4", f2);
-        t2.addAssignee("user2");
-        t2.markCompleted();
+        Task t2 = new Task("id4", "Task B", "g4", true,
+                new ArrayList<>(Collections.singletonList("user2")), f2);
 
-        // Task 3: no due date
-        Task t3 = new Task("Task C", "g4");
-        t3.addAssignee("user3");
+        Task t3 = new Task("id5", "Task C", "g4", false,
+                new ArrayList<>(Collections.singletonList("user3")));
 
-        taskDAO.saveTask(t1);
-        taskDAO.saveTask(t2);
-        taskDAO.saveTask(t3);
+        taskDAO.upsertTask(t1);
+        taskDAO.upsertTask(t2);
+        taskDAO.upsertTask(t3);
 
         TestPresenter presenter = new TestPresenter();
         ViewGroupTasksInteractor interactor =
                 new ViewGroupTasksInteractor(taskDAO, presenter, groupDAO);
 
-        ViewGroupTasksInputData inputData = new ViewGroupTasksInputData("g4");
+        interactor.execute(new ViewGroupTasksInputData("g4"));
 
-        // Act
-        interactor.execute(inputData);
+        ViewGroupTasksOutputData out = presenter.getReceived();
+        assertNotNull(out);
 
-        // Assert
-        ViewGroupTasksOutputData output = presenter.getReceived();
-        assertNotNull(output);
+        List<ViewGroupTasksOutputData.TaskDTO> list = out.getTasks();
+        assertEquals(3, list.size());
 
-        List<ViewGroupTasksOutputData.TaskDTO> dtos = output.getTasks();
-        assertEquals(3, dtos.size(), "All tasks for the group should be returned (no filtering)");
+        list.sort(Comparator.comparing(ViewGroupTasksOutputData.TaskDTO::getDescription));
 
-        // HashMap does not guarantee order, so sort by description for deterministic assertions.
-        dtos.sort(Comparator.comparing(ViewGroupTasksOutputData.TaskDTO::getDescription));
+        assertEquals("Task A", list.get(0).getDescription());
+        assertEquals("Task B", list.get(1).getDescription());
+        assertEquals("Task C", list.get(2).getDescription());
 
-        ViewGroupTasksOutputData.TaskDTO dtoA = dtos.get(0);
-        ViewGroupTasksOutputData.TaskDTO dtoB = dtos.get(1);
-        ViewGroupTasksOutputData.TaskDTO dtoC = dtos.get(2);
-
-        assertEquals("Task A", dtoA.getDescription());
-        assertFalse(dtoA.isCompleted());
-
-        assertEquals("Task B", dtoB.getDescription());
-        assertTrue(dtoB.isCompleted());
-
-        assertEquals("Task C", dtoC.getDescription());
-        assertEquals("No due date", dtoC.getDueDateString());
+        assertEquals(Arrays.asList("user1", "user2", "user3"), out.getNames());
     }
 }

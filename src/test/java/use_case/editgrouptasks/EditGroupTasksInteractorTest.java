@@ -9,9 +9,11 @@ import entity.user.User;
 import entity.user.UserRole;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;          // <-- NEW
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -26,319 +28,468 @@ public class EditGroupTasksInteractorTest {
         }
     }
 
+    // ---------------------------------------------------------------------
+    //  1. USER NOT MODERATOR → BLOCKED
+    // ---------------------------------------------------------------------
     @Test
     void testOnlyModeratorsCanEdit() {
-        // DAOs
         InMemoryTaskDataAccessObject taskDAO = new InMemoryTaskDataAccessObject();
         InMemoryUserDataAccessObject userDAO = new InMemoryUserDataAccessObject();
-        InMemoryMembershipDataAccessObject membershipDAO = new InMemoryMembershipDataAccessObject();
+        InMemoryMembershipDataAccessObject memDAO = new InMemoryMembershipDataAccessObject();
 
-        // User exists but is NOT a moderator
-        User user = new User("alice", "pw");
-        userDAO.save(user);
+        User u = new User("alice", "pw");
+        userDAO.save(u);
         userDAO.setCurrentUsername("alice");
 
-        // membership exists but is not moderator
-        Membership mem = new Membership("alice", "g1", UserRole.MEMBER, true);
-        membershipDAO.save(mem);
+        memDAO.save(new Membership("alice", "g1", UserRole.MEMBER, true));
 
         TestPresenter presenter = new TestPresenter();
-
         EditGroupTasksInteractor interactor =
-                new EditGroupTasksInteractor(taskDAO, presenter, userDAO, membershipDAO);
+                new EditGroupTasksInteractor(taskDAO, presenter, userDAO, memDAO);
 
         EditGroupTasksInputData input = new EditGroupTasksInputData(
-                "t1",
-                "new description",
-                "2025-01-01",
-                false,
-                Collections.emptyList(),
-                "g1"
+                "t1", "desc", "2030-01-01 00:00", false,
+                Collections.emptyList(), "g1"
         );
 
         interactor.execute(input);
 
-        assertNotNull(presenter.received);
         assertFalse(presenter.received.isSuccess());
         assertEquals("Only moderators can edit tasks.", presenter.received.getMessage());
     }
 
+    // ---------------------------------------------------------------------
+    //  2. TASK NOT FOUND
+    // ---------------------------------------------------------------------
     @Test
     void testTaskNotFound() {
-        // DAOs
         InMemoryTaskDataAccessObject taskDAO = new InMemoryTaskDataAccessObject();
         InMemoryUserDataAccessObject userDAO = new InMemoryUserDataAccessObject();
-        InMemoryMembershipDataAccessObject membershipDAO = new InMemoryMembershipDataAccessObject();
+        InMemoryMembershipDataAccessObject memDAO = new InMemoryMembershipDataAccessObject();
 
-        // Moderator user
-        User user = new User("bob", "pw");
-        userDAO.save(user);
+        User u = new User("bob", "pw");
+        userDAO.save(u);
         userDAO.setCurrentUsername("bob");
 
-        Membership mem = new Membership("bob", "g1", UserRole.MODERATOR, true);
-        membershipDAO.save(mem);
+        memDAO.save(new Membership("bob", "g1", UserRole.MODERATOR, true));
 
         TestPresenter presenter = new TestPresenter();
-
         EditGroupTasksInteractor interactor =
-                new EditGroupTasksInteractor(taskDAO, presenter, userDAO, membershipDAO);
+                new EditGroupTasksInteractor(taskDAO, presenter, userDAO, memDAO);
 
-        // No task with id "t404"
         EditGroupTasksInputData input = new EditGroupTasksInputData(
-                "t404",
-                "anything",
-                "2024-05-05",
-                false,
-                Collections.emptyList(),
-                "g1"
+                "missing", "x", "2030-01-01 00:00", false, null, "g1"
         );
 
         interactor.execute(input);
 
-        assertNotNull(presenter.received);
         assertFalse(presenter.received.isSuccess());
         assertEquals("Task not found.", presenter.received.getMessage());
     }
 
+    // ---------------------------------------------------------------------
+    //  3. VALID EDIT — DESCRIPTION, DUE DATE, COMPLETION
+    // ---------------------------------------------------------------------
     @Test
     void testEditDescriptionDueDateCompletion() {
-        // DAOs
         InMemoryTaskDataAccessObject taskDAO = new InMemoryTaskDataAccessObject();
         InMemoryUserDataAccessObject userDAO = new InMemoryUserDataAccessObject();
-        InMemoryMembershipDataAccessObject membershipDAO = new InMemoryMembershipDataAccessObject();
+        InMemoryMembershipDataAccessObject memDAO = new InMemoryMembershipDataAccessObject();
 
-        // Moderator user
         User mod = new User("carol", "pw");
         userDAO.save(mod);
         userDAO.setCurrentUsername("carol");
 
-        membershipDAO.save(new Membership("carol", "g1", UserRole.MODERATOR, true));
+        memDAO.save(new Membership("carol", "g1", UserRole.MODERATOR, true));
 
-        // Task
-        Task task = new Task("Old Description", "g1");
-        taskDAO.saveTask(task);
+        // OLD: new Task("Old", "g1");
+        Task task = new Task(
+                "t-edit-1",
+                "Old",
+                "g1",
+                false,
+                new ArrayList<>()
+        );
+        taskDAO.upsertTask(task);
 
         TestPresenter presenter = new TestPresenter();
         EditGroupTasksInteractor interactor =
-                new EditGroupTasksInteractor(taskDAO, presenter, userDAO, membershipDAO);
+                new EditGroupTasksInteractor(taskDAO, presenter, userDAO, memDAO);
 
-        // New changes
         EditGroupTasksInputData input = new EditGroupTasksInputData(
                 task.getID(),
                 "New Description",
-                "2030-12-25",   // due date as yyyy-MM-dd
-                true,           // completed
-                null,           // no change to assignees
+                "2030-12-25 13:45",
+                true,
+                null,
                 "g1"
         );
 
         interactor.execute(input);
 
-        // Assertions
-        assertNotNull(presenter.received);
         assertTrue(presenter.received.isSuccess());
         assertEquals("Task updated successfully.", presenter.received.getMessage());
-
-        // Validate changes to the task
         assertEquals("New Description", task.getDescription());
         assertTrue(task.isCompleted());
-        assertEquals("2030-12-25", task.getDueDate().get().toLocalDate().toString());
+        assertEquals("2030-12-25T13:45", task.getDueDate().get().toString());
     }
 
+    // ---------------------------------------------------------------------
+    //  4. INVALID DATE FORMAT
+    // ---------------------------------------------------------------------
     @Test
-    void testEditAssigneesUpdatesUserTaskLists() {
-        // DAOs
+    void testInvalidDateRejected() {
         InMemoryTaskDataAccessObject taskDAO = new InMemoryTaskDataAccessObject();
         InMemoryUserDataAccessObject userDAO = new InMemoryUserDataAccessObject();
-        InMemoryMembershipDataAccessObject membershipDAO = new InMemoryMembershipDataAccessObject();
+        InMemoryMembershipDataAccessObject memDAO = new InMemoryMembershipDataAccessObject();
 
-        // Moderator
-        User mod = new User("dave", "pw");
+        User mod = new User("x", "pw");
         userDAO.save(mod);
-        userDAO.setCurrentUsername("dave");
-        membershipDAO.save(new Membership("dave", "g1", UserRole.MODERATOR, true));
+        userDAO.setCurrentUsername("x");
+        memDAO.save(new Membership("x", "g1", UserRole.MODERATOR, true));
 
-        // Two users
-        User u1 = new User("u1", "pw");
-        User u2 = new User("u2", "pw");
-
-        userDAO.save(u1);
-        userDAO.save(u2);
-
-        // Task with original assignee u1
-        Task task = new Task("Some task", "g1");
-        task.addAssignee("u1");
-        u1.addTask(task.getID());
-        taskDAO.saveTask(task);
+        // OLD: new Task("Task", "g1");
+        Task task = new Task(
+                "t-invalid",
+                "Task",
+                "g1",
+                false,
+                new ArrayList<>()
+        );
+        taskDAO.upsertTask(task);
 
         TestPresenter presenter = new TestPresenter();
         EditGroupTasksInteractor interactor =
-                new EditGroupTasksInteractor(taskDAO, presenter, userDAO, membershipDAO);
+                new EditGroupTasksInteractor(taskDAO, presenter, userDAO, memDAO);
 
-        // Replace u1 with u2
         EditGroupTasksInputData input = new EditGroupTasksInputData(
                 task.getID(),
-                null,              // no description change
-                null,              // no due date change
-                null,              // no completed change
+                null,
+                "NOT_A_DATE",
+                null,
+                null,
+                "g1"
+        );
+
+        interactor.execute(input);
+
+        assertFalse(presenter.received.isSuccess());
+        assertEquals("Invalid date.", presenter.received.getMessage());
+    }
+
+    // ---------------------------------------------------------------------
+    //  5. ASSIGNEE UPDATE — USER TASK LISTS UPDATED
+    // ---------------------------------------------------------------------
+    @Test
+    void testEditAssigneesUpdatesUserTaskLists() {
+        InMemoryTaskDataAccessObject taskDAO = new InMemoryTaskDataAccessObject();
+        InMemoryUserDataAccessObject userDAO = new InMemoryUserDataAccessObject();
+        InMemoryMembershipDataAccessObject memDAO = new InMemoryMembershipDataAccessObject();
+
+        User mod = new User("mod", "pw");
+        userDAO.save(mod);
+        userDAO.setCurrentUsername("mod");
+        memDAO.save(new Membership("mod", "g1", UserRole.MODERATOR, true));
+
+        User u1 = new User("u1", "pw");
+        User u2 = new User("u2", "pw");
+        userDAO.save(u1);
+        userDAO.save(u2);
+
+        // OLD: new Task("Test", "g1");
+        Task task = new Task(
+                "t-assignees",
+                "Test",
+                "g1",
+                true,
+                new ArrayList<>()
+        );
+        task.addAssignee("u1");
+        u1.addTask(task.getID());
+        taskDAO.upsertTask(task);
+
+        TestPresenter presenter = new TestPresenter();
+        EditGroupTasksInteractor interactor =
+                new EditGroupTasksInteractor(taskDAO, presenter, userDAO, memDAO);
+
+        EditGroupTasksInputData input = new EditGroupTasksInputData(
+                task.getID(),
+                null,
+                null,
+                null,
                 Arrays.asList("u2"),
                 "g1"
         );
 
         interactor.execute(input);
 
-        // Presenter SHOULD have been called (only in assignee-change branch)
-        assertNotNull(presenter.received);
-        assertTrue(presenter.received.isSuccess());  // success defaults to true here
-        assertEquals("Task updated successfully.", presenter.received.getMessage());
+        assertTrue(presenter.received.isSuccess());
 
-        // Old user should no longer have the task
+        // NOTE: these assertions assume the interactor correctly:
+        // 1) removes the task from old assignees
+        // 2) adds it to new assignees
         assertFalse(u1.getTasks().contains(task.getID()));
-
-        // New user should now have the task
         assertTrue(u2.getTasks().contains(task.getID()));
     }
 
+    // ---------------------------------------------------------------------
+    //  6. NO ASSIGNEE CHANGE → STILL SUCCESS
+    // ---------------------------------------------------------------------
     @Test
-    void testNoAssigneeChangeDoesNotTriggerAssigneeBranch() {
+    void testNoAssigneeChangeStillSuccess() {
         InMemoryTaskDataAccessObject taskDAO = new InMemoryTaskDataAccessObject();
         InMemoryUserDataAccessObject userDAO = new InMemoryUserDataAccessObject();
-        InMemoryMembershipDataAccessObject membershipDAO = new InMemoryMembershipDataAccessObject();
+        InMemoryMembershipDataAccessObject memDAO = new InMemoryMembershipDataAccessObject();
 
-        User mod = new User("mod", "pw");
+        User mod = new User("m", "pw");
         userDAO.save(mod);
-        userDAO.setCurrentUsername("mod");
-        membershipDAO.save(new Membership("mod", "g1", UserRole.MODERATOR, true));
+        userDAO.setCurrentUsername("m");
+        memDAO.save(new Membership("m", "g1", UserRole.MODERATOR, true));
 
-        Task task = new Task("Task", "g1");
-        taskDAO.saveTask(task);
+        // OLD: new Task("Task", "g1");
+        Task task = new Task(
+                "t-no-assignee-change",
+                "Task",
+                "g1",
+                false,
+                new ArrayList<>()
+        );
+        taskDAO.upsertTask(task);
 
         TestPresenter presenter = new TestPresenter();
         EditGroupTasksInteractor interactor =
-                new EditGroupTasksInteractor(taskDAO, presenter, userDAO, membershipDAO);
+                new EditGroupTasksInteractor(taskDAO, presenter, userDAO, memDAO);
 
         EditGroupTasksInputData input = new EditGroupTasksInputData(
                 task.getID(),
                 null,
                 null,
                 null,
-                null,      // <--- important: no assignee list
+                null,
                 "g1"
         );
 
         interactor.execute(input);
 
-        assertNotNull(presenter.received);
         assertTrue(presenter.received.isSuccess());
         assertEquals("Task updated successfully.", presenter.received.getMessage());
     }
 
+    // ---------------------------------------------------------------------
+    //  7. EMPTY STRING DUE DATE → DO NOT UPDATE
+    // ---------------------------------------------------------------------
     @Test
-    void testAssigneeLoopsHandleMissingUsers() {
+    void testEmptyDueDateDoesNotChangeDueDate() {
         InMemoryTaskDataAccessObject taskDAO = new InMemoryTaskDataAccessObject();
         InMemoryUserDataAccessObject userDAO = new InMemoryUserDataAccessObject();
-        InMemoryMembershipDataAccessObject membershipDAO = new InMemoryMembershipDataAccessObject();
+        InMemoryMembershipDataAccessObject memDAO = new InMemoryMembershipDataAccessObject();
 
+        User mod = new User("z", "pw");
+        userDAO.save(mod);
+        userDAO.setCurrentUsername("z");
+        memDAO.save(new Membership("z", "g1", UserRole.MODERATOR, true));
+
+        // OLD: new Task("Task", "g1");
+        Task task = new Task(
+                "t-empty-date",
+                "Task",
+                "g1",
+                false,
+                new ArrayList<>()
+        );
+        LocalDateTime oldDue = LocalDateTime.of(2030, 1, 1, 10, 0);
+        task.setDueDate(oldDue);
+        taskDAO.upsertTask(task);
+
+        TestPresenter presenter = new TestPresenter();
+        EditGroupTasksInteractor interactor =
+                new EditGroupTasksInteractor(taskDAO, presenter, userDAO, memDAO);
+
+        EditGroupTasksInputData input = new EditGroupTasksInputData(
+                task.getID(),
+                null,
+                "",      // empty → do not update
+                null,
+                null,
+                "g1"
+        );
+
+        interactor.execute(input);
+
+        assertEquals(oldDue, task.getDueDate().get());
+    }
+
+    @Test
+    void testMembershipNullAllowsEditing() {
+        InMemoryTaskDataAccessObject taskDAO = new InMemoryTaskDataAccessObject();
+        InMemoryUserDataAccessObject userDAO = new InMemoryUserDataAccessObject();
+        InMemoryMembershipDataAccessObject memDAO = new InMemoryMembershipDataAccessObject();
+
+        // User exists but DOES NOT have a membership in g1
+        User user = new User("lonely", "pw");
+        userDAO.save(user);
+        userDAO.setCurrentUsername("lonely");
+
+        // Task exists
+        Task task = new Task(
+                "t-null-membership",
+                "Description",
+                "g1",
+                false,
+                new ArrayList<>()
+        );
+        taskDAO.upsertTask(task);
+
+        TestPresenter presenter = new TestPresenter();
+
+        EditGroupTasksInteractor interactor =
+                new EditGroupTasksInteractor(taskDAO, presenter, userDAO, memDAO);
+
+        EditGroupTasksInputData input = new EditGroupTasksInputData(
+                task.getID(),
+                "Updated",
+                null,
+                null,
+                null,
+                "g1"
+        );
+
+        interactor.execute(input);
+
+        // Because membership == null, edit is permitted
+        assertNotNull(presenter.received);
+        assertTrue(presenter.received.isSuccess());
+        assertEquals("Task updated successfully.", presenter.received.getMessage());
+
+        // also ensure update happened
+        assertEquals("Updated", task.getDescription());
+    }
+
+    @Test
+    void testMarkIncompleteBranchExecutes() {
+        InMemoryTaskDataAccessObject taskDAO = new InMemoryTaskDataAccessObject();
+        InMemoryUserDataAccessObject userDAO = new InMemoryUserDataAccessObject();
+        InMemoryMembershipDataAccessObject memDAO = new InMemoryMembershipDataAccessObject();
+
+        User mod = new User("q", "pw");
+        userDAO.save(mod);
+        userDAO.setCurrentUsername("q");
+        memDAO.save(new Membership("q", "g1", UserRole.MODERATOR, true));
+
+        Task task = new Task(
+                "t-incomplete-branch",
+                "Task",
+                "g1",
+                false,
+                new ArrayList<>()
+        );
+        task.markCompleted(); // MUST start completed so markIncomplete actually flips state
+        taskDAO.upsertTask(task);
+
+        TestPresenter presenter = new TestPresenter();
+        EditGroupTasksInteractor interactor =
+                new EditGroupTasksInteractor(taskDAO, presenter, userDAO, memDAO);
+
+        EditGroupTasksInputData input = new EditGroupTasksInputData(
+                task.getID(),
+                null,
+                null,
+                false,     // explicitly request incomplete
+                null,
+                "g1"
+        );
+
+        interactor.execute(input);
+
+        assertFalse(task.isCompleted());
+        assertTrue(presenter.received.isSuccess());
+    }
+
+    @Test
+    void testOldAssigneeUserNotFound() {
+        InMemoryTaskDataAccessObject taskDAO = new InMemoryTaskDataAccessObject();
+        InMemoryUserDataAccessObject userDAO = new InMemoryUserDataAccessObject();
+        InMemoryMembershipDataAccessObject memDAO = new InMemoryMembershipDataAccessObject();
+
+        // Moderator
+        User mod = new User("mod", "pw");
+        userDAO.save(mod);
+        userDAO.setCurrentUsername("mod");
+        memDAO.save(new Membership("mod", "g1", UserRole.MODERATOR, true));
+
+        // Task with old assignee: "ghost" (user does NOT exist)
+        Task task = new Task(
+                "t-old-null",
+                "Task",
+                "g1",
+                false,
+                new ArrayList<>()
+        );
+        task.addAssignee("ghost");     // ghost user does NOT exist!
+        taskDAO.upsertTask(task);
+
+        TestPresenter presenter = new TestPresenter();
+        EditGroupTasksInteractor interactor =
+                new EditGroupTasksInteractor(taskDAO, presenter, userDAO, memDAO);
+
+        // newAssignees null -> test still hits old loop
+        EditGroupTasksInputData input = new EditGroupTasksInputData(
+                task.getID(),
+                null,
+                null,
+                null,
+                new ArrayList<>(),  // empty but non-null → hits old loop
+                "g1"
+        );
+
+        interactor.execute(input);
+
+        assertTrue(presenter.received.isSuccess());
+        assertTrue(task.getAssignees().isEmpty());   // old removed (task-level)
+        // no crash from u == null branch
+    }
+
+    @Test
+    void testNewAssigneeUserNotFound() {
+        InMemoryTaskDataAccessObject taskDAO = new InMemoryTaskDataAccessObject();
+        InMemoryUserDataAccessObject userDAO = new InMemoryUserDataAccessObject();
+        InMemoryMembershipDataAccessObject memDAO = new InMemoryMembershipDataAccessObject();
+
+        // Moderator
         User mod = new User("mod2", "pw");
         userDAO.save(mod);
         userDAO.setCurrentUsername("mod2");
-        membershipDAO.save(new Membership("mod2", "g1", UserRole.MODERATOR, true));
+        memDAO.save(new Membership("mod2", "g1", UserRole.MODERATOR, true));
 
-        Task task = new Task("Task", "g1");
-        task.addAssignee("ghostUser");  // <--- user does NOT exist
-        taskDAO.saveTask(task);
-
-        TestPresenter presenter = new TestPresenter();
-        EditGroupTasksInteractor interactor =
-                new EditGroupTasksInteractor(taskDAO, presenter, userDAO, membershipDAO);
-
-        EditGroupTasksInputData input = new EditGroupTasksInputData(
-                task.getID(),
-                null,
-                null,
-                null,
-                Arrays.asList("ghostUser2"),  // <--- also does NOT exist
-                "g1"
-        );
-
-        interactor.execute(input);
-
-        assertNotNull(presenter.received);
-        assertTrue(presenter.received.isSuccess());
-    }
-
-    @Test
-    void markIncomplete() {
-        // DAOs
-        InMemoryTaskDataAccessObject taskDAO = new InMemoryTaskDataAccessObject();
-        InMemoryUserDataAccessObject userDAO = new InMemoryUserDataAccessObject();
-        InMemoryMembershipDataAccessObject membershipDAO = new InMemoryMembershipDataAccessObject();
-
-        // Moderator user
-        User user = new User("bob", "pw");
-        userDAO.save(user);
-        userDAO.setCurrentUsername("bob");
-
-        Membership mem = new Membership("bob", "g1", UserRole.MODERATOR, true);
-        membershipDAO.save(mem);
-
-        Task task = new Task("Some task", "g1");
-        task.markIncomplete();
-        taskDAO.saveTask(task);
-
-        TestPresenter presenter = new TestPresenter();
-
-        EditGroupTasksInteractor interactor =
-                new EditGroupTasksInteractor(taskDAO, presenter, userDAO, membershipDAO);
-
-        EditGroupTasksInputData input = new EditGroupTasksInputData(
-                task.getID(),
-                "anything",
-                "2024-05-05",
+        // Task with no old assignees
+        Task task = new Task(
+                "t-new-null",
+                "Task",
+                "g1",
                 false,
-                Collections.emptyList(),
-                "g1"
+                new ArrayList<>()
         );
+        taskDAO.upsertTask(task);
 
-        interactor.execute(input);
-
-        assertNotNull(presenter.received);
-        assertTrue(presenter.received.isSuccess());
-        assertEquals(false, task.isCompleted());
-    }
-
-    @Test
-    void testEmptyDueDateStringDoesNotUpdateDueDate() {
-        InMemoryTaskDataAccessObject taskDAO = new InMemoryTaskDataAccessObject();
-        InMemoryUserDataAccessObject userDAO = new InMemoryUserDataAccessObject();
-        InMemoryMembershipDataAccessObject membershipDAO = new InMemoryMembershipDataAccessObject();
-
-        User mod = new User("mod3", "pw");
-        userDAO.save(mod);
-        userDAO.setCurrentUsername("mod3");
-        membershipDAO.save(new Membership("mod3", "g1", UserRole.MODERATOR, true));
-
-        // Task with an initial due date
-        Task task = new Task("Task", "g1");
-        task.setDueDate(LocalDate.of(2030, 1, 1).atStartOfDay());
-        taskDAO.saveTask(task);
-
+        TestPresenter presenter = new TestPresenter();
         EditGroupTasksInteractor interactor =
-                new EditGroupTasksInteractor(taskDAO, new TestPresenter(), userDAO, membershipDAO);
+                new EditGroupTasksInteractor(taskDAO, presenter, userDAO, memDAO);
 
-        // Pass an empty string as newDueDate
+        // Add "ghost" as new assignee → user does NOT exist
         EditGroupTasksInputData input = new EditGroupTasksInputData(
                 task.getID(),
                 null,
-                "",          // <--- empty but not null
                 null,
                 null,
+                List.of("ghost"),  // ghost user does NOT exist
                 "g1"
         );
 
         interactor.execute(input);
 
-        // Due date should remain unchanged
-        assertEquals("2030-01-01", task.getDueDate().get().toLocalDate().toString());
+        assertTrue(presenter.received.isSuccess());
+        assertEquals(List.of("ghost"), task.getAssignees()); // stored
+        // but user not updated since u == null
     }
+
 }

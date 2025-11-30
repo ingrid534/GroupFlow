@@ -91,6 +91,15 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
                 String sel = groupsList.getSelectedValue();
                 if (sel != null) {
                     cards.show(workArea, sel);
+                    Component panel = null;
+                    for (Component c : workArea.getComponents()) {
+                        if (sel.equals(c.getName())) {
+                            panel = c;
+                            break;
+                        }
+                    }
+
+                    updateTasksTabIfPossible(panel, sel);
                 }
             }
         });
@@ -120,6 +129,34 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
                         list, displayText, index, isSelected, cellHasFocus);
             }
         });
+    }
+
+    private void updateTasksTabIfPossible(Component panel, String sel) {
+        if (panel instanceof JPanel) {
+            JPanel panel2 = (JPanel) panel;
+            JTabbedPane tabs = findTabbedPane(panel2);
+            if (tabs != null) {
+                int idx = tabs.indexOfTab("Tasks");
+                if (idx != -1) {
+                    tabs.setComponentAt(idx, buildGroupTasksTab(sel));
+                }
+            }
+        }
+    }
+
+    private JTabbedPane findTabbedPane(Container root) {
+        for (Component c : root.getComponents()) {
+            if (c instanceof JTabbedPane) {
+                return (JTabbedPane) c;
+            }
+            if (c instanceof Container) {
+                JTabbedPane found = findTabbedPane((Container) c);
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        return null;
     }
 
     private JComponent buildHeader() {
@@ -224,19 +261,6 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
         tabs.setForegroundAt(0, new Color(0x1E88E5));
 
         groupPanel.add(tabs, BorderLayout.CENTER);
-
-        tabs.addChangeListener(event -> {
-            int index = tabs.getSelectedIndex();
-            String tabTitle = tabs.getTitleAt(index);
-
-            if ("Tasks".equals(tabTitle)) {
-                Component current = tabs.getComponentAt(index);
-
-                if (current instanceof JPanel || current instanceof JScrollPane) {
-                    tabs.setComponentAt(index, buildGroupTasksTab(groupId));
-                }
-            }
-        });
         return groupPanel;
     }
 

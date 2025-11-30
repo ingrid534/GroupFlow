@@ -171,7 +171,9 @@ public class Task {
      * @param assignees the new list of assigned users.
      */
     public void setAssignees(List<String> assignees) {
-        if (assignees == null) return;
+        if (assignees == null) {
+            return;
+        }
         this.assignees.clear();
         this.assignees.addAll(assignees);
     }

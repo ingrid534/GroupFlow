@@ -15,6 +15,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ViewTasksInteractorTest {
 
+    // -----------------------------
+    // Test Presenter
+    // -----------------------------
     private static class TestPresenter implements ViewTasksOutputBoundary {
         private ViewTasksOutputData received;
 
@@ -34,25 +37,18 @@ public class ViewTasksInteractorTest {
 
     @Test
     void testNullTaskIsSkipped() {
-        // Custom DAO that returns null in the list
         ViewTasksDataAccessInterface taskDAO = new ViewTasksDataAccessInterface() {
             @Override
             public List<Task> getTasksForUser(String username) {
                 List<Task> list = new ArrayList<>();
-                list.add(null);  // force the null branch
+                list.add(null);
                 return list;
             }
         };
 
-        ViewTasksUserDataAccessInterface userDAO = new ViewTasksUserDataAccessInterface() {
-            @Override
-            public String getCurrentUsername() {
-                return "alice";
-            }
-        };
+        ViewTasksUserDataAccessInterface userDAO = () -> "alice";
 
         TestPresenter presenter = new TestPresenter();
-
         ViewTasksInteractor interactor =
                 new ViewTasksInteractor(taskDAO, presenter, userDAO);
 
@@ -71,7 +67,6 @@ public class ViewTasksInteractorTest {
         userDAO.save(new User("alice", "pw"));
 
         TestPresenter presenter = new TestPresenter();
-
         ViewTasksInteractor interactor =
                 new ViewTasksInteractor(taskDAO, presenter, userDAO);
 
@@ -89,10 +84,10 @@ public class ViewTasksInteractorTest {
         userDAO.setCurrentUsername("bob");
         userDAO.save(new User("bob", "pw"));
 
-        Task completed = new Task("Completed Task", "g1");
+        Task completed = new Task("id1", "Completed Task", "g1", false, new ArrayList<>());
         completed.addAssignee("bob");
         completed.markCompleted();
-        taskDAO.saveTask(completed);
+        taskDAO.upsertTask(completed);
 
         TestPresenter presenter = new TestPresenter();
         ViewTasksInteractor interactor =
@@ -111,9 +106,10 @@ public class ViewTasksInteractorTest {
         userDAO.setCurrentUsername("bob");
         userDAO.save(new User("bob", "pw"));
 
-        Task overdue = new Task("Overdue", "g1", LocalDateTime.now().minusDays(5));
+        Task overdue = new Task("id2", "Overdue", "g1", false, new ArrayList<>(),
+                LocalDateTime.now().minusDays(3));
         overdue.addAssignee("bob");
-        taskDAO.saveTask(overdue);
+        taskDAO.upsertTask(overdue);
 
         TestPresenter presenter = new TestPresenter();
         ViewTasksInteractor interactor =
@@ -132,9 +128,9 @@ public class ViewTasksInteractorTest {
         userDAO.setCurrentUsername("charlie");
         userDAO.save(new User("charlie", "pw"));
 
-        Task t = new Task("No Date", "gX");
+        Task t = new Task("id3", "No Date", "gX", false, new ArrayList<>());
         t.addAssignee("charlie");
-        taskDAO.saveTask(t);
+        taskDAO.upsertTask(t);
 
         TestPresenter presenter = new TestPresenter();
         ViewTasksInteractor interactor =
@@ -146,6 +142,7 @@ public class ViewTasksInteractorTest {
                 presenter.getReceived().getTasks();
 
         assertEquals(1, tasks.size());
+
         ViewTasksOutputData.TaskDTO dto = tasks.get(0);
 
         assertEquals("No Date", dto.getDescription());
@@ -164,9 +161,9 @@ public class ViewTasksInteractorTest {
 
         LocalDateTime future = LocalDateTime.now().plusDays(2);
 
-        Task t = new Task("Future Work", "group123", future);
+        Task t = new Task("id4", "Future Work", "group123", false, new ArrayList<>(), future);
         t.addAssignee("dave");
-        taskDAO.saveTask(t);
+        taskDAO.upsertTask(t);
 
         TestPresenter presenter = new TestPresenter();
         ViewTasksInteractor interactor =
@@ -176,11 +173,18 @@ public class ViewTasksInteractorTest {
 
         List<ViewTasksOutputData.TaskDTO> tasks =
                 presenter.getReceived().getTasks();
+
         assertEquals(1, tasks.size());
 
         ViewTasksOutputData.TaskDTO dto = tasks.get(0);
+
+        // Interactor uses "yyyy-MM-dd HH:mm"
+        String expected = future.format(
+                java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+        );
+
+        assertEquals(expected, dto.getDueDateString());
         assertEquals("Future Work", dto.getDescription());
-        assertEquals(future.toLocalDate().toString(), dto.getDueDateString());
         assertEquals("group123", dto.getGroupId());
     }
 
@@ -192,28 +196,29 @@ public class ViewTasksInteractorTest {
         userDAO.setCurrentUsername("eva");
         userDAO.save(new User("eva", "pw"));
 
-        // Valid
+        // Valid with date
         LocalDateTime f1 = LocalDateTime.now().plusDays(3);
-        Task valid1 = new Task("Valid 1", "g1", f1);
+        Task valid1 = new Task("id5", "Valid 1", "g1", false, new ArrayList<>(), f1);
         valid1.addAssignee("eva");
 
         // Valid no date
-        Task valid2 = new Task("Valid 2", "g2");
+        Task valid2 = new Task("id6", "Valid 2", "g2", false, new ArrayList<>());
         valid2.addAssignee("eva");
 
         // Completed
-        Task completed = new Task("Completed", "g3");
+        Task completed = new Task("id7", "Completed", "g3", false, new ArrayList<>());
         completed.addAssignee("eva");
         completed.markCompleted();
 
         // Overdue
-        Task overdue = new Task("Overdue", "g4", LocalDateTime.now().minusDays(2));
+        Task overdue = new Task("id8", "Overdue", "g4", false, new ArrayList<>(),
+                LocalDateTime.now().minusDays(2));
         overdue.addAssignee("eva");
 
-        taskDAO.saveTask(valid1);
-        taskDAO.saveTask(valid2);
-        taskDAO.saveTask(completed);
-        taskDAO.saveTask(overdue);
+        taskDAO.upsertTask(valid1);
+        taskDAO.upsertTask(valid2);
+        taskDAO.upsertTask(completed);
+        taskDAO.upsertTask(overdue);
 
         TestPresenter presenter = new TestPresenter();
         ViewTasksInteractor interactor =
@@ -225,7 +230,10 @@ public class ViewTasksInteractorTest {
                 presenter.getReceived().getTasks();
 
         assertEquals(2, result.size());
+
+        // Sort alphabetically for deterministic testing
         result.sort(Comparator.comparing(ViewTasksOutputData.TaskDTO::getDescription));
+
         assertEquals("Valid 1", result.get(0).getDescription());
         assertEquals("Valid 2", result.get(1).getDescription());
     }

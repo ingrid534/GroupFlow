@@ -132,7 +132,7 @@ public class CreateGroupTaskInteractorTest {
 
         CreateGroupTaskInputData input = new CreateGroupTaskInputData(
                 "Write report",
-                "2030-12-25",
+                "2030-12-25 11:30",
                 Arrays.asList("carol"),
                 "g1"
         );
@@ -277,4 +277,43 @@ public class CreateGroupTaskInteractorTest {
         // ghostUser ignored — no exception
         assertTrue(presenter.received.isSuccess());
     }
+
+    @Test
+    void testInvalidDateFormatTriggersError() {
+        InMemoryTaskDataAccessObject taskDAO = new InMemoryTaskDataAccessObject();
+        InMemoryUserDataAccessObject userDAO = new InMemoryUserDataAccessObject();
+        InMemoryGroupDataAccessObject groupDAO = new InMemoryGroupDataAccessObject();
+        InMemoryMembershipDataAccessObject membershipDAO = new InMemoryMembershipDataAccessObject();
+
+        // moderator setup
+        User mod = new User("zoe", "pw");
+        userDAO.save(mod);
+        userDAO.setCurrentUsername("zoe");
+        membershipDAO.save(new Membership("zoe", "g1", UserRole.MODERATOR, true));
+
+        // group exists
+        Group group = new Group("Grp", "g1", null);
+        groupDAO.save(group);
+
+        TestPresenter presenter = new TestPresenter();
+
+        CreateGroupTaskInteractor interactor =
+                new CreateGroupTaskInteractor(taskDAO, presenter, new TaskFactory(),
+                        userDAO, groupDAO, membershipDAO);
+
+        // <-- DEADLINE PROVIDED BUT INVALID FORMAT
+        CreateGroupTaskInputData input = new CreateGroupTaskInputData(
+                "Bad date test",
+                "NOT_A_DATE",      // invalid: should trigger catch(DateTimeParseException)
+                null,
+                "g1"
+        );
+
+        interactor.execute(input);
+
+        assertNotNull(presenter.received);
+        assertFalse(presenter.received.isSuccess());
+        assertEquals("Invalid date.", presenter.received.getMessage());
+    }
+
 }

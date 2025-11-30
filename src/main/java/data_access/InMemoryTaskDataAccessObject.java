@@ -48,7 +48,7 @@ public class InMemoryTaskDataAccessObject implements ViewTasksDataAccessInterfac
     }
 
     @Override
-    public void saveTask(Task task) {
+    public void upsertTask(Task task) {
         this.tasks.put(task.getID(), task);
     }
 }
