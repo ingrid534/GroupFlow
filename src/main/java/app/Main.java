@@ -25,6 +25,9 @@ public class Main {
                 .addViewMembersUseCase()
                 .addViewPendingUseCase()
                 .addGroupTasksUseCases()
+                .addRemoveMemberUseCase()
+                .addRespondRequestUseCase()
+                .addUpdateRoleUseCase()
                 .build();
 
         application.pack();

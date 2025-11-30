@@ -10,13 +10,16 @@ import entity.membership.MembershipFactory;
 import entity.user.UserRole;
 import org.bson.Document;
 import use_case.create_group.CreateGroupMembershipDataAccessInterface;
+import use_case.manage_members.remove_member.RemoveMemberDataAccessInterface;
+import use_case.manage_members.respond_request.RespondRequestDataAccessInterface;
+import use_case.manage_members.update_role.UpdateRoleDataAccessInterface;
 import use_case.manage_members.view_members.ViewMembersMembershipDataAccessInterface;
 import use_case.manage_members.view_pending.ViewPendingMembershipDataAccessInterface;
+import use_case.creategrouptask.CreateGroupTasksMembershipDataAccessInterface;
+import use_case.editgrouptasks.EditGroupTasksMembershipDataAccessInterface;
 
 import java.util.ArrayList;
 import java.util.List;
-import use_case.creategrouptask.CreateGroupTasksMembershipDataAccessInterface;
-import use_case.editgrouptasks.EditGroupTasksMembershipDataAccessInterface;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
@@ -31,8 +34,11 @@ import static com.mongodb.client.model.Filters.eq;
 public class DBMembershipDataAccessObject implements CreateGroupMembershipDataAccessInterface,
         ViewMembersMembershipDataAccessInterface,
         ViewPendingMembershipDataAccessInterface,
-        CreateGroupTasksMembershipDataAccessInterface, 
-        EditGroupTasksMembershipDataAccessInterface {
+        CreateGroupTasksMembershipDataAccessInterface,
+        EditGroupTasksMembershipDataAccessInterface,
+        RemoveMemberDataAccessInterface,
+        RespondRequestDataAccessInterface,
+        UpdateRoleDataAccessInterface {
 
     private static final String USER_FIELD = "user";
     private static final String GROUP_FIELD = "group";
@@ -107,7 +113,6 @@ public class DBMembershipDataAccessObject implements CreateGroupMembershipDataAc
         UserRole role = UserRole.valueOf(doc.getString(ROLE_FIELD));
         boolean approved = doc.getBoolean(APPROVED_FIELD, false);
 
-        // Use the factory to create the membership instance
         return membershipFactory.create(user, group, role, approved);
     }
 
@@ -126,7 +131,6 @@ public class DBMembershipDataAccessObject implements CreateGroupMembershipDataAc
             UserRole role = UserRole.valueOf(doc.getString(ROLE_FIELD));
             boolean approved = doc.getBoolean(APPROVED_FIELD, false);
 
-            // Use the factory to create the membership instance
             result.add(membershipFactory.create(user, group, role, approved));
         }
 
@@ -148,10 +152,74 @@ public class DBMembershipDataAccessObject implements CreateGroupMembershipDataAc
             UserRole role = UserRole.valueOf(doc.getString(ROLE_FIELD));
             boolean approved = doc.getBoolean(APPROVED_FIELD, false);
 
-            // Use the factory to create the membership instance
             result.add(membershipFactory.create(user, group, role, approved));
         }
 
         return result;
+    }
+
+    /**
+     * Updates the role of an existing membership for the given group and user.
+     * If no matching membership is found, the method completes silently.
+     *
+     * @param groupID  the ID of the group whose membership is being updated
+     * @param username the username of the member whose role is being changed
+     * @param newRole  the new role to assign to the member
+     */
+    @Override
+    public void updateMembership(String groupID, String username, UserRole newRole) {
+        membershipsCollection.updateOne(
+                and(
+                        eq(USER_FIELD, username),
+                        eq(GROUP_FIELD, groupID)
+                ),
+                new Document("$set", new Document(ROLE_FIELD, newRole.name()))
+        );
+    }
+
+    /**
+     * Updates a pending membership request for the given group and user.
+     * If {@code accepted} is true, the user's membership record is updated to an
+     * accepted/active state. If {@code accepted} is false, the user's pending
+     * membership record is removed entirely.
+     *
+     * @param groupID  the ID of the group whose membership request is being updated
+     * @param username the username of the member whose request is being processed
+     * @param accepted true to accept the request, false to decline and remove it
+     */
+    @Override
+    public void updateMembership(String groupID, String username, boolean accepted) {
+        if (accepted) {
+            membershipsCollection.updateOne(
+                    and(
+                            eq(USER_FIELD, username),
+                            eq(GROUP_FIELD, groupID),
+                            eq(APPROVED_FIELD, false)
+                    ),
+                    new Document("$set", new Document(APPROVED_FIELD, true))
+            );
+        } else {
+            membershipsCollection.deleteOne(
+                    and(
+                            eq(USER_FIELD, username),
+                            eq(GROUP_FIELD, groupID),
+                            eq(APPROVED_FIELD, false)
+                    )
+            );
+        }
+    }
+
+    /**
+     * Removes the membership record for the specified user in the given group.
+     * If no such membership exists, the method completes silently.
+     *
+     * @param groupID  the ID of the group the user is being removed from
+     * @param username the username of the member to remove
+     */
+    @Override
+    public void removeMembership(String groupID, String username) {
+        membershipsCollection.deleteOne(
+                and(eq(USER_FIELD, username), eq(GROUP_FIELD, groupID))
+        );
     }
 }

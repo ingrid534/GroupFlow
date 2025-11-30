@@ -9,6 +9,9 @@ import interface_adapter.editgrouptask.EditGroupTaskController;
 import interface_adapter.editgrouptask.EditGroupTaskViewModel;
 import interface_adapter.logout.LogoutController;
 import interface_adapter.manage_members.PeopleTabViewModel;
+import interface_adapter.manage_members.remove_member.RemoveMemberControllerFactory;
+import interface_adapter.manage_members.respond_request.RespondRequestControllerFactory;
+import interface_adapter.manage_members.update_role.UpdateRoleControllerFactory;
 import interface_adapter.manage_members.view_members.ViewMembersControllerFactory;
 import interface_adapter.manage_members.view_pending.ViewPendingControllerFactory;
 import interface_adapter.viewgrouptasks.ViewGroupTasksController;
@@ -64,9 +67,13 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
 
     private ViewMembersControllerFactory viewMembersControllerFactory;
     private ViewPendingControllerFactory viewPendingControllerFactory;
+    private RemoveMemberControllerFactory removeMemberControllerFactory;
+    private RespondRequestControllerFactory respondRequestControllerFactory;
+    private UpdateRoleControllerFactory updateRoleControllerFactory;
 
     // Maps group IDs to their names
     private final java.util.Map<String, String> groupIdToName = new java.util.HashMap<>();
+    private String currentUsername;
 
     public DashboardView(DashboardViewModel dashboardViewModel, ViewTasksView viewTasksView) {
         this.dashboardViewModel = Objects.requireNonNull(dashboardViewModel);
@@ -242,7 +249,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
 
     private PeopleTabView createPeopleTab(String groupId) {
         PeopleTabViewModel vm = new PeopleTabViewModel();
-        PeopleTabView view = new PeopleTabView(vm, groupId);
+        PeopleTabView view = new PeopleTabView(vm, groupId, currentUsername);
 
         if (viewMembersControllerFactory != null) {
             view.setViewMembersController(
@@ -253,6 +260,23 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
         if (viewPendingControllerFactory != null) {
             view.setViewPendingController(
                     viewPendingControllerFactory.create(vm)
+            );
+        }
+        if (removeMemberControllerFactory != null) {
+            view.setRemoveMemberController(
+                    removeMemberControllerFactory.create(vm)
+            );
+        }
+
+        if (respondRequestControllerFactory != null) {
+            view.setRespondRequestController(
+                    respondRequestControllerFactory.create(vm)
+            );
+        }
+
+        if (updateRoleControllerFactory != null) {
+            view.setUpdateRoleController(
+                    updateRoleControllerFactory.create(vm)
             );
         }
 
@@ -416,7 +440,8 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     public void propertyChange(PropertyChangeEvent evt) {
         if ("state".equals(evt.getPropertyName())) {
             LoggedInState st = (LoggedInState) evt.getNewValue();
-            usernameLabel.setText(st.getUsername());
+            currentUsername = st.getUsername();
+            usernameLabel.setText(currentUsername);
             if (st.getGroups() != null) {
                 setGroups(st.getGroups());
             }
@@ -448,6 +473,18 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
 
     public void setViewPendingControllerFactory(ViewPendingControllerFactory factory) {
         this.viewPendingControllerFactory = factory;
+    }
+
+    public void setRemoveMemberControllerFactory(RemoveMemberControllerFactory factory) {
+        this.removeMemberControllerFactory = factory;
+    }
+
+    public void setRespondRequestControllerFactory(RespondRequestControllerFactory factory) {
+        this.respondRequestControllerFactory = factory;
+    }
+
+    public void setUpdateRoleControllerFactory(UpdateRoleControllerFactory factory) {
+        this.updateRoleControllerFactory = factory;
     }
 
     public void setViewGroupTasksController(ViewGroupTasksController controller) {
