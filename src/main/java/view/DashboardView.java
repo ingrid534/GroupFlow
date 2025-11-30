@@ -185,13 +185,6 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
                 );
                 if (code != null && !code.trim().isEmpty()) {
                     joinGroupController.execute(code.trim());
-                    // Optional little UX touch:
-                    JOptionPane.showMessageDialog(
-                            this,
-                            "Join request sent to the group owner.",
-                            "Request Sent",
-                            JOptionPane.INFORMATION_MESSAGE
-                    );
                 }
             }
         });
