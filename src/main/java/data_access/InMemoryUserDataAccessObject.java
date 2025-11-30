@@ -1,6 +1,7 @@
 package data_access;
 
 import use_case.change_password.ChangePasswordUserDataAccessInterface;
+import use_case.create_group.CreateGroupUserDataAccessInterface;
 import use_case.login.LoginUserDataAccessInterface;
 import use_case.logout.LogoutUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
@@ -18,6 +19,7 @@ import entity.user.User;
 public class InMemoryUserDataAccessObject implements SignupUserDataAccessInterface,
         LoginUserDataAccessInterface,
         ChangePasswordUserDataAccessInterface,
+        CreateGroupUserDataAccessInterface,
         LogoutUserDataAccessInterface {
 
     private final Map<String, User> users = new HashMap<>();

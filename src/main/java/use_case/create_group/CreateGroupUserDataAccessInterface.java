@@ -9,14 +9,6 @@ import entity.user.User;
 public interface CreateGroupUserDataAccessInterface {
 
     /**
-     * Checks if the given username exists.
-     *
-     * @param username the username to look for
-     * @return true if a user with the given username exists; false otherwise
-     */
-    boolean existsByName(String username);
-
-    /**
      * Returns the user with the given username.
      *
      * @param username the username to look up
@@ -30,4 +22,18 @@ public interface CreateGroupUserDataAccessInterface {
      * @return the username of the currently logged-in user
      */
     String getCurrentUsername();
+
+    /**
+     * Sets the current username in use.
+     *
+     * @param name The username to be set
+     */
+    void setCurrentUsername(String name);
+
+    /**
+     * Saves the user.
+     *
+     * @param user the user to save
+     */
+    void save(User user);
 }

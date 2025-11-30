@@ -28,9 +28,11 @@ import static com.mongodb.client.model.Filters.eq;
  * of user records stored inside a MongoDB "users" collection.
  * </p>
  */
-public class DBGroupDataAccessObject implements CreateGroupDataAccessInterface,
+public class DBGroupDataAccessObject implements
+        CreateGroupDataAccessInterface,
         LoginGroupsDataAccessInterface,
-        CreateGroupTaskGroupDataAccessInterface, ViewGroupTasksGroupDataAccessInterface {
+        CreateGroupTaskGroupDataAccessInterface,
+        ViewGroupTasksGroupDataAccessInterface {
 
     private static final String GROUP_NAME = "name";
     private static final String GROUP_CODE = "joinCode";
