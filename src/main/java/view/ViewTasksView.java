@@ -1,6 +1,5 @@
 package view;
 
-import interface_adapter.viewtasks.LoggedInState;
 import interface_adapter.viewtasks.ViewTasksViewModel;
 import interface_adapter.viewtasks.ViewTasksController;
 import use_case.viewtasks.ViewTasksOutputData;
@@ -33,9 +32,6 @@ public class ViewTasksView extends JPanel implements PropertyChangeListener {
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
         add(scrollPane, BorderLayout.CENTER);
-
-        // Optional: initial render if there are already tasks in the view model
-        refreshList();
     }
 
     private void refreshList() {
@@ -64,9 +60,9 @@ public class ViewTasksView extends JPanel implements PropertyChangeListener {
      */
     public void propertyChange(PropertyChangeEvent evt) {
         if ("state".equals(evt.getPropertyName())) {
-            LoggedInState state = (LoggedInState) evt.getNewValue();
-            viewTasksController.execute(state.getUsername());
+            viewTasksController.execute();
         }
+
         if ("tasks".equals(evt.getPropertyName())) {
             refreshList();
         }

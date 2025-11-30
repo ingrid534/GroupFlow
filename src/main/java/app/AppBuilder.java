@@ -13,11 +13,15 @@ import data_access.DBUserDataAccessObject;
 import data_access.DBTaskDataAccessObject;
 import entity.group.GroupFactory;
 import entity.membership.MembershipFactory;
+import entity.task.TaskFactory;
 import entity.user.UserFactory;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.create_group.CreateGroupController;
 import interface_adapter.create_group.CreateGroupPresenter;
 import interface_adapter.create_group.CreateGroupViewModel;
+import interface_adapter.creategrouptasks.CreateGroupTasksController;
+import interface_adapter.creategrouptasks.CreateGroupTasksPresenter;
+import interface_adapter.creategrouptasks.CreateGroupTasksViewModel;
 import interface_adapter.dashboard.DashboardViewModel;
 import interface_adapter.joingroup.JoinGroupController;
 import interface_adapter.joingroup.JoinGroupPresenter;
@@ -26,6 +30,9 @@ import use_case.join_group.JoinGroupInputBoundary;
 import use_case.join_group.JoinGroupInteractor;
 import use_case.join_group.JoinGroupOutputBoundary;
 import view.JoinGroupView;
+import interface_adapter.editgrouptask.EditGroupTaskController;
+import interface_adapter.editgrouptask.EditGroupTaskPresenter;
+import interface_adapter.editgrouptask.EditGroupTaskViewModel;
 import interface_adapter.logged_in.ChangePasswordController;
 import interface_adapter.logged_in.ChangePasswordPresenter;
 import interface_adapter.logged_in.LoggedInViewModel;
@@ -34,9 +41,18 @@ import interface_adapter.login.LoginPresenter;
 import interface_adapter.login.LoginViewModel;
 import interface_adapter.logout.LogoutController;
 import interface_adapter.logout.LogoutPresenter;
+import interface_adapter.manage_members.PeopleTabViewModel;
+import interface_adapter.manage_members.remove_member.RemoveMemberControllerFactory;
+import interface_adapter.manage_members.respond_request.RespondRequestControllerFactory;
+import interface_adapter.manage_members.update_role.UpdateRoleControllerFactory;
+import interface_adapter.manage_members.view_members.ViewMembersControllerFactory;
+import interface_adapter.manage_members.view_pending.ViewPendingControllerFactory;
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
+import interface_adapter.viewgrouptasks.ViewGroupTasksController;
+import interface_adapter.viewgrouptasks.ViewGroupTasksPresenter;
+import interface_adapter.viewgrouptasks.ViewGroupTasksViewModel;
 import interface_adapter.viewtasks.ViewTasksController;
 import interface_adapter.viewtasks.ViewTasksPresenter;
 import interface_adapter.viewtasks.ViewTasksViewModel;
@@ -46,6 +62,12 @@ import use_case.change_password.ChangePasswordOutputBoundary;
 import use_case.create_group.CreateGroupInputBoundary;
 import use_case.create_group.CreateGroupInteractor;
 import use_case.create_group.CreateGroupOutputBoundary;
+import use_case.creategrouptask.CreateGroupTaskInputBoundary;
+import use_case.creategrouptask.CreateGroupTaskInteractor;
+import use_case.creategrouptask.CreateGroupTaskOutputBoundary;
+import use_case.editgrouptasks.EditGroupTasksInputBoundary;
+import use_case.editgrouptasks.EditGroupTasksInteractor;
+import use_case.editgrouptasks.EditGroupTasksOutputBoundary;
 import use_case.login.LoginInputBoundary;
 import use_case.login.LoginInteractor;
 import use_case.login.LoginOutputBoundary;
@@ -55,6 +77,9 @@ import use_case.logout.LogoutOutputBoundary;
 import use_case.signup.SignupInputBoundary;
 import use_case.signup.SignupInteractor;
 import use_case.signup.SignupOutputBoundary;
+import use_case.viewgrouptasks.ViewGroupTasksInputBoundary;
+import use_case.viewgrouptasks.ViewGroupTasksInteractor;
+import use_case.viewgrouptasks.ViewGroupTasksOutputBoundary;
 import use_case.viewtasks.ViewTasksInputBoundary;
 import use_case.viewtasks.ViewTasksInteractor;
 import use_case.viewtasks.ViewTasksOutputBoundary;
@@ -69,7 +94,9 @@ public class AppBuilder {
     final UserFactory userFactory = new UserFactory();
     final GroupFactory groupFactory = new GroupFactory();
     final MembershipFactory membershipFactory = new MembershipFactory();
+    final TaskFactory taskFactory = new TaskFactory();
     final ViewManagerModel viewManagerModel = new ViewManagerModel();
+    final PeopleTabViewModel peopleTabViewModel = new PeopleTabViewModel();
     ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
 
     private final java.util.Map<String, Dimension> viewSizes = new java.util.HashMap<>();
@@ -84,15 +111,22 @@ public class AppBuilder {
     private final String dbName = "group_flow";
 
     final DBGroupDataAccessObject groupDataAccessObject =
-            new DBGroupDataAccessObject(groupFactory, mongoDBConnectionString, dbName);
+            new DBGroupDataAccessObject(groupFactory, membershipFactory, mongoDBConnectionString, dbName);
+
     final DBUserDataAccessObject userDataAccessObject =
             new DBUserDataAccessObject(userFactory,
             mongoDBConnectionString, dbName);
+
     final DBMembershipDataAccessObject membershipDataAccessObject =
             new DBMembershipDataAccessObject(membershipFactory,
                     mongoDBConnectionString, dbName);
-    // TODO: Implement task DAO
-    final DBTaskDataAccessObject taskDataAccessObject = new DBTaskDataAccessObject();
+
+    final DBTaskDataAccessObject taskDataAccessObject =
+            new DBTaskDataAccessObject(
+                    taskFactory,
+                    mongoDBConnectionString,
+                    dbName
+            );
 
     // DAO version using a shared external database
     // final DBUserDataAccessObject userDataAccessObject = new
@@ -110,6 +144,11 @@ public class AppBuilder {
     private CreateGroupView createGroupView;
     private JoinGroupView joinGroupView;
     private JoinGroupViewModel joinGroupViewModel;
+    private PeopleTabView peopleTabView;
+    private GroupTasksView groupTasksView;
+    private ViewGroupTasksViewModel viewGroupTasksViewModel;
+    private EditGroupTaskViewModel editGroupTaskViewModel;
+    private CreateGroupTasksViewModel createGroupTasksViewModel;
 
     private JFrame application;
     private ViewTasksView viewTasksView;
@@ -141,6 +180,7 @@ public class AppBuilder {
         loginViewModel = new LoginViewModel();
         loginView = new LoginView(loginViewModel);
         cardPanel.add(loginView, loginView.getViewName());
+        viewSizes.put(loginView.getViewName(), new Dimension(420, 320));
         viewSizes.put(loginView.getViewName(), new Dimension(420, 320));
         return this;
     }
@@ -194,9 +234,57 @@ public class AppBuilder {
     public AppBuilder addViewTasksUseCase() {
         viewTasksViewModel = new ViewTasksViewModel();
         ViewTasksOutputBoundary presenter = new ViewTasksPresenter(viewTasksViewModel);
-        ViewTasksInputBoundary interactor = new ViewTasksInteractor(taskDataAccessObject, presenter);
+        ViewTasksInputBoundary interactor = new ViewTasksInteractor(taskDataAccessObject, presenter,
+                userDataAccessObject);
         ViewTasksController viewTasksController = new ViewTasksController(interactor);
         viewTasksView = new ViewTasksView(viewTasksViewModel, viewTasksController);
+        return this;
+    }
+
+    /**
+     * Method to add the TaskView to dashboard.
+     *
+     * @return App builder
+     */
+    public AppBuilder addGroupTasksUseCases() {
+        viewGroupTasksViewModel = new ViewGroupTasksViewModel();
+        ViewGroupTasksOutputBoundary viewPresenter =
+                new ViewGroupTasksPresenter(viewGroupTasksViewModel);
+
+        ViewGroupTasksInputBoundary viewInteractor =
+                new ViewGroupTasksInteractor(taskDataAccessObject, viewPresenter, groupDataAccessObject);
+
+        ViewGroupTasksController viewController =
+                new ViewGroupTasksController(viewInteractor);
+
+        editGroupTaskViewModel = new EditGroupTaskViewModel();
+        EditGroupTasksOutputBoundary editPresenter =
+                new EditGroupTaskPresenter(editGroupTaskViewModel, viewTasksViewModel);
+
+        EditGroupTasksInputBoundary editInteractor =
+                new EditGroupTasksInteractor(taskDataAccessObject, editPresenter, userDataAccessObject,
+                        membershipDataAccessObject);
+
+        EditGroupTaskController editController =
+                new EditGroupTaskController(editInteractor);
+
+        createGroupTasksViewModel = new CreateGroupTasksViewModel();
+        CreateGroupTaskOutputBoundary createPresenter =
+                new CreateGroupTasksPresenter(createGroupTasksViewModel, viewTasksViewModel);
+
+        CreateGroupTaskInputBoundary createInteractor =
+                new CreateGroupTaskInteractor(taskDataAccessObject, createPresenter, taskFactory,
+                        userDataAccessObject, groupDataAccessObject, membershipDataAccessObject);
+
+        CreateGroupTasksController createController =
+                new CreateGroupTasksController(createInteractor);
+
+        this.dashboardView.setViewGroupTasksController(viewController);
+        this.dashboardView.setEditGroupTaskController(editController);
+        this.dashboardView.setCreateGroupTasksController(createController);
+        this.dashboardView.setCreateGroupTasksViewModel(createGroupTasksViewModel);
+        this.dashboardView.setEditGroupTasksViewModel(editGroupTaskViewModel);
+        this.dashboardView.setViewGroupTasksViewModel(viewGroupTasksViewModel);
         return this;
     }
 
@@ -228,6 +316,76 @@ public class AppBuilder {
         dashboardView.setCreateGroupController(createGroupController);
 
         createGroupView.hookCreateGroupModalOpen(application);
+
+        return this;
+    }
+
+    /**
+     * Method to add the View Members Use case.
+     *
+     * @return App builder.
+     */
+    public AppBuilder addViewMembersUseCase() {
+        ViewMembersControllerFactory factory =
+                new ViewMembersControllerFactory(membershipDataAccessObject);
+
+        dashboardView.setViewMembersControllerFactory(factory);
+
+        return this;
+    }
+
+    /**
+     * Method to add the View Pending Use case.
+     *
+     * @return App builder.
+     */
+    public AppBuilder addViewPendingUseCase() {
+        ViewPendingControllerFactory factory =
+                new ViewPendingControllerFactory(membershipDataAccessObject);
+
+        dashboardView.setViewPendingControllerFactory(factory);
+
+        return this;
+    }
+
+    /**
+     * Method to add the Remove Member Use case.
+     *
+     * @return App builder.
+     */
+    public AppBuilder addRemoveMemberUseCase() {
+        RemoveMemberControllerFactory factory =
+                new RemoveMemberControllerFactory(membershipDataAccessObject);
+
+        dashboardView.setRemoveMemberControllerFactory(factory);
+
+        return this;
+    }
+
+    /**
+     * Method to add the Respond Request Use case.
+     *
+     * @return App builder.
+     */
+    public AppBuilder addRespondRequestUseCase() {
+        RespondRequestControllerFactory factory =
+                new RespondRequestControllerFactory(membershipDataAccessObject);
+
+        dashboardView.setRespondRequestControllerFactory(factory);
+
+        return this;
+    }
+
+    /**
+     * Method to add the Update Role Use case.
+     *
+     * @return App builder.
+     */
+    public AppBuilder addUpdateRoleUseCase() {
+        UpdateRoleControllerFactory factory =
+                new UpdateRoleControllerFactory(membershipDataAccessObject);
+
+        dashboardView.setUpdateRoleControllerFactory(factory);
 
         return this;
     }

@@ -1,10 +1,11 @@
-package interface_adapter.view_members;
+package interface_adapter.manage_members;
 
 import interface_adapter.ViewModel;
 
-public class PeopleTabViewModel extends ViewModel {
+public class PeopleTabViewModel extends ViewModel<ManageMembersState> {
+
     public PeopleTabViewModel() {
-        super("sign up");
+        super("people");
         setState(new ManageMembersState());
-    }
+    } // PeopleTabViewModel
 }

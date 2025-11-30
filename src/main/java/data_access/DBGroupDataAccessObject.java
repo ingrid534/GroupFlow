@@ -1,21 +1,24 @@
 package data_access;
 
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.*;
 import entity.group.Group;
 import entity.group.GroupFactory;
 import entity.group.GroupType;
+import entity.membership.Membership;
+import entity.membership.MembershipFactory;
+import entity.user.UserRole;
 import use_case.create_group.CreateGroupDataAccessInterface;
 import use_case.join_group.JoinGroupUserDataAccessInterface;
+import use_case.creategrouptask.CreateGroupTaskGroupDataAccessInterface;
 import use_case.login.LoginGroupsDataAccessInterface;
 import org.bson.Document;
+import use_case.viewgrouptasks.ViewGroupTasksGroupDataAccessInterface;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 
 /**
@@ -27,16 +30,26 @@ import static com.mongodb.client.model.Filters.eq;
  * </p>
  */
 public class DBGroupDataAccessObject implements CreateGroupDataAccessInterface,
-        LoginGroupsDataAccessInterface, JoinGroupUserDataAccessInterface {
+        LoginGroupsDataAccessInterface, 
+        JoinGroupUserDataAccessInterface,
+        LoginGroupsDataAccessInterface,
+        CreateGroupTaskGroupDataAccessInterface, 
+        ViewGroupTasksGroupDataAccessInterface {
 
     private static final String GROUP_NAME = "name";
     private static final String GROUP_CODE = "joinCode";
     private static final String GROUP_TYPE = "type";
 
+    private static final String MEMBERSHIP_GROUP_NAME_FIELD = "group";
+    private static final String MEMBERSHIP_USERNAME_FIELD = "user";
+    private static final String MEMBERSHIP_ROLE_FIELD = "role";
+    private static final String MEMBERSHIP_APPROVED_FIELD = "approved";
+
     private static final String JOIN_CODE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private static final int JOIN_CODE_LENGTH = 6;
 
     private final GroupFactory groupFactory;
+    private final MembershipFactory membershipFactory;
     private final MongoClient mongoClient;
     private final MongoDatabase database;
     private final MongoCollection<Document> groupsCollection;
@@ -55,10 +68,13 @@ public class DBGroupDataAccessObject implements CreateGroupDataAccessInterface,
      * database reference, and "groups" collection.
      *
      * @param groupFactory      A factory for creating Group entities.
+     * @param membershipFactory A factory for creating Membership entities.
      * @param connectionString  The MongoDB connection string.
      * @param dbName            The name of the database to use.*/
-    public DBGroupDataAccessObject(GroupFactory groupFactory, String connectionString, String dbName) {
+    public DBGroupDataAccessObject(GroupFactory groupFactory, MembershipFactory membershipFactory,
+                                   String connectionString, String dbName) {
         this.groupFactory = groupFactory;
+        this.membershipFactory = membershipFactory;
         this.mongoClient = MongoClients.create(connectionString);
         this.database = mongoClient.getDatabase(dbName);
         this.groupsCollection = database.getCollection("groups");
@@ -139,9 +155,10 @@ public class DBGroupDataAccessObject implements CreateGroupDataAccessInterface,
         // For now, this DAO also looks into the memberships collection so we can
         // answer "which groups does this user belong to".
         // If needed, this could be moved into a Membership DAO and composed in an interactor.
-        for (Document membershipDoc : membershipsCollection.find(eq("user", username))) {
+        for (Document membershipDoc : membershipsCollection.find(
+                and(eq("user", username), eq("approved", true)))) {
 
-            String joinCode = membershipDoc.getString("group");
+            String joinCode = membershipDoc.getString(MEMBERSHIP_GROUP_NAME_FIELD);
             if (joinCode == null) {
                 continue;
             }
@@ -155,17 +172,74 @@ public class DBGroupDataAccessObject implements CreateGroupDataAccessInterface,
                 continue;
             }
 
-            String name = groupDoc.getString(GROUP_NAME);
-            String typeStr = groupDoc.getString(GROUP_TYPE);
-
-            GroupType groupType = GroupType.valueOf(typeStr);
-
-            Group group = groupFactory.create(name, joinCode, groupType);
-
-            result.add(group);
+            result.add(extractGroupFromDocument(groupDoc));
         }
 
         return result;
+    }
+
+    /**
+     * Retrieves the Group object associated with the given `groupID`.
+     * @param groupID the unique ID of the group to retrieve.
+     * @return the Group object in the database with the given `groupID`.
+     * @throws RuntimeException if there exists no group with the given ID.
+     */
+    @Override
+    public Group getGroup(String groupID) throws RuntimeException {
+        final Document groupDoc = groupsCollection.find(eq(GROUP_CODE, groupID)).first();
+
+        if (groupDoc == null) {
+            throw new RuntimeException(String.format("No group with ID [%s] exists.", groupID));
+        }
+
+        return extractGroupFromDocument(groupDoc);
+
+    }
+
+    /**
+     * Extracts a Group object from a MongoDB document.
+     *
+     * @param groupDoc The MongoDB document containing group data.
+     * @return A Group object created from the document data.
+     */
+    private Group extractGroupFromDocument(Document groupDoc) {
+        String name = groupDoc.getString(GROUP_NAME);
+        String joinCode = groupDoc.getString(GROUP_CODE);
+        String typeStr = groupDoc.getString(GROUP_TYPE);
+        GroupType groupType = GroupType.valueOf(typeStr);
+
+        Group group = groupFactory.create(name, joinCode, groupType);
+
+        FindIterable<Document> membershipDocs = membershipsCollection.find(
+                eq(MEMBERSHIP_GROUP_NAME_FIELD, joinCode)
+        );
+
+        addMembersToGroup(membershipDocs, group);
+
+        return group;
+    }
+
+    /**
+     * Adds members to a Group object based on membership documents.
+     *
+     * @param membershipDocs The MongoDB documents containing membership data.
+     * @param group          The Group object to add members to.
+     */
+    private void addMembersToGroup(FindIterable<Document> membershipDocs, Group group) {
+        for (Document md : membershipDocs) {
+            if (md == null) {
+                continue;
+            }
+
+            String username = md.getString(MEMBERSHIP_USERNAME_FIELD);
+            String groupID = md.getString(MEMBERSHIP_GROUP_NAME_FIELD);
+            UserRole role = UserRole.valueOf(md.getString(MEMBERSHIP_ROLE_FIELD));
+            boolean approved = md.getBoolean(MEMBERSHIP_APPROVED_FIELD, false);
+
+            Membership membership = membershipFactory.create(username, groupID, role, approved);
+
+            group.addMembership(membership);
+        }
     }
 
 }

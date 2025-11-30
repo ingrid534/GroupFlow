@@ -39,14 +39,10 @@ public class LoginPresenter implements LoginOutputBoundary {
         loggedInState.setGroups(response.getGroups());
         dashboardViewModel.setState(loggedInState);
 
-        // Update ViewTasksViewModel state
-        final interface_adapter.viewtasks.LoggedInState loggedInStateView = viewTasksViewModel.getState();
-        loggedInStateView.setUsername(response.getUsername());
-        viewTasksViewModel.setState(loggedInStateView);
-
         // Notify views
-        this.viewTasksViewModel.firePropertyChange();
         this.dashboardViewModel.firePropertyChange();
+
+        this.viewTasksViewModel.firePropertyChange();
 
         // Clear everything from the LoginViewModel state
         loginViewModel.setState(new LoginState());

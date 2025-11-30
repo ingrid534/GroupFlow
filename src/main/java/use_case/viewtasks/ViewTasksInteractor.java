@@ -8,24 +8,26 @@ import java.util.List;
 
 public class ViewTasksInteractor implements ViewTasksInputBoundary {
     private final ViewTasksDataAccessInterface taskAccessObject;
+    private final ViewTasksUserDataAccessInterface userDataAccess;
     private final ViewTasksOutputBoundary presenter;
 
     private static final DateTimeFormatter DATE_FORMATTER =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     public ViewTasksInteractor(ViewTasksDataAccessInterface taskAccessObject,
-                               ViewTasksOutputBoundary presenter) {
+                               ViewTasksOutputBoundary presenter,
+                               ViewTasksUserDataAccessInterface userDataAccessInterface) {
         this.taskAccessObject = taskAccessObject;
+        this.userDataAccess = userDataAccessInterface;
         this.presenter = presenter;
     }
 
     @Override
-    public void execute(ViewTasksInputData inputData) {
-        List<String> taskIds = taskAccessObject.getTasksForUser(inputData.getUserName());
+    public void execute() {
+        List<Task> taskIds = taskAccessObject.getTasksForUser(userDataAccess.getCurrentUsername());
         List<ViewTasksOutputData.TaskDTO> dtoList = new ArrayList<>();
 
-        for (String taskId : taskIds) {
-            Task task = taskAccessObject.getTask(taskId);
+        for (Task task : taskIds) {
 
             if (task == null) {
                 continue;

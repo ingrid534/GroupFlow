@@ -24,6 +24,12 @@ public class Main {
                 // .addChangePasswordUseCase()
                 .addCreateGroupUseCase()
                 .addJoinGroupUseCase()
+                .addViewMembersUseCase()
+                .addViewPendingUseCase()
+                .addGroupTasksUseCases()
+                .addRemoveMemberUseCase()
+                .addRespondRequestUseCase()
+                .addUpdateRoleUseCase()
                 .build();
 
         application.pack();
