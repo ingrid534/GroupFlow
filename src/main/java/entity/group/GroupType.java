@@ -6,5 +6,7 @@ package entity.group;
  */
 public enum GroupType {
     STUDY,
-    PROJECT
+    PROJECT,
+    PERSONAL,
+    OTHER
 }
