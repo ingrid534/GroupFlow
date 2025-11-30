@@ -12,7 +12,9 @@ import use_case.manage_members.view_members.ViewMembersMembershipDataAccessInter
 import use_case.manage_members.view_pending.ViewPendingMembershipDataAccessInterface;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class InMemoryMembershipDataAccessObject implements
         CreateGroupMembershipDataAccessInterface,
@@ -24,7 +26,7 @@ public class InMemoryMembershipDataAccessObject implements
         RespondRequestDataAccessInterface,
         UpdateRoleDataAccessInterface {
 
-    private final List<Membership> memberships = new ArrayList<>();
+    private final Map<Keys, Membership> memberships = new HashMap<>();
 
     /**
      * Saves the membership group to the data source.
@@ -33,7 +35,7 @@ public class InMemoryMembershipDataAccessObject implements
      */
     @Override
     public void save(Membership membership) {
-        memberships.add(membership);
+        memberships.put(new Keys(membership.getUsername(), membership.getGroup()), membership);
     }
 
     /**
@@ -46,7 +48,7 @@ public class InMemoryMembershipDataAccessObject implements
      */
     @Override
     public Membership get(String username, String groupID) {
-        Membership membership = findMembershipByDetails(username, groupID);
+        Membership membership = memberships.get(new Keys(username, groupID));
 
         if (membership != null) {
             return membership;
@@ -63,12 +65,7 @@ public class InMemoryMembershipDataAccessObject implements
      */
     @Override
     public void removeMembership(String groupID, String username) {
-        Membership membership = findMembershipByDetails(username, groupID);
-
-        if (membership != null) {
-            memberships.remove(membership);
-        }
-
+        memberships.remove(new Keys(username, groupID));
     }
 
     /**
@@ -83,7 +80,8 @@ public class InMemoryMembershipDataAccessObject implements
      */
     @Override
     public void updateMembership(String groupID, String username, boolean accepted) {
-        Membership membership = findMembershipByDetails(username, groupID);
+        Keys membershipKey = new Keys(username, groupID);
+        Membership membership = memberships.get(membershipKey);
 
         if (membership == null) {
             return;
@@ -92,7 +90,7 @@ public class InMemoryMembershipDataAccessObject implements
         if (accepted) {
             membership.approve();
         } else {
-            memberships.remove(membership);
+            memberships.remove(membershipKey);
         }
     }
 
@@ -106,7 +104,7 @@ public class InMemoryMembershipDataAccessObject implements
      */
     @Override
     public void updateMembership(String groupID, String username, UserRole newRole) {
-        Membership membership = findMembershipByDetails(username, groupID);
+        Membership membership = memberships.get(new Keys(username, groupID));
 
         if (membership == null) {
             return;
@@ -125,7 +123,7 @@ public class InMemoryMembershipDataAccessObject implements
     public List<Membership> getMembersForGroup(String groupID) {
         List<Membership> approvedMemberships = new ArrayList<>();
 
-        for (Membership m : memberships) {
+        for (Membership m : memberships.values()) {
             if (m.getGroup().equals(groupID) && m.isApproved()) {
                 approvedMemberships.add(m);
             }
@@ -144,7 +142,7 @@ public class InMemoryMembershipDataAccessObject implements
     public List<Membership> getPendingForGroup(String groupID) {
         List<Membership> pendingMemberships = new ArrayList<>();
 
-        for (Membership m : memberships) {
+        for (Membership m : memberships.values()) {
             if (m.getGroup().equals(groupID) && !m.isApproved()) {
                 pendingMemberships.add(m);
             }
@@ -153,13 +151,39 @@ public class InMemoryMembershipDataAccessObject implements
         return pendingMemberships;
     }
 
-    private Membership findMembershipByDetails(String username, String groupID) {
-        for (Membership m : memberships) {
-            if (m.getUsername().equals(username) && m.getGroup().equals(groupID)) {
-                return m;
-            }
+    public static class Keys {
+        private final String username;
+        private final String groupId;
+
+        public Keys(String userID, String groupID) {
+            this.username = userID;
+            this.groupId = groupID;
         }
 
-        return null;
+        public String getUserID() {
+            return username;
+        }
+
+        public String getGroupID() {
+            return groupId;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (!(o instanceof Keys)) {
+                return false;
+            }
+            Keys keys = (Keys) o;
+            return username.equals(keys.username)
+                    && groupId.equals(keys.groupId);
+        }
+
+        @Override
+        public int hashCode() {
+            return java.util.Objects.hash(username, groupId);
+        }
     }
 }
