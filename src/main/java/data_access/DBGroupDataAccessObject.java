@@ -34,7 +34,7 @@ import static com.mongodb.client.model.Updates.set;
  * of user records stored inside a MongoDB "users" collection.
  * </p>
  */
-public class DBGroupDataAccessObject implements 
+public class DBGroupDataAccessObject implements
         CreateGroupDataAccessInterface,
         LoginGroupsDataAccessInterface, 
         JoinGroupUserDataAccessInterface,
