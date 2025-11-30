@@ -11,6 +11,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import interface_adapter.create_schedule.CreateScheduleViewModel;
+// trying to fix checkstyle
 
 public class CreateScheduleView extends JPanel {
 
