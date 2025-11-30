@@ -101,15 +101,22 @@ public class AppBuilder {
     private final String dbName = "group_flow";
 
     final DBGroupDataAccessObject groupDataAccessObject =
-            new DBGroupDataAccessObject(groupFactory, mongoDBConnectionString, dbName);
+            new DBGroupDataAccessObject(groupFactory, membershipFactory, mongoDBConnectionString, dbName);
+
     final DBUserDataAccessObject userDataAccessObject =
             new DBUserDataAccessObject(userFactory,
             mongoDBConnectionString, dbName);
+
     final DBMembershipDataAccessObject membershipDataAccessObject =
             new DBMembershipDataAccessObject(membershipFactory,
                     mongoDBConnectionString, dbName);
-    // TODO: Implement task DAO
-    final DBTaskDataAccessObject taskDataAccessObject = new DBTaskDataAccessObject();
+
+    final DBTaskDataAccessObject taskDataAccessObject =
+            new DBTaskDataAccessObject(
+                    taskFactory,
+                    mongoDBConnectionString,
+                    dbName
+            );
 
     // DAO version using a shared external database
     // final DBUserDataAccessObject userDataAccessObject = new
@@ -336,7 +343,7 @@ public class AppBuilder {
      */
     public AppBuilder addLoginUseCase() {
         final LoginOutputBoundary loginOutputBoundary = new LoginPresenter(viewManagerModel,
-                dashboardViewModel, loginViewModel, signupViewModel);
+                dashboardViewModel, loginViewModel, signupViewModel, viewTasksViewModel);
         final LoginInputBoundary loginInteractor = new LoginInteractor(
                 userDataAccessObject, groupDataAccessObject, loginOutputBoundary);
 
