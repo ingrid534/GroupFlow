@@ -22,6 +22,7 @@ import interface_adapter.create_group.CreateGroupViewModel;
 import interface_adapter.creategrouptasks.CreateGroupTasksController;
 import interface_adapter.creategrouptasks.CreateGroupTasksPresenter;
 import interface_adapter.creategrouptasks.CreateGroupTasksViewModel;
+import interface_adapter.create_schedule.CreateScheduleViewModel;
 import interface_adapter.dashboard.DashboardViewModel;
 import interface_adapter.joingroup.JoinGroupController;
 import interface_adapter.joingroup.JoinGroupPresenter;
@@ -150,6 +151,8 @@ public class AppBuilder {
     private ViewGroupTasksViewModel viewGroupTasksViewModel;
     private EditGroupTaskViewModel editGroupTaskViewModel;
     private CreateGroupTasksViewModel createGroupTasksViewModel;
+    private CreateScheduleView createScheduleView;
+    private CreateScheduleViewModel createScheduleViewModel;
 
     private JFrame application;
     private ViewTasksView viewTasksView;
@@ -482,6 +485,16 @@ public class AppBuilder {
 
         final LogoutController logoutController = new LogoutController(logoutInteractor);
         dashboardView.setLogoutController(logoutController);
+        return this;
+    }
+
+    /**
+     * Adds create schedule use case to application (Not done).
+     * @return this builder
+     */
+    public AppBuilder addCreateScheduleView() {
+        createScheduleViewModel = new CreateScheduleViewModel();
+        createScheduleView = new CreateScheduleView(createScheduleViewModel);
         return this;
     }
 
