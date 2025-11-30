@@ -30,7 +30,7 @@ public class JoinGroupInteractor implements JoinGroupInputBoundary {
     @Override
     public void execute(JoinGroupInputData inputData) {
 
-        String code = inputData.getGroupCode();   // this is your groupId / join code
+        String code = inputData.getGroupCode();
 
         if (code == null || code.isBlank()) {
             presenter.prepareFailView("Group ID cannot be empty.");
@@ -42,21 +42,18 @@ public class JoinGroupInteractor implements JoinGroupInputBoundary {
             return;
         }
 
-        // Who is requesting to join?
         String currentUsername = userDataAccess.getCurrentUsername();
         User user = userDataAccess.get(currentUsername);
 
-        // Create a PENDING membership (approved = false, role = MEMBER)
         Membership pending = membershipFactory.create(
-                user.getName(),   // or user.getUsername() depending on your User implementation
+                user.getName(),
                 code,
                 UserRole.MEMBER,
-                false              // <- NOT approved yet = join request
+                false
         );
 
         membershipDataAccess.save(pending);
 
-        // Let the presenter know everything went fine
         presenter.prepareSuccessView(new JoinGroupOutputData(code));
     }
 }
