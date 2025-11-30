@@ -23,6 +23,10 @@ public class EditTaskView extends JDialog implements PropertyChangeListener {
     private final String taskId;
     private final List<String> memberNames;
     private final String groupId;
+    private final String initialDescription;
+    private final String initialDueDateString;
+    private final List<String> initialAssignees;
+    private final boolean initialCompleted;
 
     private final EditGroupTaskController controller;
     private final EditGroupTaskViewModel viewModel;
@@ -37,21 +41,29 @@ public class EditTaskView extends JDialog implements PropertyChangeListener {
     /**
      * Constructs a modal dialog for editing a task.
      *
-     * @param taskId      ID of the task to edit
-     * @param memberNames list of usernames that can be assigned this task
-     * @param controller  controller for the edit-group-task use case
-     * @param viewModel   ViewModel providing edit result feedback
-     * @param groupId     The group Id
+     * @param taskId               ID of the task to edit
+     * @param memberNames          list of usernames that can be assigned this task
+     * @param controller           controller for the edit-group-task use case
+     * @param viewModel            ViewModel providing edit result feedback
+     * @param groupId              The group Id
+     * @param initialDescription   the initial description
+     * @param initialDueDateString the initial due date
+     * @param initialAssignees     the initial assignees
+     * @param initialCompleted     the initial completed status
      */
     public EditTaskView(String taskId, List<String> memberNames,
                         EditGroupTaskController controller, EditGroupTaskViewModel viewModel,
-                        String groupId) {
+                        String groupId, String initialDescription, String initialDueDateString, List<String> initialAssignees, boolean initialCompleted) {
         super((Frame) null, "Edit Task", true);
         this.taskId = taskId;
         this.memberNames = memberNames;
         this.groupId = groupId;
         this.controller = controller;
         this.viewModel = viewModel;
+        this.initialDescription = initialDescription;
+        this.initialDueDateString = initialDueDateString;
+        this.initialAssignees = initialAssignees;
+        this.initialCompleted = initialCompleted;
 
         this.viewModel.addPropertyChangeListener(this);
 
@@ -115,6 +127,9 @@ public class EditTaskView extends JDialog implements PropertyChangeListener {
 
         gbc.gridx = 1;
         descriptionField = new JTextField(25);
+        if (initialDescription != null) {
+            descriptionField.setText(initialDescription);
+        }
         panel.add(descriptionField, gbc);
 
         gbc.gridx = 0;
@@ -126,6 +141,9 @@ public class EditTaskView extends JDialog implements PropertyChangeListener {
 
         gbc.gridx = 1;
         dueDateField = new JTextField(20);
+        if (initialDueDateString != null && !initialDueDateString.equals("No due date")) {
+            dueDateField.setText(initialDueDateString);
+        }
         panel.add(dueDateField, gbc);
 
         gbc.gridx = 0;
@@ -144,6 +162,9 @@ public class EditTaskView extends JDialog implements PropertyChangeListener {
         assigneeCheckBoxes = new ArrayList<>();
         for (String name : memberNames) {
             JCheckBox cb = new JCheckBox(name);
+            if (initialAssignees != null && initialAssignees.contains(name)) {
+                cb.setSelected(true);
+            }
             assigneeCheckBoxes.add(cb);
             checkboxPanel.add(cb);
         }
@@ -158,6 +179,7 @@ public class EditTaskView extends JDialog implements PropertyChangeListener {
 
     private void addCompletedCheckbox(JPanel panel, GridBagConstraints gbc) {
         completedCheckBox = new JCheckBox("Mark as completed");
+        completedCheckBox.setSelected(initialCompleted);
 
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.LINE_START;

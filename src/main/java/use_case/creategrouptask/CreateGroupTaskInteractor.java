@@ -1,6 +1,7 @@
 package use_case.creategrouptask;
 
 import entity.group.Group;
+import entity.membership.Membership;
 import entity.task.Task;
 import entity.task.TaskFactory;
 import entity.user.User;
@@ -47,7 +48,10 @@ public class CreateGroupTaskInteractor implements CreateGroupTaskInputBoundary {
 
     @Override
     public void execute(CreateGroupTaskInputData inputData) {
-        if (!membershipDataAccess.get(userDataAccess.getCurrentUsername(), inputData.getGroupId()).isModerator()) {
+        Membership membership = membershipDataAccess.get(
+                userDataAccess.getCurrentUsername(),
+                inputData.getGroupId());
+        if (membership != null && !membership.isModerator()) {
             presenter.present(new CreateGroupTaskOutputData(false,
                     "Only moderators may create tasks in this group."));
             return;
