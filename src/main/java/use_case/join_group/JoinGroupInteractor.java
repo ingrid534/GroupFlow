@@ -45,6 +45,12 @@ public class JoinGroupInteractor implements JoinGroupInputBoundary {
         String currentUsername = userDataAccess.getCurrentUsername();
         User user = userDataAccess.get(currentUsername);
 
+        Membership existing = membershipDataAccess.get(currentUsername, code);
+        if (existing != null) {
+            presenter.prepareFailView("You are already in this group!");
+            return;
+        }
+
         Membership pending = membershipFactory.create(
                 user.getName(),
                 code,
