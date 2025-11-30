@@ -12,6 +12,7 @@ import org.bson.Document;
 import use_case.create_group.CreateGroupMembershipDataAccessInterface;
 import use_case.manage_members.remove_member.RemoveMemberDataAccessInterface;
 import use_case.manage_members.respond_request.RespondRequestDataAccessInterface;
+import use_case.manage_members.update_role.UpdateRoleDataAccessInterface;
 import use_case.manage_members.view_members.ViewMembersMembershipDataAccessInterface;
 import use_case.manage_members.view_pending.ViewPendingMembershipDataAccessInterface;
 
@@ -36,7 +37,8 @@ public class DBMembershipDataAccessObject implements CreateGroupMembershipDataAc
         CreateGroupTasksMembershipDataAccessInterface, 
         EditGroupTasksMembershipDataAccessInterface,
         RemoveMemberDataAccessInterface,
-        RespondRequestDataAccessInterface {
+        RespondRequestDataAccessInterface,
+        UpdateRoleDataAccessInterface {
 
     private static final String USER_FIELD = "user";
     private static final String GROUP_FIELD = "group";
@@ -135,6 +137,25 @@ public class DBMembershipDataAccessObject implements CreateGroupMembershipDataAc
         }
 
         return result;
+    }
+
+    /**
+     * Updates the role of an existing membership for the given group and user.
+     * If no matching membership is found, the method completes silently.
+     *
+     * @param groupID  the ID of the group whose membership is being updated
+     * @param username the username of the member whose role is being changed
+     * @param newRole  the new role to assign to the member
+     */
+    @Override
+    public void updateMembership(String groupID, String username, UserRole newRole) {
+        membershipsCollection.updateOne(
+                and(
+                        eq(USER_FIELD, username),
+                        eq(GROUP_FIELD, groupID)
+                ),
+                new Document("$set", new Document(ROLE_FIELD, newRole.name()))
+        );
     }
 
     /**

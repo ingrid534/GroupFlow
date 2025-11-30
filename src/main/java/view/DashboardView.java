@@ -11,6 +11,7 @@ import interface_adapter.logout.LogoutController;
 import interface_adapter.manage_members.PeopleTabViewModel;
 import interface_adapter.manage_members.remove_member.RemoveMemberControllerFactory;
 import interface_adapter.manage_members.respond_request.RespondRequestControllerFactory;
+import interface_adapter.manage_members.update_role.UpdateRoleControllerFactory;
 import interface_adapter.manage_members.view_members.ViewMembersControllerFactory;
 import interface_adapter.manage_members.view_pending.ViewPendingControllerFactory;
 import interface_adapter.viewgrouptasks.ViewGroupTasksController;
@@ -68,6 +69,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     private ViewPendingControllerFactory viewPendingControllerFactory;
     private RemoveMemberControllerFactory removeMemberControllerFactory;
     private RespondRequestControllerFactory respondRequestControllerFactory;
+    private UpdateRoleControllerFactory updateRoleControllerFactory;
 
     // Maps group IDs to their names
     private final java.util.Map<String, String> groupIdToName = new java.util.HashMap<>();
@@ -272,6 +274,12 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
             );
         }
 
+        if (updateRoleControllerFactory != null) {
+            view.setUpdateRoleController(
+                    updateRoleControllerFactory.create(vm)
+            );
+        }
+
         return view;
     } // createPeopleTab
 
@@ -473,6 +481,10 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
 
     public void setRespondRequestControllerFactory(RespondRequestControllerFactory factory) {
         this.respondRequestControllerFactory = factory;
+    }
+
+    public void setUpdateRoleControllerFactory(UpdateRoleControllerFactory factory) {
+        this.updateRoleControllerFactory = factory;
     }
 
     public void setViewGroupTasksController(ViewGroupTasksController controller) {

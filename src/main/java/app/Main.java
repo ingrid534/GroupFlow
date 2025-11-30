@@ -27,6 +27,7 @@ public class Main {
                 .addGroupTasksUseCases()
                 .addRemoveMemberUseCase()
                 .addRespondRequestUseCase()
+                .addUpdateRoleUseCase()
                 .build();
 
         application.pack();

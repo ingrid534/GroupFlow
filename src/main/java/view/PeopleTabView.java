@@ -5,38 +5,43 @@ import interface_adapter.manage_members.ManageMembersState;
 import interface_adapter.manage_members.PeopleTabViewModel;
 import interface_adapter.manage_members.remove_member.RemoveMemberController;
 import interface_adapter.manage_members.respond_request.RespondRequestController;
+import interface_adapter.manage_members.update_role.UpdateRoleController;
 import interface_adapter.manage_members.view_members.ViewMembersController;
 import interface_adapter.manage_members.view_pending.ViewPendingController;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 /**
- * A panel representing the "People" tab of a group UI.
+ * A panel representing the People tab of a group UI.
  * Displays group members and pending membership requests.
  * Members can be assigned roles and removed, and pending requests
  * can be accepted or declined.
  */
-public class PeopleTabView extends JPanel implements ActionListener, PropertyChangeListener {
+public class PeopleTabView extends JPanel implements PropertyChangeListener {
+
+    private static final long serialVersionUID = 1L;
 
     /** Panel that lists current members. */
     private final JPanel membersListPanel = new JPanel();
     /** Panel that lists pending membership requests. */
     private final JPanel pendingListPanel = new JPanel();
-    /** Available roles a member can have. */
-    private final String[] roles = {"Member", "Admin", "Moderator"};
 
-    /** Fixed height for each row/item in the lists. */
+    /** Fixed height for each row or item in the lists. */
     private static final int ROW_HEIGHT = 35;
-    /** Split pane dividing members list from pending requests (if visible). */
+    /** Split pane dividing members list from pending requests if visible. */
     private final JSplitPane split;
 
     // Controllers
@@ -44,6 +49,7 @@ public class PeopleTabView extends JPanel implements ActionListener, PropertyCha
     private ViewPendingController viewPendingController;
     private RemoveMemberController removeMemberController;
     private RespondRequestController respondRequestController;
+    private UpdateRoleController updateRoleController;
 
     private final PeopleTabViewModel peopleTabViewModel;
 
@@ -52,6 +58,18 @@ public class PeopleTabView extends JPanel implements ActionListener, PropertyCha
 
     /** Role of the current user in this group, if known. */
     private UserRole currentUserRole;
+
+    /** Cached data used for rebuilding and sorting. */
+    private final Map<String, String> currentMembers = new HashMap<>();
+    private final List<String> currentPending = new ArrayList<>();
+
+    /** Sort options. */
+    private final String sortOption1 = "Name A-Z";
+    private final String sortOption2 = "Name Z-A";
+    private final String sortOption3 = "Role";
+    /** Current sort options. */
+    private String membersSortOption = sortOption1;
+    private String pendingSortOption = sortOption1;
 
     /**
      * Creates a new PeopleTabView for a given group.
@@ -70,18 +88,16 @@ public class PeopleTabView extends JPanel implements ActionListener, PropertyCha
         this.groupID = groupID;
         this.currentUsername = currentUsername;
 
-        // Top bar with Refresh button
         addRefreshButton();
 
         split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         split.setResizeWeight(1.0);
         split.setDividerSize(4);
 
-        // Create Members panel
         JPanel membersPanel = createListPanel(
                 "Members",
                 membersListPanel,
-                new String[]{"Name A-Z", "Name Z-A", "Role"}
+                new String[]{sortOption1, sortOption2, sortOption3}
         );
 
         split.setLeftComponent(membersPanel);
@@ -89,6 +105,9 @@ public class PeopleTabView extends JPanel implements ActionListener, PropertyCha
         add(split, BorderLayout.CENTER);
     }
 
+    /**
+     * Adds the refresh button that reloads members and pending requests.
+     */
     private void addRefreshButton() {
         JPanel topBar = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton refreshButton = new JButton("Refresh");
@@ -108,8 +127,8 @@ public class PeopleTabView extends JPanel implements ActionListener, PropertyCha
      * Creates a container panel for either the members list or the pending list,
      * including sorting controls and a scrollable content area.
      *
-     * @param title       displayed title of the panel
-     * @param listPanel   the internal panel that items will be added to
+     * @param title displayed title of the panel
+     * @param listPanel the internal panel that items will be added to
      * @param sortOptions sorting choices displayed in a combo box
      * @return the constructed panel
      */
@@ -120,6 +139,22 @@ public class PeopleTabView extends JPanel implements ActionListener, PropertyCha
         JPanel top = new JPanel(new FlowLayout(FlowLayout.LEFT));
         top.add(new JLabel("Sort by:"));
         JComboBox<String> sortCombo = new JComboBox<>(sortOptions);
+
+        // Wire sort behavior based on which panel this is
+        sortCombo.addActionListener(event -> {
+            String selected = (String) sortCombo.getSelectedItem();
+            if (selected == null) {
+                return;
+            }
+            if (listPanel == membersListPanel) {
+                membersSortOption = selected;
+                rebuildMembersPanel();
+            } else if (listPanel == pendingListPanel) {
+                pendingSortOption = selected;
+                rebuildPendingPanel();
+            }
+        });
+
         top.add(sortCombo);
         panel.add(top, BorderLayout.NORTH);
 
@@ -153,96 +188,207 @@ public class PeopleTabView extends JPanel implements ActionListener, PropertyCha
     }
 
     /**
-     * Adds a member row to the members list.
+     * Returns the sorting order value for the given role.
+     *
+     * @param role the role to map to an order value
+     * @return an integer representing the role order
+     */
+    private int roleOrder(UserRole role) {
+        if (role == null) {
+            return 3;
+        }
+        switch (role) {
+            case MODERATOR:
+                return 0;
+            case MEMBER:
+                return 1;
+            default:
+                return 2;
+        }
+    }
+
+    /**
+     * Adds a member row to the members list, with an option to lock the role dropdown.
      *
      * @param name the member display name
      * @param role the current role assigned to the member
+     * @param lockRoleDropdownForUser true if the role dropdown for this user should be disabled
      */
-    public void addMember(String name, String role) {
+    private void addMember(String name, String role, boolean lockRoleDropdownForUser) {
         final JPanel row = createRowPanel();
 
         boolean isCurrentUser = name != null && name.equalsIgnoreCase(currentUsername);
 
         final JLabel nameLabel = new JLabel(name);
 
-        // Highlight the current user
         if (isCurrentUser) {
             nameLabel.setText(name + " (You)");
-            nameLabel.setFont(nameLabel.getFont().deriveFont(Font.BOLD));
+            nameLabel.setFont(nameLabel.getFont().deriveFont(java.awt.Font.BOLD));
         }
 
         JComboBox<UserRole> roleDropdown = new JComboBox<>(UserRole.values());
 
-        // Match role string to UserRole
         UserRole matchedRole = parseUserRole(role);
         if (matchedRole != null) {
             roleDropdown.setSelectedItem(matchedRole);
         }
+        final UserRole[] previousRole = {matchedRole};
 
         JButton removeBtn = new JButton("\u2716");
         removeBtn.addActionListener(event -> {
-            removeMemberController.execute(groupID, name);
+            if (removeMemberController != null) {
+                removeMemberController.execute(groupID, name);
+            }
         });
 
-        // Permission rules
-        if (isCurrentUser) {
-            // No self removal from this tab
-            removeBtn.setEnabled(false);
-            removeBtn.setToolTipText("");
-            // If current user is only a member, also do not let them change their own role here
-            if (currentUserRole == UserRole.MEMBER) {
-                roleDropdown.setEnabled(false);
+        applyMemberPermissions(isCurrentUser, roleDropdown, removeBtn, lockRoleDropdownForUser);
+
+        roleDropdown.addActionListener(event -> {
+            if (updateRoleController == null) {
+                return;
             }
-        } else if (currentUserRole == UserRole.MEMBER) {
-            // Plain members cannot manage other users
-            roleDropdown.setEnabled(false);
-            removeBtn.setEnabled(false);
-            removeBtn.setToolTipText("Members cannot remove other users.");
-        }
+            if (!roleDropdown.isEnabled()) {
+                return;
+            }
+            UserRole selected = (UserRole) roleDropdown.getSelectedItem();
+            if (selected == null) {
+                return;
+            }
+            if (Objects.equals(previousRole[0], selected)) {
+                return;
+            }
+            updateRoleController.execute(groupID, name, selected);
+            previousRole[0] = selected;
+        });
 
         addComponentsToRow(row, nameLabel, roleDropdown, removeBtn);
 
         membersListPanel.add(row);
         membersListPanel.add(Box.createVerticalStrut(2));
-        membersListPanel.revalidate();
-        membersListPanel.repaint();
+    }
+
+    /**
+     * Applies permission rules to the member row controls.
+     *
+     * @param isCurrentUser true if this row represents the current user
+     * @param roleDropdown the dropdown used to change the member role
+     * @param removeBtn the button used to remove the member
+     * @param lockRoleDropdownForUser true if the role dropdown should be disabled
+     */
+    private void applyMemberPermissions(boolean isCurrentUser,
+                                        JComboBox<UserRole> roleDropdown,
+                                        JButton removeBtn,
+                                        boolean lockRoleDropdownForUser) {
+
+        if (isCurrentUser) {
+            removeBtn.setEnabled(false);
+            removeBtn.setToolTipText("You cannot remove yourself from the group here.");
+            if (currentUserRole == UserRole.MEMBER) {
+                roleDropdown.setEnabled(false);
+            }
+        } else if (currentUserRole == UserRole.MEMBER) {
+            roleDropdown.setEnabled(false);
+            removeBtn.setEnabled(false);
+            removeBtn.setToolTipText("Members cannot remove other users.");
+        }
+
+        if (lockRoleDropdownForUser) {
+            roleDropdown.setEnabled(false);
+            roleDropdown.setToolTipText("Cannot change role for the last moderator in the group.");
+        }
     }
 
     /**
      * Updates the People tab with the given list of members.
-     * This method clears the current member display and rebuilds it
-     * using the provided username-to-role mapping.
+     * This method caches the mapping and rebuilds the panel,
+     * applying the current sorting selection.
      *
      * @param members a map where each key is a username and each value is that user's role
      */
     public void setMembers(Map<String, String> members) {
+        currentMembers.clear();
+        if (members != null) {
+            currentMembers.putAll(members);
+        }
+        rebuildMembersPanel();
+    }
+
+    /**
+     * Rebuilds the members panel from the cached currentMembers map,
+     * applying sorting and last moderator protection.
+     */
+    private void rebuildMembersPanel() {
         membersListPanel.removeAll();
         currentUserRole = null;
 
-        if (members == null || members.isEmpty()) {
-            membersListPanel.revalidate();
-            membersListPanel.repaint();
+        if (currentMembers.isEmpty()) {
+            refreshPanel(membersListPanel);
             return;
         }
 
-        // First pass: find the current user's role
-        for (Map.Entry<String, String> entry : members.entrySet()) {
+        int moderatorCount = 0;
+        String lastModeratorUsername = null;
+
+        for (Map.Entry<String, String> entry : currentMembers.entrySet()) {
             String name = entry.getKey();
             String role = entry.getValue();
 
+            UserRole parsedRole = parseUserRole(role);
+
             if (name != null && name.equalsIgnoreCase(currentUsername)) {
-                currentUserRole = parseUserRole(role);
-                break;
+                currentUserRole = parsedRole;
+            }
+
+            if (parsedRole == UserRole.MODERATOR) {
+                moderatorCount++;
+                lastModeratorUsername = name;
             }
         }
 
-        // Second pass: build all rows
-        for (Map.Entry<String, String> entry : members.entrySet()) {
-            this.addMember(entry.getKey(), entry.getValue());
+        List<Map.Entry<String, String>> entries = new ArrayList<>(currentMembers.entrySet());
+        sortMembers(entries);
+
+        for (Map.Entry<String, String> entry : entries) {
+            String name = entry.getKey();
+            String role = entry.getValue();
+
+            boolean lockDropdownForThisUser = false;
+            UserRole parsedRole = parseUserRole(role);
+
+            if (parsedRole == UserRole.MODERATOR
+                    && moderatorCount == 1
+                    && name != null
+                    && name.equalsIgnoreCase(lastModeratorUsername)) {
+                lockDropdownForThisUser = true;
+            }
+
+            addMember(name, role, lockDropdownForThisUser);
         }
 
-        membersListPanel.revalidate();
-        membersListPanel.repaint();
+        refreshPanel(membersListPanel);
+    }
+
+    /**
+     * Sorts the list of member entries according to the current membersSortOption.
+     *
+     * @param entries the entries to sort in place
+     */
+    private void sortMembers(List<Map.Entry<String, String>> entries) {
+        if (sortOption2.equalsIgnoreCase(membersSortOption)) {
+            entries.sort((ent1, ent2) -> ent2.getKey().compareToIgnoreCase(ent1.getKey()));
+        } else if ("Role".equalsIgnoreCase(membersSortOption)) {
+            entries.sort((ent1, ent2) -> {
+                UserRole r1 = parseUserRole(ent1.getValue());
+                UserRole r2 = parseUserRole(ent2.getValue());
+                int cmp = Integer.compare(roleOrder(r1), roleOrder(r2));
+                if (cmp != 0) {
+                    return cmp;
+                }
+                return ent1.getKey().compareToIgnoreCase(ent2.getKey());
+            });
+        } else {
+            entries.sort((ent1, ent2) -> ent1.getKey().compareToIgnoreCase(ent2.getKey()));
+        }
     }
 
     /**
@@ -253,16 +399,7 @@ public class PeopleTabView extends JPanel implements ActionListener, PropertyCha
      */
     public void addPending(String username) {
 
-        // Create pending section if needed
-        if (split.getRightComponent() == null) {
-            JPanel pendingPanel = createListPanel(
-                    "Pending Requests",
-                    pendingListPanel,
-                    new String[]{"Name A-Z", "Name Z-A"}
-            );
-            split.setRightComponent(pendingPanel);
-            split.setDividerLocation(0.6);
-        }
+        ensurePendingPanelVisible();
 
         final JPanel row = createRowPanel();
 
@@ -270,13 +407,20 @@ public class PeopleTabView extends JPanel implements ActionListener, PropertyCha
 
         JButton acceptBtn = new JButton("\u2714");
         acceptBtn.setForeground(new Color(3, 120, 3));
-        acceptBtn.addActionListener(event -> respondRequestController.execute(groupID, username, true));
+        acceptBtn.addActionListener(event -> {
+            if (respondRequestController != null) {
+                respondRequestController.execute(groupID, username, true);
+            }
+        });
 
         JButton declineBtn = new JButton("\u2716");
         declineBtn.setForeground(new Color(220, 20, 60));
-        declineBtn.addActionListener(event -> respondRequestController.execute(groupID, username, false));
+        declineBtn.addActionListener(event -> {
+            if (respondRequestController != null) {
+                respondRequestController.execute(groupID, username, false);
+            }
+        });
 
-        // Plain members cannot manage pending requests
         if (currentUserRole == UserRole.MEMBER) {
             acceptBtn.setEnabled(false);
             declineBtn.setEnabled(false);
@@ -289,37 +433,84 @@ public class PeopleTabView extends JPanel implements ActionListener, PropertyCha
 
         pendingListPanel.add(row);
         pendingListPanel.add(Box.createVerticalStrut(2));
-        pendingListPanel.revalidate();
-        pendingListPanel.repaint();
+    }
+
+    /**
+     * Ensures that the pending requests panel is visible on the split pane.
+     */
+    private void ensurePendingPanelVisible() {
+        if (split.getRightComponent() == null) {
+            JPanel pendingPanel = createListPanel(
+                    "Pending Requests",
+                    pendingListPanel,
+                    new String[]{sortOption1, sortOption2}
+            );
+            split.setRightComponent(pendingPanel);
+            split.setDividerLocation(0.6);
+        }
+    }
+
+    /**
+     * Hides the pending requests panel from the split pane.
+     */
+    private void hidePendingPanel() {
+        if (split.getRightComponent() != null) {
+            split.setRightComponent(null);
+            split.setDividerLocation(1.0);
+        }
     }
 
     /**
      * Updates the People tab with the given list of pending membership requests.
-     * This method clears the current pending panel and rebuilds it using
-     * the provided list of usernames.
+     * This method caches the list and rebuilds the panel,
+     * applying the current sorting selection.
      *
      * @param pending a list of usernames representing users who have requested to join the group
      */
     public void setPending(ArrayList<String> pending) {
+        currentPending.clear();
+        if (pending != null) {
+            currentPending.addAll(pending);
+        }
+        rebuildPendingPanel();
+    }
+
+    /**
+     * Rebuilds the pending requests panel from the cached currentPending list,
+     * applying sorting and visibility rules.
+     */
+    private void rebuildPendingPanel() {
         pendingListPanel.removeAll();
 
-        if (pending == null || pending.isEmpty()) {
-            // Empty pending users list -> hide the right side
-            if (split.getRightComponent() != null) {
-                split.setRightComponent(null);
-                split.setDividerLocation(1.0);
-            }
-            pendingListPanel.revalidate();
-            pendingListPanel.repaint();
+        if (currentPending.isEmpty()) {
+            hidePendingPanel();
+            refreshPanel(pendingListPanel);
             return;
         }
 
-        for (String entry : pending) {
-            this.addPending(entry);
+        ensurePendingPanelVisible();
+
+        List<String> sorted = new ArrayList<>(currentPending);
+        sortPending(sorted);
+
+        for (String entry : sorted) {
+            addPending(entry);
         }
 
-        pendingListPanel.revalidate();
-        pendingListPanel.repaint();
+        refreshPanel(pendingListPanel);
+    }
+
+    /**
+     * Sorts the list of pending usernames according to the current pendingSortOption.
+     *
+     * @param pending the list of usernames to sort in place
+     */
+    private void sortPending(List<String> pending) {
+        if (sortOption2.equalsIgnoreCase(pendingSortOption)) {
+            pending.sort((str1, str2) -> str2.compareToIgnoreCase(str1));
+        } else {
+            pending.sort(String::compareToIgnoreCase);
+        }
     }
 
     /**
@@ -340,7 +531,7 @@ public class PeopleTabView extends JPanel implements ActionListener, PropertyCha
     /**
      * Adds components to a row with consistent sizing and spacing rules.
      *
-     * @param row        the panel representing the row
+     * @param row the panel representing the row
      * @param components the UI components to place into the row
      */
     private void addComponentsToRow(JPanel row, JComponent... components) {
@@ -364,32 +555,13 @@ public class PeopleTabView extends JPanel implements ActionListener, PropertyCha
     }
 
     /**
-     * Removes a pending request row and cleans up spacing fillers.
-     * If no pending requests remain, the entire pending panel is removed.
+     * Revalidates and repaints the given panel.
      *
-     * @param row the row panel to remove
+     * @param panel the panel to refresh
      */
-    private void removePendingRow(JPanel row) {
-        int index = pendingListPanel.getComponentZOrder(row);
-        if (index != -1) {
-            pendingListPanel.remove(index);
-
-            if (index < pendingListPanel.getComponentCount()) {
-                Component next = pendingListPanel.getComponent(index);
-                if (next instanceof Box.Filler) {
-                    pendingListPanel.remove(next);
-                }
-            }
-        }
-
-        pendingListPanel.revalidate();
-        pendingListPanel.repaint();
-
-        // If no pending requests left, remove the right panel entirely
-        if (pendingListPanel.getComponentCount() == 0 && split.getRightComponent() != null) {
-            split.setRightComponent(null);
-            split.setDividerLocation(1.0);
-        }
+    private void refreshPanel(JPanel panel) {
+        panel.revalidate();
+        panel.repaint();
     }
 
     /**
@@ -436,9 +608,14 @@ public class PeopleTabView extends JPanel implements ActionListener, PropertyCha
         this.respondRequestController = respondRequestController;
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        // No button actions wired through ActionListener directly yet
+    /**
+     * Sets the controller responsible for handling changes to member roles.
+     * This only stores the controller reference and does not trigger any action by itself.
+     *
+     * @param updateRoleController the controller that processes member role updates
+     */
+    public void setUpdateRoleController(UpdateRoleController updateRoleController) {
+        this.updateRoleController = updateRoleController;
     }
 
     @Override

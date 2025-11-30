@@ -17,9 +17,9 @@ public class RemoveMemberInteractor implements RemoveMemberInputBoundary {
     } // ViewMembersInteractor
 
     @Override
-    public void execute(RemoveMemberInputData viewMembersInputData) {
-        final String groupId = viewMembersInputData.getGroupId();
-        final String username = viewMembersInputData.getUsername();
+    public void execute(RemoveMemberInputData removeMemberInputData) {
+        final String groupId = removeMemberInputData.getGroupId();
+        final String username = removeMemberInputData.getUsername();
 
         // remove
         membershipDataAccessObject.removeMembership(groupId, username);
