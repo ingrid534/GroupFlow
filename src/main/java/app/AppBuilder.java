@@ -88,6 +88,7 @@ import view.*;
 /**
  * Class for setting up application.
  */
+@SuppressWarnings({"checkstyle:ClassFanOutComplexity", "checkstyle:SuppressWarnings"})
 public class AppBuilder {
     private final JPanel cardPanel = new JPanel();
     private final CardLayout cardLayout = new CardLayout();

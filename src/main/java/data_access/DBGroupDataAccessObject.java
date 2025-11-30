@@ -32,7 +32,6 @@ import static com.mongodb.client.model.Filters.eq;
 public class DBGroupDataAccessObject implements CreateGroupDataAccessInterface,
         LoginGroupsDataAccessInterface, 
         JoinGroupUserDataAccessInterface,
-        LoginGroupsDataAccessInterface,
         CreateGroupTaskGroupDataAccessInterface, 
         ViewGroupTasksGroupDataAccessInterface {
 
@@ -110,7 +109,7 @@ public class DBGroupDataAccessObject implements CreateGroupDataAccessInterface,
         String code;
         do {
             code = generateRandomJoinCode();
-        } while (joinCodeExists(code));
+        } while (groupCodeExists(code));
         return code;
     }
 
@@ -123,20 +122,13 @@ public class DBGroupDataAccessObject implements CreateGroupDataAccessInterface,
         return sb.toString();
     }
 
-    private boolean joinCodeExists(String code) {
+    @Override
+    public boolean groupCodeExists(String code) {
         Document existing = groupsCollection
                 .find(eq(GROUP_CODE, code))
                 .projection(new Document("_id", 1))
                 .first();
         return existing != null;
-    }
-
-    @Override
-    public boolean groupCodeExists(String code) {
-        if (code == null) {
-            return false;
-        }
-        return joinCodeExists(code);
     }
 
     /**
