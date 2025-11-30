@@ -44,17 +44,10 @@ public class InMemoryMembershipDataAccessObject implements
      * @param username The user id.
      * @param groupID  The group id.
      * @return The Membership object if found.
-     * @throws RuntimeException If membership is not found.
      */
     @Override
     public Membership get(String username, String groupID) {
-        Membership membership = memberships.get(new Keys(username, groupID));
-
-        if (membership != null) {
-            return membership;
-        }
-
-        throw new RuntimeException("Membership not found");
+        return memberships.get(new Keys(username, groupID));
     }
 
     /**
