@@ -16,9 +16,8 @@ import use_case.viewgrouptasks.ViewGroupTasksDataAccessInterface;
 import use_case.viewtasks.ViewTasksDataAccessInterface;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Objects;
+import java.time.ZoneId;
+import java.util.*;
 
 /**
  * A data access object (DAO) for managing tasks in a MongoDB database.
@@ -131,7 +130,9 @@ public class DBTaskDataAccessObject implements ViewTasksDataAccessInterface, Vie
         String taskID = document.getObjectId(TASK_ID_FIELD).toHexString();
         String description = document.getString(DESCRIPTION_FIELD);
         String groupID = document.getString(GROUP_ID_FIELD);
-        String dueDate = document.getString(DUE_DATE_FIELD);
+
+        Date dueDate = document.getDate(DUE_DATE_FIELD);
+
         boolean isCompleted = document.getBoolean(COMPLETED_FIELD, false);
         List<String> assignees = document.getList(ASSIGNEES_FIELD, String.class);
 
@@ -139,8 +140,10 @@ public class DBTaskDataAccessObject implements ViewTasksDataAccessInterface, Vie
             return taskFactory.createWithoutDeadline(taskID, description, groupID, isCompleted, assignees);
         }
 
+        LocalDateTime dueDateTime = dueDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+
         return taskFactory.createWithDeadline(taskID, description, groupID,
-                isCompleted, assignees, LocalDateTime.parse(dueDate));
+                isCompleted, assignees, dueDateTime);
     }
 
     /**
@@ -159,7 +162,9 @@ public class DBTaskDataAccessObject implements ViewTasksDataAccessInterface, Vie
                 .append(ASSIGNEES_FIELD, task.getAssignees());
 
         if (task.hasDueDate()) {
-            taskDoc.append(DUE_DATE_FIELD, task.getDueDate());
+            LocalDateTime dueDateTime = task.getDueDate().get();
+            Date dueDate = Date.from(dueDateTime.atZone(ZoneId.systemDefault()).toInstant());
+            taskDoc.append(DUE_DATE_FIELD, dueDate);
         }
 
         try {
