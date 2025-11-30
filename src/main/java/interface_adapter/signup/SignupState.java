@@ -13,6 +13,12 @@ public class SignupState {
     private String repeatPassword = "";
     private String repeatPasswordError;
 
+    /**
+     * Sets the value of a specific field based on its name.
+     *
+     * @param fieldName The name of the field to set (e.g., "username", "email", "password", "repeat password").
+     * @param fieldText The value to set for the specified field.
+     */
     public void setField(String fieldName, String fieldText) {
         switch (fieldName) {
             case "username":
@@ -26,6 +32,8 @@ public class SignupState {
                 break;
             case "repeat password":
                 setRepeatPassword(fieldText);
+                break;
+            default:
                 break;
         }
 

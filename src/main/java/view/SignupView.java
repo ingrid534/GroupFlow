@@ -52,6 +52,16 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
         toLogin = new JButton("Go to login");
         toLogin.setAlignmentX(Component.LEFT_ALIGNMENT);
 
+        addFieldLabels();
+
+        addActionListeners();
+        // Check similarity to previous
+
+        addDocumentListeners();
+
+    }
+
+    private void addFieldLabels() {
         this.add(createTitleLabel());
         this.add(Box.createVerticalStrut(30));
 
@@ -74,18 +84,7 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
         this.add(signUp);
         this.add(Box.createVerticalStrut(10));
         this.add(toLogin);
-
-        actionListeners();
-        // Check similarity to previous
-
-        addFieldListener("username", usernameInputField);
-        addFieldListener("email", emailInputField);
-        addFieldListener("password", passwordInputField);
-        addFieldListener("repeat password", repeatPasswordInputField);
-
     }
-
-
 
     private JLabel createTitleLabel() {
         final JLabel title = new JLabel("Sign Up");
@@ -101,10 +100,10 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
         label.setForeground(new Color(120, 120, 120));
         label.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        return label;    }
+        return label;
+    }
 
-
-    private void actionListeners() {
+    private void addActionListeners() {
         signUp.addActionListener(
                 // This creates an anonymous subclass of ActionListener and instantiates it.
                 new ActionListener() {
@@ -131,6 +130,13 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
         );
     }
 
+    private void addDocumentListeners() {
+        addFieldDocumentListener("username", usernameInputField);
+        addFieldDocumentListener("email", emailInputField);
+        addFieldDocumentListener("password", passwordInputField);
+        addFieldDocumentListener("repeat password", repeatPasswordInputField);
+    }
+
     private void styleField(JTextField field) {
         field.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, new Color(200, 200, 200)));
         field.setFont(new Font("SansSerif", Font.PLAIN, 16));
@@ -139,8 +145,7 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
         field.setAlignmentX(Component.LEFT_ALIGNMENT);
     }
 
-
-    private void addFieldListener(String fieldName, JTextField field) {
+    private void addFieldDocumentListener(String fieldName, JTextField field) {
         field.getDocument().addDocumentListener(new DocumentListener() {
 
             private void documentListenerHelper() {
