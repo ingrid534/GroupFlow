@@ -22,6 +22,12 @@ public class Main {
                 .addLogoutUseCase()
                 // .addChangePasswordUseCase()
                 .addCreateGroupUseCase()
+                .addViewMembersUseCase()
+                .addViewPendingUseCase()
+                .addGroupTasksUseCases()
+                .addRemoveMemberUseCase()
+                .addRespondRequestUseCase()
+                .addUpdateRoleUseCase()
                 .addCreateScheduleView()
                 .build();
 

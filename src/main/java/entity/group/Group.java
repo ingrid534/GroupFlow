@@ -9,7 +9,7 @@ import entity.user.UserRole;
 
 /**
  * A simple entity representing a group. Groups have IDs, names, memberships,
- * and tpes.
+ * and types.
  * Memberships act as a link between a Group and a User.
  */
 public class Group {
@@ -200,6 +200,24 @@ public class Group {
             target.reassignRole(newRole);
         }
 
+    }
+
+    /**
+     * Add the given task to the group's list of tasks.
+     *
+     * @param taskID the task to add
+     */
+    public void addTask(String taskID) {
+        this.tasks.add(taskID);
+    }
+
+    /**
+     * Remove the given task from the group's list of tasks.
+     *
+     * @param taskID Task to remove
+     */
+    public void removeTask(String taskID) {
+        this.tasks.remove(taskID);
     }
 
     @Override

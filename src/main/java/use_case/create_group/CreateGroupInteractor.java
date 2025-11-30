@@ -61,12 +61,10 @@ public class CreateGroupInteractor implements CreateGroupInputBoundary {
             Map<String, String> newGroupHashMap = new HashMap<>();
             for (Group newGroup : newGroups) {
                 newGroupHashMap.put(newGroup.getGroupID(), newGroup.getName());
-                System.out.println(newGroup.getName());
             }
 
             final CreateGroupOutputData createGroupOutputData = new CreateGroupOutputData(
                     group.getGroupID(), groupName, groupType, newGroupHashMap
-
             );
             createGroupPresenter.prepareSuccessView(createGroupOutputData);
         }

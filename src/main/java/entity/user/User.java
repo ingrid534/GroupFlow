@@ -101,7 +101,7 @@ public class User {
     }
 
     /**
-     * Remove the given task to the user's list of tasks.
+     * Remove the given task from the user's list of tasks.
      * 
      * @param taskID Task to remove
      */
