@@ -9,6 +9,7 @@ import java.awt.Color;
 public class CreateSchedulePresenter implements CreateScheduleOutputBoundary {
     private final CreateScheduleViewModel createScheduleViewModel;
     private final ViewManagerModel viewManagerModel;
+    private final GroupScheduleViewModel groupScheduleViewModel;
 
     // TODO: move these to the common schedule presenter
     static final Color NO_COLOR = new Color(255, 255, 255);
@@ -16,13 +17,17 @@ public class CreateSchedulePresenter implements CreateScheduleOutputBoundary {
     static final Color MED_GREEN = new Color(0, 150, 0);
     static final Color DARK_GREEN = new Color(0, 100, 0);
 
-    public CreateSchedulePresenter(CreateScheduleViewModel createScheduleViewModel, ViewManagerModel viewManagerModel) {
+    public CreateSchedulePresenter(CreateScheduleViewModel createScheduleViewModel, ViewManagerModel viewManagerModel,
+        GroupScheduleViewModel groupScheduleViewModel
+    ) {
         this.createScheduleViewModel = createScheduleViewModel;
         this.viewManagerModel = viewManagerModel;
+        this.groupScheduleViewModel = groupScheduleViewModel;
     }
 
     @Override
     public void prepareSuccessView(CreateScheduleOutputData response) {
+        createScheduleViewModel..getState().setOpenModal(false);
         createScheduleViewModel.firePropertyChange("openModal");
 
         // TODO: move this to common schedule presenter
@@ -36,14 +41,22 @@ public class CreateSchedulePresenter implements CreateScheduleOutputBoundary {
             }
         }
 
-        CreateScheduleState state = createScheduleViewModel.getState();
-        state.setOpenModal(false);
+        createScheduleViewModel.setState(new CreateScheduleState());
 
         // TODO: move this to common schedule presenter
         // state.setMasterSchedule(colorSchedule);
 
-        createScheduleViewModel.setState(state);
-        createScheduleViewModel.firePropertyChange("state");
+        GroupScheduleState scheduleState = groupScheduleViewModel.getState();
+        scheduleState.getMasterSchedule(response.getMasterSchedule());
+        scheduleState.setGroupSize(response.getGroupSize());
+        // not sure if i need this
+        scheduleState.setGroupID(response.getGroupID());
+
+        groupScheduleViewModel.setState(scheduleState);
+        groupScheduleViewModel.firePropertyChange("schedule");
+
+        viewManagerModel.setActiveView(groupScheduleViewModel.getViewName());
+        viewManagerModel.firePropertyChange("view");
 
     }
 

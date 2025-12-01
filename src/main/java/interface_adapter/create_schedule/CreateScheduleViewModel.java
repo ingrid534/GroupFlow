@@ -5,7 +5,7 @@ import interface_adapter.ViewModel;
 public class CreateScheduleViewModel extends ViewModel<CreateScheduleState> {
     
     public CreateScheduleViewModel() {
-        super("create schedule");
+        super("group schedule");
         setState(new CreateScheduleState());
     }
 }

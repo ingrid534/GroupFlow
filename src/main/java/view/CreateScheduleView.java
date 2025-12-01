@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.Box;
@@ -58,7 +59,6 @@ public class CreateScheduleView extends JPanel implements PropertyChangeListener
         this.add(Box.createRigidArea(new Dimension(0, 10)));
         this.add(title);
 
-        JButton createSchedule = new JButton("Submit Availability");
         createSchedule.setAlignmentX(Component.CENTER_ALIGNMENT);
         this.add(Box.createRigidArea(new Dimension(0, 10)));
         this.add(createSchedule);
