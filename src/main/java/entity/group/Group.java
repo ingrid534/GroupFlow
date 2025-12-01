@@ -18,6 +18,7 @@ public class Group {
     private List<Membership> memberships;
     private List<String> tasks;
     private GroupType groupType;
+    private int[][] masterSchedule;
 
     /**
      * Creates a new group with the given name, type, and user who created the
@@ -31,12 +32,12 @@ public class Group {
      *
      */
     public Group(String name, String groupId, GroupType groupType) {
-        // Temporary until we set up a DB
         this.groupID = groupId;
         this.name = name;
         this.groupType = groupType;
         this.memberships = new ArrayList<>();
         this.tasks = new ArrayList<>();
+        this.masterSchedule = new int[7][12];
     }
 
     public String getGroupID() {
@@ -60,7 +61,9 @@ public class Group {
         final List<String> users = new ArrayList<>();
 
         for (Membership m : memberships) {
-            users.add(m.getUsername());
+            if (m.isApproved()) {
+                users.add(m.getUsername());
+            }
         }
 
         return users;
@@ -73,6 +76,10 @@ public class Group {
      */
     public List<String> getTasks() {
         return tasks;
+    }
+
+    public int[][] getMasterSchedule() {
+        return masterSchedule;
     }
 
     /**
@@ -89,6 +96,14 @@ public class Group {
             }
         }
         throw new NoSuchElementException("No moderator in this group.");
+    }
+
+    /**
+     * Count the numebr of members in this group.
+     * @return the number of members.
+     */
+    public int getSize() {
+        return memberships.size();
     }
 
     /**
@@ -130,6 +145,10 @@ public class Group {
 
     public void setGroupId(String groupId) {
         this.groupID = groupId;
+    }
+
+    public void setMasterSchedule(int[][] newMasterSchedule) {
+        this.masterSchedule = newMasterSchedule;
     }
 
     /**

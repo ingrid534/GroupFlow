@@ -46,11 +46,21 @@ public class ViewTasksView extends JPanel implements PropertyChangeListener {
             String text;
             if (dto.getDueDateString() == null || dto.getDueDateString().isEmpty()) {
                 text = dto.getDescription();
+            } else if (dto.getDueDateString().equals("No due date")) {
+                text = dto.getDescription() + " | No due date ";
             } else {
-                text = dto.getDescription() + " (due " + dto.getDueDateString() + ")";
+                text = dto.getDescription() + " | due " + dto.getDueDateString() + " ";
             }
             listModel.addElement(text);
         }
+    }
+
+    /**
+     * Calls execute method of the controller.
+     *
+     */
+    public void execute() {
+        viewTasksController.execute();
     }
 
     /**

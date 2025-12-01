@@ -16,6 +16,7 @@ public class User {
     private final String password;
     private List<Membership> memberships;
     private List<String> tasks;
+    private boolean[][] schedule;
 
     /**
      * Creates a new user with the given non-empty name and non-empty password.
@@ -36,6 +37,7 @@ public class User {
         this.password = password;
         this.memberships = new ArrayList<>();
         this.tasks = new ArrayList<>();
+        this.schedule = new boolean[7][12];
     }
 
     public String getUserID() {
@@ -52,6 +54,10 @@ public class User {
 
     public List<String> getTasks() {
         return tasks;
+    }
+
+    public boolean[][] getSchedule() {
+        return schedule;
     }
 
     /**
@@ -107,6 +113,10 @@ public class User {
      */
     public void removeTask(String taskID) {
         this.tasks.remove(taskID);
+    }
+
+    public void setSchedule(boolean[][] newSchedule) {
+        this.schedule = newSchedule;
     }
 
 }
