@@ -5,11 +5,39 @@ package interface_adapter.signup;
  */
 public class SignupState {
     private String username = "";
+    private String email = "";
+    private String emailError = "";
     private String usernameError;
     private String password = "";
     private String passwordError;
     private String repeatPassword = "";
     private String repeatPasswordError;
+
+    /**
+     * Sets the value of a specific field based on its name.
+     *
+     * @param fieldName The name of the field to set (e.g., "username", "email", "password", "repeat password").
+     * @param fieldText The value to set for the specified field.
+     */
+    public void setField(String fieldName, String fieldText) {
+        switch (fieldName) {
+            case "username":
+                setUsername(fieldText);
+                break;
+            case "email":
+                setPassword(fieldText);
+                break;
+            case "password":
+                setPassword(fieldText);
+                break;
+            case "repeat password":
+                setRepeatPassword(fieldText);
+                break;
+            default:
+                break;
+        }
+
+    }
 
     public String getUsername() {
         return username;
@@ -66,5 +94,13 @@ public class SignupState {
                 + ", password='" + password + '\''
                 + ", repeatPassword='" + repeatPassword + '\''
                 + '}';
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
