@@ -65,6 +65,7 @@ public class CreateScheduleInteractor implements CreateScheduleInputBoundary {
             }
         }
 
+        group.setMasterSchedule(masterSchedule);
         groupDataAccessObject.saveMasterSchedule(group);
         final CreateScheduleOutputData createScheduleOutputData = 
             new CreateScheduleOutputData(masterSchedule, group.getSize());

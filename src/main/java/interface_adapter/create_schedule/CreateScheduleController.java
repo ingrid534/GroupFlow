@@ -12,13 +12,11 @@ public class CreateScheduleController {
 
     /**
      * Executes the Create Schedule use case.
-     * @param userID the user creating the schedule.
-     * @param groupID the group this user is creating the schedule in.
      * @param availabilityGrid the grid of the user's available time slots.
      */
-    public void execute(String userID, String groupID, boolean[][] availabilityGrid) {
+    public void execute(boolean[][] availabilityGrid) {
         final CreateScheduleInputData createScheduleInputData = 
-            new CreateScheduleInputData(userID, groupID, availabilityGrid);
+            new CreateScheduleInputData(availabilityGrid);
 
         createScheduleInteractor.execute(createScheduleInputData);
     }

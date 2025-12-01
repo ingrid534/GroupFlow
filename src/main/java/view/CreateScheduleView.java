@@ -19,13 +19,12 @@ import javax.swing.border.LineBorder;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import interface_adapter.create_group.CreateGroupController;
 import interface_adapter.create_schedule.CreateScheduleController;
 import interface_adapter.create_schedule.CreateScheduleState;
 import interface_adapter.create_schedule.CreateScheduleViewModel;
 // trying to fix checkstyle
 
-public class CreateScheduleView extends JPanel implements PropertyChangeListener, ActionListener {
+public class CreateScheduleView extends JPanel implements PropertyChangeListener {
 
     private final String viewName = "create schedule";
     private final CreateScheduleViewModel createScheduleViewModel;
@@ -74,6 +73,20 @@ public class CreateScheduleView extends JPanel implements PropertyChangeListener
                 cell.setPreferredSize(new Dimension(40, 30));
                 cell.setBorder(new LineBorder(Color.BLACK, 1));
                 cell.setMargin(new Insets(0, 0, 0, 0));
+
+                // when a user clicks a button, should toggle green/white
+                final int r = row;
+                final int c = col;
+                cell.addActionListener(evt -> {
+                    boolean[][] slots = createScheduleViewModel.getState().getSelectedSlots();
+                    slots[r][c] = !slots[r][c];
+                    if (slots[r][c]) {
+                        cell.setBackground(Color.GREEN);
+                    } else {
+                        cell.setBackground(Color.WHITE);
+                    }
+                });
+
                 buttons[row][col] = cell;
                 buttonPanel.add(cell);
             }
@@ -96,15 +109,14 @@ public class CreateScheduleView extends JPanel implements PropertyChangeListener
      * @param state the current state of the Create Schedule view
      */
     private void setFields(CreateScheduleState state) {
-        Color[][] schedule = state.getMasterSched();
-
-        for (int row = 0; row < 7; row++) {
-            for (int col = 0; col < 12; col++) {
-                if (buttons[row][col] != null) {
-                    buttons[row][col].setBackground(schedule[row][col]);
-                }
-            }
-        }
+        // TODO: move this to the GroupScheduleView?
+        // for (int row = 0; row < 7; row++) {
+        //     for (int col = 0; col < 12; col++) {
+        //         if (buttons[row][col] != null) {
+        //             buttons[row][col].setBackground(schedule[row][col]);
+        //         }
+        //     }
+        // }
 
         errorField.setText(state.getError());
     }
@@ -143,7 +155,7 @@ public class CreateScheduleView extends JPanel implements PropertyChangeListener
                     final CreateScheduleState currentState = createScheduleViewModel.getState();
 
                     createScheduleController.execute(
-                                currentState.getMasterSched()
+                                currentState.getSelectedSlots()
                     );
                 }
             }
