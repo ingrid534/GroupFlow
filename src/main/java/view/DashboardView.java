@@ -169,7 +169,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     private JComponent buildHeader() {
         JPanel header = new JPanel(new BorderLayout());
         header.setBorder(new EmptyBorder(6, 6, 6, 6));
-        header.setBackground(new Color(247, 248, 250));
+        // header.setBackground(Color.WHITE);
 
         JLabel title = new JLabel("Group Workspace");
         title.setFont(title.getFont().deriveFont(Font.BOLD, 16f));
@@ -251,7 +251,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
                 if (i == tabs.getSelectedIndex()) {
                     tabs.setForegroundAt(i, new Color(0x1E88E5));
                 } else {
-                    tabs.setForegroundAt(i, Color.DARK_GRAY);
+                    tabs.setForegroundAt(i, Color.WHITE);
                 }
             }
         });

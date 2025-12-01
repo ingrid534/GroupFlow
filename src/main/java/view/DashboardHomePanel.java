@@ -13,12 +13,12 @@ import java.awt.geom.RoundRectangle2D;
 public class DashboardHomePanel extends JPanel {
 
     private static final Color BG_MAIN = new Color(245, 247, 250);
-    private static final Color CARD_BG = Color.WHITE;
-    private static final Color CARD_BORDER = new Color(230, 233, 240);
+    //    private static final Color CARD_BG = Color.WHITE;
+    private static final Color CARD_BORDER = new Color(126, 126, 129);
     private static final Color TEXT_PRIMARY = new Color(26, 28, 35);
     private static final Color TEXT_SECONDARY = new Color(112, 118, 135);
     private static final Color BUTTON_BG = new Color(64, 120, 255);
-    private static final Color BUTTON_TEXT = Color.WHITE;
+    //    private static final Color BUTTON_TEXT = Color.WHITE;
 
     public DashboardHomePanel(ViewTasksView viewTasksView,
                               ActionListener createGroupListener,
@@ -26,7 +26,7 @@ public class DashboardHomePanel extends JPanel {
 
         setLayout(new BorderLayout(24, 24));
         setBorder(new EmptyBorder(20, 20, 20, 20));
-        setBackground(BG_MAIN);
+        //        setBackground(BG_MAIN);
 
         add(buildLeftColumn(createGroupListener, joinGroupListener), BorderLayout.CENTER);
 
@@ -56,7 +56,7 @@ public class DashboardHomePanel extends JPanel {
 
     private JComponent buildHeroCard() {
         RoundedPanel hero = new RoundedPanel(22);
-        hero.setBackground(CARD_BG);
+        //        hero.setBackground(CARD_BG);
         hero.setBorder(BorderFactory.createLineBorder(CARD_BORDER));
         hero.setLayout(new BorderLayout(12, 12));
 
@@ -80,14 +80,14 @@ public class DashboardHomePanel extends JPanel {
         text.setLayout(new BoxLayout(text, BoxLayout.Y_AXIS));
 
         JLabel title = new JLabel("Find or create your group");
-        title.setForeground(TEXT_PRIMARY);
+        //        title.setForeground(TEXT_PRIMARY);
         title.setFont(title.getFont().deriveFont(Font.BOLD, 20f));
 
         JLabel subtitle = wrapLabel(
                 "Collaborate with your team, track tasks, and manage members in one place.",
                 280
         );
-        subtitle.setForeground(TEXT_SECONDARY);
+        //        subtitle.setForeground(TEXT_SECONDARY);
         subtitle.setBorder(new EmptyBorder(4, 0, 0, 0));
 
         text.add(title);
@@ -164,7 +164,7 @@ public class DashboardHomePanel extends JPanel {
 
         RoundedPanel card = new RoundedPanel(18);
         card.setLayout(new BorderLayout(10, 10));
-        card.setBackground(CARD_BG);
+        //        card.setBackground(CARD_BG);
         card.setBorder(new EmptyBorder(12, 14, 12, 14));
 
         JPanel textPanel = new JPanel();
@@ -172,11 +172,11 @@ public class DashboardHomePanel extends JPanel {
         textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
 
         JLabel title = new JLabel(titleText);
-        title.setForeground(TEXT_PRIMARY);
+        //        title.setForeground(TEXT_PRIMARY);
         title.setFont(title.getFont().deriveFont(Font.BOLD, 14f));
 
         JLabel desc = wrapLabel(descriptionText, 220);
-        desc.setForeground(TEXT_SECONDARY);
+        //        desc.setForeground(TEXT_SECONDARY);
         desc.setBorder(new EmptyBorder(4, 0, 0, 0));
 
         textPanel.add(title);
@@ -195,7 +195,7 @@ public class DashboardHomePanel extends JPanel {
     private JComponent buildTasksCard(ViewTasksView viewTasksView) {
         RoundedPanel wrapper = new RoundedPanel(18);
         wrapper.setLayout(new BorderLayout(8, 8));
-        wrapper.setBackground(CARD_BG);
+        //        wrapper.setBackground(CARD_BG);
         wrapper.setBorder(BorderFactory.createLineBorder(CARD_BORDER));
         wrapper.setPreferredSize(new Dimension(320, 0));
 
@@ -221,7 +221,7 @@ public class DashboardHomePanel extends JPanel {
         header.setBorder(new EmptyBorder(4, 4, 8, 4));
 
         JLabel label = new JLabel("Your tasks");
-        label.setForeground(TEXT_PRIMARY);
+        //        label.setForeground(TEXT_PRIMARY);
         label.setFont(label.getFont().deriveFont(Font.BOLD, 14f));
 
         JButton refresh = new JButton("Refresh");
@@ -238,8 +238,8 @@ public class DashboardHomePanel extends JPanel {
         button.setFocusPainted(false);
         button.setBorderPainted(false);
         button.setOpaque(true);
-        button.setBackground(BUTTON_BG);
-        button.setForeground(BUTTON_TEXT);
+        //        button.setBackground(BUTTON_BG);
+        //        button.setForeground(BUTTON_TEXT);
         button.setFont(button.getFont().deriveFont(Font.PLAIN, 13f));
         button.setBorder(new EmptyBorder(6, 14, 6, 14));
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -249,8 +249,8 @@ public class DashboardHomePanel extends JPanel {
         button.setFocusPainted(false);
         button.setOpaque(true);
         button.setBorder(BorderFactory.createLineBorder(CARD_BORDER));
-        button.setBackground(Color.WHITE);
-        button.setForeground(TEXT_PRIMARY);
+        //        button.setBackground(Color.WHITE);
+        //        button.setForeground(TEXT_PRIMARY);
         button.setFont(button.getFont().deriveFont(Font.PLAIN, 12f));
         button.setBorder(new EmptyBorder(4, 10, 4, 10));
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));

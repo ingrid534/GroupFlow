@@ -14,6 +14,8 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import static view.FieldUIFactory.*;
+
 /**
  * The View for the Signup Use Case.
  */
@@ -38,13 +40,13 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
         signupViewModel.addPropertyChangeListener(this);
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        setBackground(Color.WHITE);
+        //        setBackground(Color.WHITE);
         setBorder(new EmptyBorder(30, 50, 40, 50));
 
-        styleField(usernameInputField);
-        styleField(emailInputField);
-        styleField(passwordInputField);
-        styleField(repeatPasswordInputField);
+        styleInputField(usernameInputField);
+        styleInputField(emailInputField);
+        styleInputField(passwordInputField);
+        styleInputField(repeatPasswordInputField);
 
         signUp = new JButton("Sign Up");
         signUp.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -53,6 +55,10 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
         toLogin.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         addFieldLabels();
+
+        this.add(signUp);
+        this.add(Box.createVerticalStrut(10));
+        this.add(toLogin);
 
         addActionListeners();
         // Check similarity to previous
@@ -80,27 +86,15 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
         this.add(createFieldLabel("Confirm Password"));
         this.add(repeatPasswordInputField);
         this.add(Box.createVerticalStrut(20));
-
-        this.add(signUp);
-        this.add(Box.createVerticalStrut(10));
-        this.add(toLogin);
     }
 
     private JLabel createTitleLabel() {
         final JLabel title = new JLabel("Sign Up");
         title.setFont(new Font("SansSerif", Font.BOLD, 32));
         title.setAlignmentX(Component.LEFT_ALIGNMENT);
-        title.setForeground(Color.BLACK);
+        //        title.setForeground(Color.BLACK);
 
         return title;
-    }
-
-    private JLabel createFieldLabel(String text) {
-        JLabel label = new JLabel(text);
-        label.setForeground(new Color(120, 120, 120));
-        label.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        return label;
     }
 
     private void addActionListeners() {
@@ -135,14 +129,6 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
         addFieldDocumentListener("email", emailInputField);
         addFieldDocumentListener("password", passwordInputField);
         addFieldDocumentListener("repeat password", repeatPasswordInputField);
-    }
-
-    private void styleField(JTextField field) {
-        field.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, new Color(200, 200, 200)));
-        field.setFont(new Font("SansSerif", Font.PLAIN, 16));
-        field.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
-        field.setBackground(Color.WHITE);
-        field.setAlignmentX(Component.LEFT_ALIGNMENT);
     }
 
     private void addFieldDocumentListener(String fieldName, JTextField field) {

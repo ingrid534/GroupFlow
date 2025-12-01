@@ -8,6 +8,7 @@ import javax.swing.*;
 class LabelTextPanel extends JPanel {
     LabelTextPanel(JLabel label, JTextField textField) {
         this.add(label);
+        add(Box.createVerticalStrut(5));
         this.add(textField);
     }
 }

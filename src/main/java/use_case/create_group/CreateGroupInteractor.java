@@ -74,5 +74,4 @@ public class CreateGroupInteractor implements CreateGroupInputBoundary {
     public void openCreateGroupModal() {
         createGroupPresenter.openCreateGroupModal();
     }
-
 }
