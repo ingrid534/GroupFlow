@@ -17,7 +17,7 @@ class LogoutInteractorTest {
         // For the success test, we need to add Paul to the data access repository
         // before we log in.
         UserFactory factory = new UserFactory();
-        User user = factory.create("Paul", "password");
+        User user = factory.create("Paul", "test@test.com", "password");
         userRepository.save(user);
         userRepository.setCurrentUsername("Paul");
 

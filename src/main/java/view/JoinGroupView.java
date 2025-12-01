@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 
 public class JoinGroupView extends JPanel implements ActionListener, PropertyChangeListener {
 
@@ -43,7 +44,11 @@ public class JoinGroupView extends JPanel implements ActionListener, PropertyCha
 
         joinButton.addActionListener(e00 -> {
             JoinGroupState state = joinGroupviewModel.getState();
-            controller.execute(state.getGroupCode());
+            try {
+                controller.execute(state.getGroupCode());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         });
 
         cancelButton.addActionListener(this);

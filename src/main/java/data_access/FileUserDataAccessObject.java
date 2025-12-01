@@ -29,7 +29,7 @@ public class FileUserDataAccessObject implements SignupUserDataAccessInterface,
         LogoutUserDataAccessInterface,
         CreateGroupDataAccessInterface {
 
-    private static final String HEADER = "username,password";
+    private static final String HEADER = "username,email,password";
 
     private final File csvFile;
     private final Map<String, Integer> headers = new LinkedHashMap<>();
@@ -48,7 +48,8 @@ public class FileUserDataAccessObject implements SignupUserDataAccessInterface,
 
         csvFile = new File(csvPath);
         headers.put("username", 0);
-        headers.put("password", 1);
+        headers.put("email", 1);
+        headers.put("password", 2);
 
         if (csvFile.length() == 0) {
             save();
@@ -65,8 +66,9 @@ public class FileUserDataAccessObject implements SignupUserDataAccessInterface,
                 while ((row = reader.readLine()) != null) {
                     final String[] col = row.split(",");
                     final String username = String.valueOf(col[headers.get("username")]);
+                    final String email = String.valueOf(col[headers.get("email")]);
                     final String password = String.valueOf(col[headers.get("password")]);
-                    final User user = userFactory.create(username, password);
+                    final User user = userFactory.create(username, email, password);
                     accounts.put(username, user);
                 }
             } catch (IOException ex) {

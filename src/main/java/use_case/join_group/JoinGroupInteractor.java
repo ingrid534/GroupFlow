@@ -1,11 +1,15 @@
 package use_case.join_group;
 
+import entity.group.Group;
 import entity.membership.Membership;
 import entity.membership.MembershipFactory;
 import entity.user.User;
 import entity.user.UserRole;
+import send_grid_api.SendEmailInterface;
 import use_case.create_group.CreateGroupMembershipDataAccessInterface;
 import use_case.create_group.CreateGroupUserDataAccessInterface;
+
+import java.io.IOException;
 
 public class JoinGroupInteractor implements JoinGroupInputBoundary {
 
@@ -14,21 +18,24 @@ public class JoinGroupInteractor implements JoinGroupInputBoundary {
     private final CreateGroupUserDataAccessInterface userDataAccess;
     private final CreateGroupMembershipDataAccessInterface membershipDataAccess;
     private final MembershipFactory membershipFactory;
+    private final SendEmailInterface emailer;
 
     public JoinGroupInteractor(JoinGroupOutputBoundary presenter,
                                JoinGroupUserDataAccessInterface groupDataAccess,
                                CreateGroupUserDataAccessInterface userDataAccess,
                                CreateGroupMembershipDataAccessInterface membershipDataAccess,
-                               MembershipFactory membershipFactory) {
+                               MembershipFactory membershipFactory,
+                               SendEmailInterface emailer) {
         this.presenter = presenter;
         this.groupDataAccess = groupDataAccess;
         this.userDataAccess = userDataAccess;
         this.membershipDataAccess = membershipDataAccess;
         this.membershipFactory = membershipFactory;
+        this.emailer = emailer;
     }
 
     @Override
-    public void execute(JoinGroupInputData inputData) {
+    public void execute(JoinGroupInputData inputData) throws IOException {
 
         String code = inputData.getGroupCode();
 
@@ -57,6 +64,10 @@ public class JoinGroupInteractor implements JoinGroupInputBoundary {
                 UserRole.MEMBER,
                 false
         );
+
+        Group requestedGroup = groupDataAccess.getGroup(code);
+        User moderator = userDataAccess.get(requestedGroup.getModerator());
+        emailer.sendEmail(moderator.getEmail(), SendEmailInterface.EmailType.GROUP_INVITE);
 
         membershipDataAccess.save(pending);
 

@@ -41,6 +41,7 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
         CreateScheduleUserDataAccessInterface {
 
     private static final String USERNAME = "username";
+    private static final String EMAIL = "email";
     private static final String PASSWORD = "password";
     private static final String SCHEDULE = "userSchedule";
 
@@ -81,13 +82,15 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
         }
 
         final String name = doc.getString(USERNAME);
+        final String email = doc.getString(EMAIL);
         final String password = doc.getString(PASSWORD);
 
         @SuppressWarnings("unchecked")
         List<List<Boolean>> userSchedule = (List<List<Boolean>>) doc.get("userSchedule");
     
         boolean[][] schedule = convertToArrayFromDB(userSchedule);
-        User user = userFactory.create(name, password);
+
+        User user = userFactory.create(name, email, password);
         user.setSchedule(schedule);
         return user;
     }
@@ -139,6 +142,7 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
 
         final Document newUser = new Document()
                 .append(USERNAME, user.getName())
+                .append(EMAIL, user.getEmail())
                 .append(PASSWORD, user.getPassword())
                 .append(SCHEDULE, dbSchedule);
 

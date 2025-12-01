@@ -25,6 +25,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
 
@@ -217,7 +218,11 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
                         JOptionPane.PLAIN_MESSAGE
                 );
                 if (code != null && !code.trim().isEmpty()) {
-                    joinGroupController.execute(code.trim());
+                    try {
+                        joinGroupController.execute(code.trim());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         };
