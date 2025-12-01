@@ -62,7 +62,6 @@ public class CreateGroupView extends JPanel implements ActionListener, PropertyC
         // Group Type panel
         groupTypeInfo = createGroupTypePanel();
 
-
         // Buttons
         cancel = new JButton("Cancel");
 
@@ -79,23 +78,23 @@ public class CreateGroupView extends JPanel implements ActionListener, PropertyC
     }
 
     private LabelTextPanel createGroupNamePanel() {
-        final LabelTextPanel groupNameInfo;
+        final LabelTextPanel panel;
         JLabel groupNameLabel = createFieldLabel("Group Name");
 
-        groupNameInfo = new LabelTextPanel(groupNameLabel, groupNameInputField);
-        groupNameInfo.setAlignmentX(Component.LEFT_ALIGNMENT);
-        groupNameInfo.setLayout(new BoxLayout(groupNameInfo, BoxLayout.Y_AXIS));
-        groupNameInfo.setBackground(Color.WHITE);
-        groupNameInfo.add(Box.createVerticalStrut(10));
+        panel = new LabelTextPanel(groupNameLabel, groupNameInputField);
+        panel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBackground(Color.WHITE);
+        panel.add(Box.createVerticalStrut(10));
 
-        return groupNameInfo;
+        return panel;
     }
 
     private JPanel createGroupTypePanel() {
         // Panel to hold label + combo box
-        JPanel groupTypeInfo = new JPanel();
-        groupTypeInfo.setLayout(new BoxLayout(groupTypeInfo, BoxLayout.Y_AXIS));
-        groupTypeInfo.setBackground(Color.WHITE);
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBackground(Color.WHITE);
 
         // Label
         JLabel groupTypeLabel = createFieldLabel("Group Type");
@@ -106,14 +105,14 @@ public class CreateGroupView extends JPanel implements ActionListener, PropertyC
         groupTypeInputField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
 
         // Add components with controlled vertical gap
-        groupTypeInfo.add(groupTypeLabel);
-        groupTypeInfo.add(groupTypeInputField);
+        panel.add(groupTypeLabel);
+        panel.add(groupTypeInputField);
 
         // Stretch panel width to match parent, but height unconstrained
-        groupTypeInfo.setAlignmentX(Component.LEFT_ALIGNMENT);
-        groupTypeInfo.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
+        panel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
 
-        return groupTypeInfo;
+        return panel;
     }
 
     /**
@@ -265,7 +264,7 @@ public class CreateGroupView extends JPanel implements ActionListener, PropertyC
                         dialog.dispatchEvent(we);
                         createGroupViewModel.setState(new CreateGroupState());
                     }
-        }
+                }
         );
     }
 
@@ -280,7 +279,7 @@ public class CreateGroupView extends JPanel implements ActionListener, PropertyC
         createGroupViewModel.addPropertyChangeListener(evt -> {
             if ("openModal".equals(evt.getPropertyName())) {
                 if (createGroupViewModel.getState().getOpenModal()) {
-                    openCreateGroupModal(dialog, application);
+                    openCreateGroupModal(application);
                 } else {
                     dialog.dispose();
                 }
@@ -291,10 +290,9 @@ public class CreateGroupView extends JPanel implements ActionListener, PropertyC
     /**
      * Opens the Create Group modal dialog.
      *
-     * @param dialog      the modal dialog to display
      * @param parentFrame the parent frame of the modal dialog
      */
-    private void openCreateGroupModal(JDialog dialog, JFrame parentFrame) {
+    private void openCreateGroupModal(JFrame parentFrame) {
         dialog.setMinimumSize(new Dimension(500, 370));
         dialog.setContentPane(this);
         dialog.setLocationRelativeTo(parentFrame);
