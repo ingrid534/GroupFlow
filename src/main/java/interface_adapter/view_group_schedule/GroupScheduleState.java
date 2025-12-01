@@ -5,6 +5,7 @@ import java.awt.Color;
 public class GroupScheduleState {
 
     private Color[][] masterSchedule;
+    private int groupSize;
     private String error = "";
 
     public GroupScheduleState() {
@@ -25,6 +26,14 @@ public class GroupScheduleState {
 
     public void setMasterSchedule(Color[][] masterSchedule) {
         this.masterSchedule = masterSchedule;
+    }
+
+    public int getGroupSize() {
+        return groupSize;
+    }
+
+    public void setGroupSize(int groupSize) {
+        this.groupSize = groupSize;
     }
 
     public String getError() {

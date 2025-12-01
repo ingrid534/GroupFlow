@@ -45,4 +45,8 @@ public class ScheduleTabView extends JPanel {
         add(groupSched);
     }
 
+    public void setCreateScheduleController(CreateScheduleController createScheduleController) {
+        this.createScheduleController = createScheduleController;
+    }
+
 }

@@ -3,8 +3,11 @@ package interface_adapter.view_group_schedule;
 import java.awt.Color;
 
 import interface_adapter.ViewManagerModel;
+// import interface_adapter.create_schedule.CreateScheduleState;
+import use_case.create_schedule.CreateScheduleOutputBoundary;
+import use_case.create_schedule.CreateScheduleOutputData;
 
-public class GroupSchedulePresenter {
+public class GroupSchedulePresenter implements CreateScheduleOutputBoundary{
     private final ViewManagerModel viewManagerModel;
     private final GroupScheduleViewModel groupScheduleViewModel;
 
@@ -12,4 +15,61 @@ public class GroupSchedulePresenter {
     static final Color LIGHT_GREEN = new Color(180, 255, 180);
     static final Color MED_GREEN = new Color(0, 150, 0);
     static final Color DARK_GREEN = new Color(0, 100, 0);
+
+    public GroupSchedulePresenter(ViewManagerModel viewManagerModel, GroupScheduleViewModel groupScheduleViewModel) {
+        this.viewManagerModel = viewManagerModel;
+        this.groupScheduleViewModel = groupScheduleViewModel;
+    }
+
+    @Override
+    public void prepareSuccessView(CreateScheduleOutputData response) {
+        int[][] masterSchedule = response.getMasterSchedule();
+        int groupSize = response.getGroupSize();
+        Color[][] colorSchedule = new Color[masterSchedule.length][masterSchedule[0].length];
+
+        for (int i = 0; i < masterSchedule.length; i++) {
+            for (int j = 0; j < masterSchedule[i].length; j++) {
+                colorSchedule[i][j] = pickColor(masterSchedule[i][j], groupSize);
+            }
+        }
+
+        GroupScheduleState state = groupScheduleViewModel.getState();
+        state.setMasterSchedule(colorSchedule);
+        state.setGroupSize(groupSize);
+
+        groupScheduleViewModel.setState(state);
+        groupScheduleViewModel.firePropertyChange("schedule");
+
+    }
+
+    /**
+     * Algorithm for what color to fill each time slot.
+     * @param num the number of users available in the group at this time slot
+     * @param groupSize the size of the group (for calculating percent)
+     * @return the color to fill the time slot with
+     */
+    private static Color pickColor(int num, int groupSize) {
+        int percent = (num * 100) / groupSize;
+        Color color;
+        if (percent >= 75) {
+            color = DARK_GREEN;
+        } else if (percent >= 50) {
+            color = MED_GREEN;
+        } else if (percent >= 25) {
+            color = LIGHT_GREEN;
+        } else {
+            color = NO_COLOR;
+        }
+
+        return color;
+    }
+
+    @Override
+    public void prepareFailView(String error) {
+        final GroupScheduleState state = groupScheduleViewModel.getState();
+        state.setError(error);
+
+        groupScheduleViewModel.setState(state);
+        groupScheduleViewModel.firePropertyChange("schedule");
+    }
 }

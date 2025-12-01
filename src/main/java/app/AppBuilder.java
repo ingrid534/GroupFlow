@@ -22,6 +22,8 @@ import interface_adapter.create_group.CreateGroupViewModel;
 import interface_adapter.creategrouptasks.CreateGroupTasksController;
 import interface_adapter.creategrouptasks.CreateGroupTasksPresenter;
 import interface_adapter.creategrouptasks.CreateGroupTasksViewModel;
+import interface_adapter.create_schedule.CreateScheduleController;
+import interface_adapter.create_schedule.CreateSchedulePresenter;
 import interface_adapter.create_schedule.CreateScheduleViewModel;
 import interface_adapter.dashboard.DashboardViewModel;
 import interface_adapter.editgrouptask.EditGroupTaskController;
@@ -44,6 +46,8 @@ import interface_adapter.manage_members.view_pending.ViewPendingControllerFactor
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
+import interface_adapter.view_group_schedule.GroupSchedulePresenter;
+import interface_adapter.view_group_schedule.GroupScheduleViewModel;
 import interface_adapter.viewgrouptasks.ViewGroupTasksController;
 import interface_adapter.viewgrouptasks.ViewGroupTasksPresenter;
 import interface_adapter.viewgrouptasks.ViewGroupTasksViewModel;
@@ -56,6 +60,9 @@ import use_case.change_password.ChangePasswordOutputBoundary;
 import use_case.create_group.CreateGroupInputBoundary;
 import use_case.create_group.CreateGroupInteractor;
 import use_case.create_group.CreateGroupOutputBoundary;
+import use_case.create_schedule.CreateScheduleInputBoundary;
+import use_case.create_schedule.CreateScheduleOutputBoundary;
+import use_case.create_schedule.CreateScheduleInteractor;
 import use_case.creategrouptask.CreateGroupTaskInputBoundary;
 import use_case.creategrouptask.CreateGroupTaskInteractor;
 import use_case.creategrouptask.CreateGroupTaskOutputBoundary;
@@ -92,6 +99,8 @@ public class AppBuilder {
     final ViewManagerModel viewManagerModel = new ViewManagerModel();
     final PeopleTabViewModel peopleTabViewModel = new PeopleTabViewModel();
     ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
+    CreateScheduleViewModel createScheduleViewModel = new CreateScheduleViewModel();
+    GroupScheduleViewModel groupScheduleViewModel = new GroupScheduleViewModel();
 
     private final java.util.Map<String, Dimension> viewSizes = new java.util.HashMap<>();
 
@@ -142,7 +151,7 @@ public class AppBuilder {
     private EditGroupTaskViewModel editGroupTaskViewModel;
     private CreateGroupTasksViewModel createGroupTasksViewModel;
     private CreateScheduleView createScheduleView;
-    private CreateScheduleViewModel createScheduleViewModel;
+    private GroupSchedulePresenter groupSchedulePresenter;
 
     private JFrame application;
     private ViewTasksView viewTasksView;
@@ -435,12 +444,24 @@ public class AppBuilder {
     }
 
     /**
-     * Adds create schedule use case to application (Not done).
-     * @return this builder
+     * Method to add the Create Group Use Case.
+     *
+     * @return App Builder
      */
-    public AppBuilder addCreateScheduleView() {
-        createScheduleViewModel = new CreateScheduleViewModel();
-        createScheduleView = new CreateScheduleView(createScheduleViewModel);
+    public AppBuilder addCreateScheduleUseCase() {
+        final CreateScheduleOutputBoundary createScheduleOutputBoundary = 
+                new CreateSchedulePresenter(createScheduleViewModel, viewManagerModel, groupScheduleViewModel);
+        final CreateScheduleInputBoundary createScheduleInteractor = 
+                new CreateScheduleInteractor(userDataAccessObject, 
+                                        groupDataAccessObject, 
+                                        createScheduleOutputBoundary, 
+                                        membershipDataAccessObject, 
+                                        groupSchedulePresenter);
+
+        CreateScheduleController createScheduleController = new CreateScheduleController(createScheduleInteractor);
+        createScheduleView.setCreateScheduleController(createScheduleController);
+        createScheduleView.hookCreateScheduleModalOpen(application);
+
         return this;
     }
 

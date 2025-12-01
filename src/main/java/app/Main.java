@@ -28,7 +28,7 @@ public class Main {
                 .addRemoveMemberUseCase()
                 .addRespondRequestUseCase()
                 .addUpdateRoleUseCase()
-                .addCreateScheduleView()
+                .addCreateScheduleUseCase()
                 .build();
 
         application.pack();

@@ -12,6 +12,8 @@ import java.awt.event.ActionListener;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
@@ -160,5 +162,38 @@ public class CreateScheduleView extends JPanel implements PropertyChangeListener
                 }
             }
         );
+    }
+
+    /**
+     * Hooks the Create Schedule modal to the application frame.
+     * This method listens for changes in the view model to open or close the modal.
+     *
+     * @param application the main application frame
+     */
+    public void hookCreateScheduleModalOpen(JFrame application) {
+        JDialog dialog = new JDialog(application, "Create Schedule", true);
+        createScheduleViewModel.addPropertyChangeListener(evt -> {
+            if ("openModal".equals(evt.getPropertyName())) {
+                if (createScheduleViewModel.getState().getOpenModal()) {
+                    openCreateScheduleModal(dialog, application);
+                } else {
+                    dialog.dispose();
+                }
+            }
+        });
+    }
+
+    /**
+     * Opens the Create Group modal dialog.
+     *
+     * @param dialog the modal dialog to display
+     * @param parentFrame the parent frame of the modal dialog
+     */
+    private void openCreateScheduleModal(JDialog dialog, JFrame parentFrame) {
+        dialog.setMinimumSize(new Dimension(400, 250));
+        dialog.setContentPane(this);
+        dialog.setLocationRelativeTo(parentFrame);
+        dialog.pack();
+        dialog.setVisible(true);
     }
 }
