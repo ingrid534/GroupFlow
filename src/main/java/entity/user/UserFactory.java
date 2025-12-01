@@ -12,7 +12,6 @@ public class UserFactory {
      * @param password password for the user
      * @return the new user
      */
-    // TODO: add String userID to factory once db is implemented.
     public User create(String name, String password) {
         return new User(name, password);
     }

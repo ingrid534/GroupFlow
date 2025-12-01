@@ -1,6 +1,7 @@
 package data_access;
 
 import use_case.change_password.ChangePasswordUserDataAccessInterface;
+import use_case.create_group.CreateGroupUserDataAccessInterface;
 import use_case.creategrouptask.CreateGroupTaskUserDataAccessInterface;
 import use_case.editgrouptasks.EditGroupTasksUserDataAccessInterface;
 import use_case.login.LoginUserDataAccessInterface;
@@ -21,6 +22,7 @@ import use_case.viewtasks.ViewTasksUserDataAccessInterface;
 public class InMemoryUserDataAccessObject implements SignupUserDataAccessInterface,
         LoginUserDataAccessInterface,
         ChangePasswordUserDataAccessInterface,
+        CreateGroupUserDataAccessInterface,
         LogoutUserDataAccessInterface,
         ViewTasksUserDataAccessInterface,
         CreateGroupTaskUserDataAccessInterface,

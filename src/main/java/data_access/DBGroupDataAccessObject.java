@@ -36,9 +36,9 @@ import static com.mongodb.client.model.Updates.set;
  */
 public class DBGroupDataAccessObject implements
         CreateGroupDataAccessInterface,
-        LoginGroupsDataAccessInterface, 
+        LoginGroupsDataAccessInterface,
         JoinGroupUserDataAccessInterface,
-        CreateGroupTaskGroupDataAccessInterface, 
+        CreateGroupTaskGroupDataAccessInterface,
         ViewGroupTasksGroupDataAccessInterface,
         CreateScheduleGroupDataAccessInterface {
 
