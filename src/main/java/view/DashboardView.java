@@ -220,8 +220,8 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
                 if (code != null && !code.trim().isEmpty()) {
                     try {
                         joinGroupController.execute(code.trim());
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                    } catch (IOException ioException) {
+                        throw new RuntimeException(ioException);
                     }
                 }
             }

@@ -18,6 +18,7 @@ public class SignupController {
      * Executes the Signup Use Case.
      * 
      * @param username  the username to sign up
+     * @param email     the email to sign up
      * @param password1 the password
      * @param password2 the password repeated
      */

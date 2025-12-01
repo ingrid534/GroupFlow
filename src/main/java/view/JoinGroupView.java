@@ -46,8 +46,8 @@ public class JoinGroupView extends JPanel implements ActionListener, PropertyCha
             JoinGroupState state = joinGroupviewModel.getState();
             try {
                 controller.execute(state.getGroupCode());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            } catch (IOException ioException) {
+                throw new RuntimeException(ioException);
             }
         });
 

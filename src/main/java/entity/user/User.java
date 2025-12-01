@@ -23,6 +23,7 @@ public class User {
      * Creates a new user with the given non-empty name and non-empty password.
      * 
      * @param name     the username
+     * @param email    the email
      * @param password the password
      * @throws IllegalArgumentException if the password or name are empty
      */
@@ -54,7 +55,9 @@ public class User {
         return name;
     }
 
-    public String getEmail() {return email;}
+    public String getEmail() {
+        return email;
+    }
 
     public String getPassword() {
         return password;

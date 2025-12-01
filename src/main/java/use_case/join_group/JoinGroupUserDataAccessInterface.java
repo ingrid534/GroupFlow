@@ -12,10 +12,10 @@ public interface JoinGroupUserDataAccessInterface {
     boolean groupCodeExists(String groupCode);
 
     /**
-     * Return the group with the given group code
+     * Return the group with the given group code.
      *
-     * @param groupCode
-     * @return the group
+     * @param groupCode the groupCode to look for
+     * @return the group to return
      */
     Group getGroup(String groupCode);
 }

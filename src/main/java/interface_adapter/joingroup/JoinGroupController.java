@@ -16,6 +16,7 @@ public class JoinGroupController {
      * Executes the JoinGroup Use Case.
      *
      * @param groupCode the groupCode of the user logging in
+     * @throws IOException if an I/O Error occurs during execution (i.e. in sending the email when joining a group).
      */
     public void execute(String groupCode) throws IOException {
         interactor.execute(new JoinGroupInputData(groupCode));
