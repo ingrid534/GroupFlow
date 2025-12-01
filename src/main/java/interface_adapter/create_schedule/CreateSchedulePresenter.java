@@ -1,6 +1,8 @@
 package interface_adapter.create_schedule;
 
 import interface_adapter.ViewManagerModel;
+import interface_adapter.view_group_schedule.GroupScheduleState;
+import interface_adapter.view_group_schedule.GroupScheduleViewModel;
 import use_case.create_schedule.CreateScheduleOutputBoundary;
 import use_case.create_schedule.CreateScheduleOutputData;
 
