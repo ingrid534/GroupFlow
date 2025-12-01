@@ -10,6 +10,7 @@ import entity.user.User;
 import entity.user.UserFactory;
 import use_case.change_password.ChangePasswordUserDataAccessInterface;
 import use_case.create_group.CreateGroupUserDataAccessInterface;
+import use_case.create_schedule.CreateScheduleUserDataAccessInterface;
 import use_case.creategrouptask.CreateGroupTaskUserDataAccessInterface;
 import use_case.editgrouptasks.EditGroupTasksUserDataAccessInterface;
 import use_case.login.LoginUserDataAccessInterface;
@@ -20,6 +21,9 @@ import use_case.viewtasks.ViewTasksUserDataAccessInterface;
 
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.set;
+
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * A MongoDB-based implementation of all user-related data access operations.
@@ -33,10 +37,12 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
         CreateGroupUserDataAccessInterface,
         ViewTasksUserDataAccessInterface,
         CreateGroupTaskUserDataAccessInterface,
-        EditGroupTasksUserDataAccessInterface {
+        EditGroupTasksUserDataAccessInterface,
+        CreateScheduleUserDataAccessInterface {
 
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
+    private static final String SCHEDULE = "userSchedule";
 
     private final UserFactory userFactory;
     private final MongoClient mongoClient;
@@ -77,7 +83,13 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
         final String name = doc.getString(USERNAME);
         final String password = doc.getString(PASSWORD);
 
-        return userFactory.create(name, password);
+        @SuppressWarnings("unchecked")
+        List<List<Boolean>> userSchedule = (List<List<Boolean>>) doc.get("userSchedule");
+    
+        boolean[][] schedule = convertToArrayFromDB(userSchedule);
+        User user = userFactory.create(name, password);
+        user.setSchedule(schedule);
+        return user;
     }
 
     /**
@@ -123,9 +135,12 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
      */
     @Override
     public void save(User user) {
+        List<List<Boolean>> dbSchedule = convertScheduleToDB(user.getSchedule());
+
         final Document newUser = new Document()
                 .append(USERNAME, user.getName())
-                .append(PASSWORD, user.getPassword());
+                .append(PASSWORD, user.getPassword())
+                .append(SCHEDULE, dbSchedule);
 
         try {
             usersCollection.insertOne(newUser);
@@ -150,4 +165,57 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
             throw new RuntimeException("User not found: " + user.getName());
         }
     }
+
+    /**
+     * Updates a user's schedule in MondoDB.
+     * @param user The user whose schedule to update.
+     * @throws RuntimeException If the user does not exist.
+     */
+    public void saveSchedule(User user) {
+        final boolean[][] userSchedule = user.getSchedule();
+        final UpdateResult result = usersCollection.updateOne(
+                eq(USERNAME, user.getName()),
+                set(SCHEDULE, convertScheduleToDB(userSchedule)));
+
+        if (result.getMatchedCount() == 0) {
+            throw new RuntimeException("User not found " + user.getName());
+        }
+    }
+
+    /**
+     * Convert the 2D array to a nested List to be stored in Mongo.
+     * @param schedule the user schedule to be converted
+     * @return the nested list representing user schedule
+     */
+    private List<List<Boolean>> convertScheduleToDB(boolean[][] schedule) {
+        List<List<Boolean>> result = new ArrayList<List<Boolean>>(schedule.length);
+        for (boolean[] i: schedule) {
+            List<Boolean> list = new ArrayList<Boolean>(i.length);
+            for (boolean j: i) {
+                list.add(j);
+            }
+            result.add(list);
+        }
+
+        return result;
+
+    }
+
+    /**
+     * Convert db user schedule back to 2D array.
+     * @param db_schedule the schedule taken from mongo.
+     * @return the 2D array representing user schedule.
+     */
+    private boolean[][] convertToArrayFromDB(List<List<Boolean>> db_schedule) {
+        boolean[][] result = new boolean[db_schedule.size()][db_schedule.get(0).size()];
+
+        for (int i = 0; i < result.length; i++) {
+            for (int j = 0; j < result[i].length; j++) {
+                result[i][j] = db_schedule.get(i).get(j);
+            }
+        }
+
+        return result;
+    }
+
 }

@@ -1,5 +1,6 @@
 package interface_adapter.viewgrouptasks;
 
+import interface_adapter.viewtasks.ViewTasksViewModel;
 import use_case.viewgrouptasks.ViewGroupTasksOutputBoundary;
 import use_case.viewgrouptasks.ViewGroupTasksOutputData;
 
@@ -10,9 +11,12 @@ import use_case.viewgrouptasks.ViewGroupTasksOutputData;
 public class ViewGroupTasksPresenter implements ViewGroupTasksOutputBoundary {
 
     private final ViewGroupTasksViewModel viewModel;
+    private final ViewTasksViewModel viewTasksViewModel;
 
-    public ViewGroupTasksPresenter(ViewGroupTasksViewModel viewModel) {
+    public ViewGroupTasksPresenter(ViewGroupTasksViewModel viewModel,
+                                   ViewTasksViewModel viewTasksViewModel) {
         this.viewModel = viewModel;
+        this.viewTasksViewModel = viewTasksViewModel;
     }
 
     @Override
@@ -24,5 +28,7 @@ public class ViewGroupTasksPresenter implements ViewGroupTasksOutputBoundary {
 
         viewModel.setState(state);
         viewModel.firePropertyChange("tasks");
+
+        viewTasksViewModel.firePropertyChange();
     }
 }

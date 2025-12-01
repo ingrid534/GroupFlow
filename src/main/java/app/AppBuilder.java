@@ -22,7 +22,15 @@ import interface_adapter.create_group.CreateGroupViewModel;
 import interface_adapter.creategrouptasks.CreateGroupTasksController;
 import interface_adapter.creategrouptasks.CreateGroupTasksPresenter;
 import interface_adapter.creategrouptasks.CreateGroupTasksViewModel;
+import interface_adapter.create_schedule.CreateScheduleViewModel;
 import interface_adapter.dashboard.DashboardViewModel;
+import interface_adapter.joingroup.JoinGroupController;
+import interface_adapter.joingroup.JoinGroupPresenter;
+import interface_adapter.joingroup.JoinGroupViewModel;
+import use_case.join_group.JoinGroupInputBoundary;
+import use_case.join_group.JoinGroupInteractor;
+import use_case.join_group.JoinGroupOutputBoundary;
+import view.JoinGroupView;
 import interface_adapter.editgrouptask.EditGroupTaskController;
 import interface_adapter.editgrouptask.EditGroupTaskPresenter;
 import interface_adapter.editgrouptask.EditGroupTaskViewModel;
@@ -81,6 +89,7 @@ import view.*;
 /**
  * Class for setting up application.
  */
+@SuppressWarnings({"checkstyle:ClassFanOutComplexity", "checkstyle:SuppressWarnings"})
 public class AppBuilder {
     private final JPanel cardPanel = new JPanel();
     private final CardLayout cardLayout = new CardLayout();
@@ -135,11 +144,15 @@ public class AppBuilder {
     private LoginView loginView;
     private DashboardView dashboardView;
     private CreateGroupView createGroupView;
+    private JoinGroupView joinGroupView;
+    private JoinGroupViewModel joinGroupViewModel;
     private PeopleTabView peopleTabView;
     private GroupTasksView groupTasksView;
     private ViewGroupTasksViewModel viewGroupTasksViewModel;
     private EditGroupTaskViewModel editGroupTaskViewModel;
     private CreateGroupTasksViewModel createGroupTasksViewModel;
+    private CreateScheduleView createScheduleView;
+    private CreateScheduleViewModel createScheduleViewModel;
 
     private JFrame application;
     private ViewTasksView viewTasksView;
@@ -189,6 +202,22 @@ public class AppBuilder {
     }
 
     /**
+     * Method to add the Join Group View.
+     *
+     * @return App Builder
+     */
+    public AppBuilder addJoinGroupView() {
+        joinGroupViewModel = new JoinGroupViewModel();
+        joinGroupView = new JoinGroupView(joinGroupViewModel);
+
+        cardPanel.add(joinGroupView, joinGroupView.getViewName());
+        // pick a reasonable size; tweak if needed
+        viewSizes.put(joinGroupView.getViewName(), new Dimension(420, 320));
+
+        return this;
+    }
+
+    /**
      * Method to add the dashboard view.
      *
      * @return App builder.
@@ -224,7 +253,7 @@ public class AppBuilder {
     public AppBuilder addGroupTasksUseCases() {
         viewGroupTasksViewModel = new ViewGroupTasksViewModel();
         ViewGroupTasksOutputBoundary viewPresenter =
-                new ViewGroupTasksPresenter(viewGroupTasksViewModel);
+                new ViewGroupTasksPresenter(viewGroupTasksViewModel, viewTasksViewModel);
 
         ViewGroupTasksInputBoundary viewInteractor =
                 new ViewGroupTasksInteractor(taskDataAccessObject, viewPresenter, groupDataAccessObject);
@@ -234,7 +263,7 @@ public class AppBuilder {
 
         editGroupTaskViewModel = new EditGroupTaskViewModel();
         EditGroupTasksOutputBoundary editPresenter =
-                new EditGroupTaskPresenter(editGroupTaskViewModel, viewTasksViewModel);
+                new EditGroupTaskPresenter(editGroupTaskViewModel);
 
         EditGroupTasksInputBoundary editInteractor =
                 new EditGroupTasksInteractor(taskDataAccessObject, editPresenter, userDataAccessObject,
@@ -245,7 +274,7 @@ public class AppBuilder {
 
         createGroupTasksViewModel = new CreateGroupTasksViewModel();
         CreateGroupTaskOutputBoundary createPresenter =
-                new CreateGroupTasksPresenter(createGroupTasksViewModel, viewTasksViewModel);
+                new CreateGroupTasksPresenter(createGroupTasksViewModel);
 
         CreateGroupTaskInputBoundary createInteractor =
                 new CreateGroupTaskInteractor(taskDataAccessObject, createPresenter, taskFactory,
@@ -398,6 +427,34 @@ public class AppBuilder {
     }
 
     /**
+     * Method to add the Join Group Use Case.
+     *
+     * @return App Builder
+     */
+    public AppBuilder addJoinGroupUseCase() {
+        final JoinGroupOutputBoundary joinGroupOutputBoundary =
+                new JoinGroupPresenter(joinGroupViewModel, dashboardViewModel, viewManagerModel);
+
+        final JoinGroupInputBoundary joinGroupInteractor =
+                new JoinGroupInteractor(
+                        joinGroupOutputBoundary,
+                        groupDataAccessObject,
+                        userDataAccessObject,
+                        membershipDataAccessObject,
+                        membershipFactory
+                );
+
+        final JoinGroupController joinGroupController =
+                new JoinGroupController(joinGroupInteractor);
+
+        // Wire controller into the join-group view
+        joinGroupView.setJoinGroupController(joinGroupController);
+        dashboardView.setJoinGroupController(joinGroupController);
+
+        return this;
+    }
+
+    /**
      * Method to add the ChangePassword use case.
      *
      * @return App builder.
@@ -428,6 +485,16 @@ public class AppBuilder {
 
         final LogoutController logoutController = new LogoutController(logoutInteractor);
         dashboardView.setLogoutController(logoutController);
+        return this;
+    }
+
+    /**
+     * Adds create schedule use case to application (Not done).
+     * @return this builder
+     */
+    public AppBuilder addCreateScheduleView() {
+        createScheduleViewModel = new CreateScheduleViewModel();
+        createScheduleView = new CreateScheduleView(createScheduleViewModel);
         return this;
     }
 

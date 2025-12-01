@@ -17,17 +17,20 @@ public class Main {
                 .addViewTasksUseCase()
                 .addDashboardView()
                 .addCreateGroupView()
+                .addJoinGroupView()
                 .addSignupUseCase()
                 .addLoginUseCase()
                 .addLogoutUseCase()
                 // .addChangePasswordUseCase()
                 .addCreateGroupUseCase()
+                .addJoinGroupUseCase()
                 .addViewMembersUseCase()
                 .addViewPendingUseCase()
                 .addGroupTasksUseCases()
                 .addRemoveMemberUseCase()
                 .addRespondRequestUseCase()
                 .addUpdateRoleUseCase()
+                .addCreateScheduleView()
                 .build();
 
         application.pack();

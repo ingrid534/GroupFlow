@@ -5,6 +5,8 @@ import interface_adapter.dashboard.DashboardViewModel;
 import use_case.join_group.JoinGroupOutputBoundary;
 import use_case.join_group.JoinGroupOutputData;
 
+import javax.swing.*;
+
 public class JoinGroupPresenter implements JoinGroupOutputBoundary {
     private final JoinGroupViewModel joinGroupViewModel;
     private final DashboardViewModel dashboardViewModel;
@@ -26,6 +28,13 @@ public class JoinGroupPresenter implements JoinGroupOutputBoundary {
         state.setGroupCodeError(null);
         joinGroupViewModel.setState(state);
 
+        JOptionPane.showMessageDialog(
+                null,
+                "Join request sent to the group owner.",
+                "Join Group",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+
         viewManagerModel.setState(dashboardViewModel.getViewName());
         viewManagerModel.firePropertyChange();
     }
@@ -35,6 +44,13 @@ public class JoinGroupPresenter implements JoinGroupOutputBoundary {
         JoinGroupState state = joinGroupViewModel.getState();
         state.setGroupCodeError(errorMessage);
         joinGroupViewModel.setState(state);
+
+        JOptionPane.showMessageDialog(
+                null,
+                errorMessage,
+                "Join Group Failed",
+                JOptionPane.ERROR_MESSAGE
+        );
     }
 
 }

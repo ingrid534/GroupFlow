@@ -73,7 +73,11 @@ public class GroupTasksView extends JPanel implements PropertyChangeListener {
 
         JButton createBtn = new JButton("Create Task");
         createBtn.addActionListener(event -> openCreateDialog(groupId));
+        JButton refreshBtn = new JButton("Refresh");
+        refreshBtn.addActionListener(event -> viewController.execute(groupId));
         topBarPanel.add(createBtn);
+        topBarPanel.add(Box.createHorizontalStrut(543));
+        topBarPanel.add(refreshBtn);
         add(topBarPanel, BorderLayout.NORTH);
 
         tasksListPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -127,12 +131,17 @@ public class GroupTasksView extends JPanel implements PropertyChangeListener {
         // Task text
         String text = dto.getDescription();
         if (dto.getDueDateString() != null && !dto.getDueDateString().isEmpty()) {
-            text += " (due " + dto.getDueDateString() + ")";
-            if (dto.isCompleted()) {
-                text += " (completed)";
+            if (dto.getDueDateString().equals("No due date")) {
+                text += " | No due date";
             }
             else {
-                text += " (not completed)";
+                text += " | due " + dto.getDueDateString();
+            }
+            if (dto.isCompleted()) {
+                text += " | completed";
+            }
+            else {
+                text += " | not completed";
             }
         }
         JLabel label = new JLabel(text);
