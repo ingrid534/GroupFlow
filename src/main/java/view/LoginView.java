@@ -15,6 +15,8 @@ import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import static view.FieldUIFactory.*;
+
 /**
  * The View for when the user is logging into the program.
  */
@@ -37,11 +39,11 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
         this.loginViewModel.addPropertyChangeListener(this);
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        setBackground(Color.WHITE);
+        // setBackground(Color.WHITE);
         setBorder(new EmptyBorder(30, 50, 40, 50));
 
-        styleField(usernameInputField);
-        styleField(passwordInputField);
+        styleInputField(usernameInputField);
+        styleInputField(passwordInputField);
 
         logIn = new JButton("Login");
         logIn.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -52,11 +54,11 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
         this.add(createTitleLabel());
         this.add(Box.createVerticalStrut(30));
 
-        this.add(createUsernameLabel());
+        this.add(createFieldLabel("Username"));
         this.add(usernameInputField);
         this.add(Box.createVerticalStrut(20));
 
-        this.add(createPasswordLabel());
+        this.add(createFieldLabel("Password"));
         this.add(passwordInputField);
         this.add(Box.createVerticalStrut(10));
 
@@ -147,33 +149,9 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
         JLabel title = new JLabel("Log In");
         title.setFont(new Font("SansSerif", Font.BOLD, 32));
         title.setAlignmentX(Component.LEFT_ALIGNMENT);
-        title.setForeground(Color.BLACK);
+        // title.setForeground(Color.BLACK);
 
         return title;
-    }
-
-    private JLabel createUsernameLabel() {
-        JLabel usernameLabel = new JLabel("Username");
-        usernameLabel.setForeground(new Color(120, 120, 120));
-        usernameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        return usernameLabel;
-    }
-
-    private JLabel createPasswordLabel() {
-        JLabel passwordLabel = new JLabel("Password");
-        passwordLabel.setForeground(new Color(120, 120, 120));
-        passwordLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        return passwordLabel;
-    }
-
-    private void styleField(JTextField field) {
-        field.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, new Color(200, 200, 200)));
-        field.setFont(new Font("SansSerif", Font.PLAIN, 16));
-        field.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
-        field.setBackground(Color.WHITE);
-        field.setAlignmentX(Component.LEFT_ALIGNMENT);
     }
 
     /**

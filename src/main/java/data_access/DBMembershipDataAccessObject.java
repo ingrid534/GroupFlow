@@ -96,8 +96,7 @@ public class DBMembershipDataAccessObject implements
      *
      * @param username  The username.
      * @param groupID The group id.
-     * @return The Membership object if found.
-     * @throws RuntimeException If membership is not found.
+     * @return The Membership object if found and null if not.
      */
     @Override
     public Membership get(String username, String groupID) {
@@ -106,7 +105,7 @@ public class DBMembershipDataAccessObject implements
         ).first();
 
         if (doc == null) {
-            throw new RuntimeException("Membership not found for user: " + userID + " group: " + groupID);
+            return null;
         }
 
         String user = doc.getString(USER_FIELD);
