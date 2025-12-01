@@ -39,7 +39,7 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
         this.loginViewModel.addPropertyChangeListener(this);
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        setBackground(Color.WHITE);
+        // setBackground(Color.WHITE);
         setBorder(new EmptyBorder(30, 50, 40, 50));
 
         styleInputField(usernameInputField);
@@ -149,7 +149,7 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
         JLabel title = new JLabel("Log In");
         title.setFont(new Font("SansSerif", Font.BOLD, 32));
         title.setAlignmentX(Component.LEFT_ALIGNMENT);
-        title.setForeground(Color.BLACK);
+        // title.setForeground(Color.BLACK);
 
         return title;
     }

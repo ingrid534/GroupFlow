@@ -40,7 +40,7 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
         signupViewModel.addPropertyChangeListener(this);
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        setBackground(Color.WHITE);
+        //        setBackground(Color.WHITE);
         setBorder(new EmptyBorder(30, 50, 40, 50));
 
         styleInputField(usernameInputField);
@@ -92,7 +92,7 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
         final JLabel title = new JLabel("Sign Up");
         title.setFont(new Font("SansSerif", Font.BOLD, 32));
         title.setAlignmentX(Component.LEFT_ALIGNMENT);
-        title.setForeground(Color.BLACK);
+        //        title.setForeground(Color.BLACK);
 
         return title;
     }

@@ -47,7 +47,7 @@ public class CreateGroupView extends JPanel implements ActionListener, PropertyC
     public CreateGroupView(CreateGroupViewModel createGroupViewModel) {
         this.createGroupViewModel = createGroupViewModel;
         this.createGroupViewModel.addPropertyChangeListener(this);
-        setBackground(Color.WHITE);
+        // setBackground(Color.WHITE);
 
         title = new JLabel("Enter your group's details.");
         title.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -84,7 +84,7 @@ public class CreateGroupView extends JPanel implements ActionListener, PropertyC
         panel = new LabelTextPanel(groupNameLabel, groupNameInputField);
         panel.setAlignmentX(Component.LEFT_ALIGNMENT);
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBackground(Color.WHITE);
+        // panel.setBackground(Color.WHITE);
         panel.add(Box.createVerticalStrut(10));
 
         return panel;
@@ -94,7 +94,7 @@ public class CreateGroupView extends JPanel implements ActionListener, PropertyC
         // Panel to hold label + combo box
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBackground(Color.WHITE);
+        // panel.setBackground(Color.WHITE);
 
         // Label
         JLabel groupTypeLabel = createFieldLabel("Group Type");
