@@ -27,6 +27,8 @@ import interface_adapter.dashboard.DashboardViewModel;
 import interface_adapter.joingroup.JoinGroupController;
 import interface_adapter.joingroup.JoinGroupPresenter;
 import interface_adapter.joingroup.JoinGroupViewModel;
+import send_grid_api.SendEmail;
+import send_grid_api.SendEmailInterface;
 import use_case.join_group.JoinGroupInputBoundary;
 import use_case.join_group.JoinGroupInteractor;
 import use_case.join_group.JoinGroupOutputBoundary;
@@ -129,6 +131,7 @@ public class AppBuilder {
                     mongoDBConnectionString,
                     dbName
             );
+    final SendEmailInterface emailer = new SendEmail();
 
     // DAO version using a shared external database
     // final DBUserDataAccessObject userDataAccessObject = new
@@ -440,7 +443,8 @@ public class AppBuilder {
                         groupDataAccessObject,
                         userDataAccessObject,
                         membershipDataAccessObject,
-                        membershipFactory
+                        membershipFactory,
+                        emailer
                 );
 
         final JoinGroupController joinGroupController =

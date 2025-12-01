@@ -25,7 +25,7 @@ public class SignupState {
                 setUsername(fieldText);
                 break;
             case "email":
-                setPassword(fieldText);
+                setEmail(fieldText);
                 break;
             case "password":
                 setPassword(fieldText);

@@ -21,7 +21,7 @@ class LoginInteractorTest {
         // For the success test, we need to add Paul to the data access repository
         // before we log in.
         UserFactory factory = new UserFactory();
-        User user = factory.create("Paul", "password");
+        User user = factory.create("Paul", "paul@gmail.com", "password");
         userRepository.save(user);
 
         // Dummy groups DAO: Paul has no groups for this test.
@@ -60,7 +60,7 @@ class LoginInteractorTest {
         // For this failure test, we need to add Paul to the data access repository
         // before we log in, and the passwords should not match.
         UserFactory factory = new UserFactory();
-        User user = factory.create("Paul", "password");
+        User user = factory.create("Paul", "paul@gmail.com", "password");
         userRepository.save(user);
 
         // Dummy groups DAO (will not be used in this test because login fails).

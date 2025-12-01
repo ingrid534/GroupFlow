@@ -13,6 +13,7 @@ public class User {
 
     private final String userID;
     private String name;
+    private String email;
     private final String password;
     private List<Membership> memberships;
     private List<String> tasks;
@@ -22,18 +23,24 @@ public class User {
      * Creates a new user with the given non-empty name and non-empty password.
      * 
      * @param name     the username
+     * @param email    the email
      * @param password the password
      * @throws IllegalArgumentException if the password or name are empty
      */
-    public User(String name, String password) {
+
+    public User(String name, String email, String password) {
         if ("".equals(name)) {
             throw new IllegalArgumentException("Username cannot be empty");
+        }
+        if ("".equals(email)) {
+            throw new IllegalArgumentException("Email cannot be empty");
         }
         if ("".equals(password)) {
             throw new IllegalArgumentException("Password cannot be empty");
         }
         this.userID = UUID.randomUUID().toString();
         this.name = name;
+        this.email = email;
         this.password = password;
         this.memberships = new ArrayList<>();
         this.tasks = new ArrayList<>();
@@ -46,6 +53,10 @@ public class User {
 
     public String getName() {
         return name;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public String getPassword() {

@@ -37,7 +37,7 @@ public class EditGroupTasksInteractorTest {
         InMemoryUserDataAccessObject userDAO = new InMemoryUserDataAccessObject();
         InMemoryMembershipDataAccessObject memDAO = new InMemoryMembershipDataAccessObject();
 
-        User u = new User("alice", "pw");
+        User u = new User("alice", "test@test.com", "pw");
         userDAO.save(u);
         userDAO.setCurrentUsername("alice");
 
@@ -67,7 +67,7 @@ public class EditGroupTasksInteractorTest {
         InMemoryUserDataAccessObject userDAO = new InMemoryUserDataAccessObject();
         InMemoryMembershipDataAccessObject memDAO = new InMemoryMembershipDataAccessObject();
 
-        User u = new User("bob", "pw");
+        User u = new User("bob", "test@test.com", "pw");
         userDAO.save(u);
         userDAO.setCurrentUsername("bob");
 
@@ -96,7 +96,7 @@ public class EditGroupTasksInteractorTest {
         InMemoryUserDataAccessObject userDAO = new InMemoryUserDataAccessObject();
         InMemoryMembershipDataAccessObject memDAO = new InMemoryMembershipDataAccessObject();
 
-        User mod = new User("carol", "pw");
+        User mod = new User("carol", "test@test.com", "pw");
         userDAO.save(mod);
         userDAO.setCurrentUsername("carol");
 
@@ -143,7 +143,7 @@ public class EditGroupTasksInteractorTest {
         InMemoryUserDataAccessObject userDAO = new InMemoryUserDataAccessObject();
         InMemoryMembershipDataAccessObject memDAO = new InMemoryMembershipDataAccessObject();
 
-        User mod = new User("x", "pw");
+        User mod = new User("x", "test@test.com", "pw");
         userDAO.save(mod);
         userDAO.setCurrentUsername("x");
         memDAO.save(new Membership("x", "g1", UserRole.MODERATOR, true));
@@ -186,13 +186,13 @@ public class EditGroupTasksInteractorTest {
         InMemoryUserDataAccessObject userDAO = new InMemoryUserDataAccessObject();
         InMemoryMembershipDataAccessObject memDAO = new InMemoryMembershipDataAccessObject();
 
-        User mod = new User("mod", "pw");
+        User mod = new User("mod", "test@test.com", "pw");
         userDAO.save(mod);
         userDAO.setCurrentUsername("mod");
         memDAO.save(new Membership("mod", "g1", UserRole.MODERATOR, true));
 
-        User u1 = new User("u1", "pw");
-        User u2 = new User("u2", "pw");
+        User u1 = new User("u1", "test@test.com", "pw");
+        User u2 = new User("u2", "test@test.com", "pw");
         userDAO.save(u1);
         userDAO.save(u2);
 
@@ -241,7 +241,7 @@ public class EditGroupTasksInteractorTest {
         InMemoryUserDataAccessObject userDAO = new InMemoryUserDataAccessObject();
         InMemoryMembershipDataAccessObject memDAO = new InMemoryMembershipDataAccessObject();
 
-        User mod = new User("m", "pw");
+        User mod = new User("m", "test@test.com", "pw");
         userDAO.save(mod);
         userDAO.setCurrentUsername("m");
         memDAO.save(new Membership("m", "g1", UserRole.MODERATOR, true));
@@ -284,7 +284,7 @@ public class EditGroupTasksInteractorTest {
         InMemoryUserDataAccessObject userDAO = new InMemoryUserDataAccessObject();
         InMemoryMembershipDataAccessObject memDAO = new InMemoryMembershipDataAccessObject();
 
-        User mod = new User("z", "pw");
+        User mod = new User("z", "test@test.com", "pw");
         userDAO.save(mod);
         userDAO.setCurrentUsername("z");
         memDAO.save(new Membership("z", "g1", UserRole.MODERATOR, true));
@@ -326,7 +326,7 @@ public class EditGroupTasksInteractorTest {
         InMemoryMembershipDataAccessObject memDAO = new InMemoryMembershipDataAccessObject();
 
         // User exists but DOES NOT have a membership in g1
-        User user = new User("lonely", "pw");
+        User user = new User("lonely", "test@test.com", "pw");
         userDAO.save(user);
         userDAO.setCurrentUsername("lonely");
 
@@ -371,7 +371,7 @@ public class EditGroupTasksInteractorTest {
         InMemoryUserDataAccessObject userDAO = new InMemoryUserDataAccessObject();
         InMemoryMembershipDataAccessObject memDAO = new InMemoryMembershipDataAccessObject();
 
-        User mod = new User("q", "pw");
+        User mod = new User("q", "test@test.com", "pw");
         userDAO.save(mod);
         userDAO.setCurrentUsername("q");
         memDAO.save(new Membership("q", "g1", UserRole.MODERATOR, true));
@@ -412,7 +412,7 @@ public class EditGroupTasksInteractorTest {
         InMemoryMembershipDataAccessObject memDAO = new InMemoryMembershipDataAccessObject();
 
         // Moderator
-        User mod = new User("mod", "pw");
+        User mod = new User("mod", "test@test.com", "pw");
         userDAO.save(mod);
         userDAO.setCurrentUsername("mod");
         memDAO.save(new Membership("mod", "g1", UserRole.MODERATOR, true));
@@ -456,7 +456,7 @@ public class EditGroupTasksInteractorTest {
         InMemoryMembershipDataAccessObject memDAO = new InMemoryMembershipDataAccessObject();
 
         // Moderator
-        User mod = new User("mod2", "pw");
+        User mod = new User("mod2", "test@test.com", "pw");
         userDAO.save(mod);
         userDAO.setCurrentUsername("mod2");
         memDAO.save(new Membership("mod2", "g1", UserRole.MODERATOR, true));

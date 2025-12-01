@@ -36,7 +36,7 @@ public class CreateGroupTaskInteractorTest {
         InMemoryMembershipDataAccessObject membershipDAO = new InMemoryMembershipDataAccessObject();
 
         // User is NOT a moderator
-        User user = new User("alice", "pw");
+        User user = new User("alice", "test@test.com", "pw");
         userDAO.save(user);
         userDAO.setCurrentUsername("alice");
 
@@ -77,7 +77,7 @@ public class CreateGroupTaskInteractorTest {
         InMemoryGroupDataAccessObject groupDAO = new InMemoryGroupDataAccessObject();
         InMemoryMembershipDataAccessObject membershipDAO = new InMemoryMembershipDataAccessObject();
 
-        User mod = new User("bob", "pw");
+        User mod = new User("bob", "test@test.com", "pw");
         userDAO.save(mod);
         userDAO.setCurrentUsername("bob");
 
@@ -115,7 +115,7 @@ public class CreateGroupTaskInteractorTest {
         InMemoryMembershipDataAccessObject membershipDAO = new InMemoryMembershipDataAccessObject();
 
         // moderator
-        User mod = new User("carol", "pw");
+        User mod = new User("carol", "test@test.com", "pw");
         userDAO.save(mod);
         userDAO.setCurrentUsername("carol");
         membershipDAO.save(new Membership("carol", "g1", UserRole.MODERATOR, true));
@@ -166,7 +166,7 @@ public class CreateGroupTaskInteractorTest {
         InMemoryGroupDataAccessObject groupDAO = new InMemoryGroupDataAccessObject();
         InMemoryMembershipDataAccessObject membershipDAO = new InMemoryMembershipDataAccessObject();
 
-        User mod = new User("dave", "pw");
+        User mod = new User("dave", "test@test.com", "pw");
         userDAO.save(mod);
         userDAO.setCurrentUsername("dave");
         membershipDAO.save(new Membership("dave", "g1", UserRole.MODERATOR, true));
@@ -205,7 +205,7 @@ public class CreateGroupTaskInteractorTest {
         InMemoryGroupDataAccessObject groupDAO = new InMemoryGroupDataAccessObject();
         InMemoryMembershipDataAccessObject membershipDAO = new InMemoryMembershipDataAccessObject();
 
-        User mod = new User("eve", "pw");
+        User mod = new User("eve", "test@test.com", "pw");
         userDAO.save(mod);
         userDAO.setCurrentUsername("eve");
         membershipDAO.save(new Membership("eve", "g1", UserRole.MODERATOR, true));
@@ -242,7 +242,7 @@ public class CreateGroupTaskInteractorTest {
         InMemoryGroupDataAccessObject groupDAO = new InMemoryGroupDataAccessObject();
         InMemoryMembershipDataAccessObject membershipDAO = new InMemoryMembershipDataAccessObject();
 
-        User mod = new User("mike", "pw");
+        User mod = new User("mike", "test@test.com", "pw");
         userDAO.save(mod);
         userDAO.setCurrentUsername("mike");
         membershipDAO.save(new Membership("mike", "g1", UserRole.MODERATOR, true));
@@ -251,7 +251,7 @@ public class CreateGroupTaskInteractorTest {
         groupDAO.save(group);
 
         // only u1 exists; u2 does NOT
-        User u1 = new User("u1", "pw");
+        User u1 = new User("u1", "test@test.com", "pw");
         userDAO.save(u1);
 
         TestPresenter presenter = new TestPresenter();
@@ -286,7 +286,7 @@ public class CreateGroupTaskInteractorTest {
         InMemoryMembershipDataAccessObject membershipDAO = new InMemoryMembershipDataAccessObject();
 
         // moderator setup
-        User mod = new User("zoe", "pw");
+        User mod = new User("zoe", "test@test.com", "pw");
         userDAO.save(mod);
         userDAO.setCurrentUsername("zoe");
         membershipDAO.save(new Membership("zoe", "g1", UserRole.MODERATOR, true));

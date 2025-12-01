@@ -8,11 +8,12 @@ public class UserFactory {
     /**
      * Create a new user.
      * 
-     * @param name     username for the user
-     * @param password password for the user
+     * @param name      username for the user
+     * @param email     email for the user
+     * @param password  password for the user
      * @return the new user
      */
-    public User create(String name, String password) {
-        return new User(name, password);
+    public User create(String name, String email, String password) {
+        return new User(name, email, password);
     }
 }
