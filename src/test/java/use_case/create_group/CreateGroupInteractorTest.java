@@ -77,7 +77,7 @@ class CreateGroupInteractorTest {
         GroupFactory groupFactory = new GroupFactory();
         MembershipFactory membershipFactory = new MembershipFactory();
 
-        User user = userFactory.create("Andrew", "andrewpols@gmail.com", "password123");
+        User user = userFactory.create("Andrew", "test@gmail.com", "password123");
         userRepository.save(user);
         userRepository.setCurrentUsername(user.getName());
 
@@ -122,7 +122,7 @@ class CreateGroupInteractorTest {
         GroupFactory groupFactory = new GroupFactory();
         MembershipFactory membershipFactory = new MembershipFactory();
 
-        User user = userFactory.create("Andrew", "andrew@gmail.com", "password123");
+        User user = userFactory.create("Andrew", "test@gmail.com", "password123");
         userRepository.save(user);
         userRepository.setCurrentUsername(user.getName());
 

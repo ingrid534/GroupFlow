@@ -1,21 +1,34 @@
 package use_case.join_group;
 
-import entity.group.Group;
+import entity.user.User;
 
 public interface JoinGroupUserDataAccessInterface {
     /**
-     * Checks if the given groupCode exists.
+     * Returns the user with the given username.
      *
-     * @param groupCode the groupCode to look for
-     * @return true if a group with the given groupCode exists; false otherwise
+     * @param username the username to look up
+     * @return the user with the given username
      */
-    boolean groupCodeExists(String groupCode);
+    User get(String username);
 
     /**
-     * Return the group with the given group code.
+     * Retrieves the username of the currently logged-in user.
      *
-     * @param groupCode the groupCode to look for
-     * @return the group to return
+     * @return the username of the currently logged-in user
      */
-    Group getGroup(String groupCode);
+    String getCurrentUsername();
+
+    /**
+     * Saves the user.
+     *
+     * @param user the user to save
+     */
+    void save(User user);
+
+    /**
+     * Sets the current username in use.
+     *
+     * @param name The username to be set
+     */
+    void setCurrentUsername(String name);
 }

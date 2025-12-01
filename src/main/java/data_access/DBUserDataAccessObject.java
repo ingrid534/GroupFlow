@@ -13,6 +13,7 @@ import use_case.create_group.CreateGroupUserDataAccessInterface;
 import use_case.create_schedule.CreateScheduleUserDataAccessInterface;
 import use_case.creategrouptask.CreateGroupTaskUserDataAccessInterface;
 import use_case.editgrouptasks.EditGroupTasksUserDataAccessInterface;
+import use_case.join_group.JoinGroupUserDataAccessInterface;
 import use_case.login.LoginUserDataAccessInterface;
 import use_case.logout.LogoutUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
@@ -35,6 +36,7 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
         ChangePasswordUserDataAccessInterface,
         LogoutUserDataAccessInterface,
         CreateGroupUserDataAccessInterface,
+        JoinGroupUserDataAccessInterface,
         ViewTasksUserDataAccessInterface,
         CreateGroupTaskUserDataAccessInterface,
         EditGroupTasksUserDataAccessInterface,

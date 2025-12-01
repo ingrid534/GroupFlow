@@ -11,7 +11,7 @@ import entity.membership.Membership;
 import entity.membership.MembershipFactory;
 import entity.user.UserRole;
 import use_case.create_group.CreateGroupDataAccessInterface;
-import use_case.join_group.JoinGroupUserDataAccessInterface;
+import use_case.join_group.JoinGroupDataAccessInterface;
 import use_case.create_schedule.CreateScheduleGroupDataAccessInterface;
 import use_case.creategrouptask.CreateGroupTaskGroupDataAccessInterface;
 import use_case.login.LoginGroupsDataAccessInterface;
@@ -37,7 +37,7 @@ import static com.mongodb.client.model.Updates.set;
 public class DBGroupDataAccessObject implements
         CreateGroupDataAccessInterface,
         LoginGroupsDataAccessInterface,
-        JoinGroupUserDataAccessInterface,
+        JoinGroupDataAccessInterface,
         CreateGroupTaskGroupDataAccessInterface,
         ViewGroupTasksGroupDataAccessInterface,
         CreateScheduleGroupDataAccessInterface {

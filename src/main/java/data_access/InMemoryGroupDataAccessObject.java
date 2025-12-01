@@ -3,6 +3,7 @@ package data_access;
 import entity.group.Group;
 import use_case.create_group.CreateGroupDataAccessInterface;
 import use_case.creategrouptask.CreateGroupTaskGroupDataAccessInterface;
+import use_case.join_group.JoinGroupDataAccessInterface;
 import use_case.login.LoginGroupsDataAccessInterface;
 import use_case.viewgrouptasks.ViewGroupTasksGroupDataAccessInterface;
 
@@ -15,9 +16,21 @@ public class InMemoryGroupDataAccessObject implements
         CreateGroupDataAccessInterface,
         LoginGroupsDataAccessInterface,
         CreateGroupTaskGroupDataAccessInterface,
-        ViewGroupTasksGroupDataAccessInterface {
+        ViewGroupTasksGroupDataAccessInterface,
+        JoinGroupDataAccessInterface {
 
     private final Map<String, Group> groups = new HashMap<>();
+
+    /**
+     * Checks if the given groupCode exists.
+     *
+     * @param groupCode the groupCode to look for
+     * @return true if a group with the given groupCode exists; false otherwise
+     */
+    @Override
+    public boolean groupCodeExists(String groupCode) {
+        return groups.containsKey(groupCode);
+    }
 
     /**
      * Returns the group object with group id.

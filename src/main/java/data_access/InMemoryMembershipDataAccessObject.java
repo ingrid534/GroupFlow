@@ -5,6 +5,7 @@ import entity.user.UserRole;
 import use_case.create_group.CreateGroupMembershipDataAccessInterface;
 import use_case.creategrouptask.CreateGroupTasksMembershipDataAccessInterface;
 import use_case.editgrouptasks.EditGroupTasksMembershipDataAccessInterface;
+import use_case.join_group.JoinGroupMembershipDataAccessInterface;
 import use_case.manage_members.remove_member.RemoveMemberDataAccessInterface;
 import use_case.manage_members.respond_request.RespondRequestDataAccessInterface;
 import use_case.manage_members.update_role.UpdateRoleDataAccessInterface;
@@ -21,6 +22,7 @@ public class InMemoryMembershipDataAccessObject implements
         ViewMembersMembershipDataAccessInterface,
         ViewPendingMembershipDataAccessInterface,
         CreateGroupTasksMembershipDataAccessInterface,
+        JoinGroupMembershipDataAccessInterface,
         EditGroupTasksMembershipDataAccessInterface,
         RemoveMemberDataAccessInterface,
         RespondRequestDataAccessInterface,
