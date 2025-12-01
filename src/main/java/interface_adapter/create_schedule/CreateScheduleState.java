@@ -1,14 +1,24 @@
 package interface_adapter.create_schedule;
 
-import java.awt.Color;
-
 public class CreateScheduleState {
-    private Color[][] masterSchedule;
+
+    private boolean[][] selectedSlots;
     private boolean openModal;
     private String error = "";
 
-    public Color[][] getMasterSched() {
-        return masterSchedule;
+    public CreateScheduleState() {
+        this.selectedSlots = new boolean[7][12];
+
+        for (int row = 0; row < 7; row++) {
+            for (int col = 0; col < 12; col++) {
+                selectedSlots[row][col] = false;
+            }
+        }
+        error = "";
+    }
+
+    public boolean[][] getSelectedSlots() {
+        return selectedSlots;
     }
 
     public boolean getOpenModal() {
@@ -19,8 +29,8 @@ public class CreateScheduleState {
         return error;
     }
 
-    public void setMasterSchedule(Color[][] masterSchedule) {
-        this.masterSchedule = masterSchedule;
+    public void setMasterSchedule(boolean[][] newSelectedSlots) {
+        this.selectedSlots = newSelectedSlots;
     } 
 
     public void setOpenModal(boolean modalState) {

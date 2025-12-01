@@ -10,6 +10,7 @@ public class CreateSchedulePresenter implements CreateScheduleOutputBoundary {
     private final CreateScheduleViewModel createScheduleViewModel;
     private final ViewManagerModel viewManagerModel;
 
+    // TODO: move these to the common schedule presenter
     static final Color NO_COLOR = new Color(255, 255, 255);
     static final Color LIGHT_GREEN = new Color(180, 255, 180);
     static final Color MED_GREEN = new Color(0, 150, 0);
@@ -24,7 +25,7 @@ public class CreateSchedulePresenter implements CreateScheduleOutputBoundary {
     public void prepareSuccessView(CreateScheduleOutputData response) {
         createScheduleViewModel.firePropertyChange("openModal");
 
-        // Create the object to pass into Create Schedule State
+        // TODO: move this to common schedule presenter
         int[][] masterSchedule = response.getMasterSchedule();
         int groupSize = response.getGroupSize();
         Color[][] colorSchedule = new Color[masterSchedule.length][masterSchedule[0].length];
@@ -37,13 +38,16 @@ public class CreateSchedulePresenter implements CreateScheduleOutputBoundary {
 
         CreateScheduleState state = createScheduleViewModel.getState();
         state.setOpenModal(false);
-        state.setMasterSchedule(colorSchedule);
+
+        // TODO: move this to common schedule presenter
+        // state.setMasterSchedule(colorSchedule);
 
         createScheduleViewModel.setState(state);
         createScheduleViewModel.firePropertyChange("state");
 
     }
 
+    // TODO: move this to common schedule presenter
     private static Color pickColor(int num, int groupSize) {
         int percent = (num * 100) / groupSize;
         Color color;
@@ -62,15 +66,17 @@ public class CreateSchedulePresenter implements CreateScheduleOutputBoundary {
 
     @Override
     public void prepareFailView(String error) {
-        final CreateScheduleState createScheduleState = createScheduleViewModel.getState();
-        createScheduleState.setError(error);
-        createScheduleViewModel.firePropertyChange();
+        final CreateScheduleState state = createScheduleViewModel.getState();
+        state.setError(error);
+
+        createScheduleViewModel.setState(state);
+        createScheduleViewModel.firePropertyChange("state");
     }
 
     @Override
     public void openCreateScheduleModal() {
         createScheduleViewModel.getState().setOpenModal(true);
-        createScheduleViewModel.firePropertyChange("open modal");
+        createScheduleViewModel.firePropertyChange("openModal");
     }
 
 }

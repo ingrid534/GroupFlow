@@ -1,33 +1,50 @@
 package view;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionListener;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.LineBorder;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+import interface_adapter.create_group.CreateGroupController;
+import interface_adapter.create_schedule.CreateScheduleController;
+import interface_adapter.create_schedule.CreateScheduleState;
 import interface_adapter.create_schedule.CreateScheduleViewModel;
 // trying to fix checkstyle
 
-public class CreateScheduleView extends JPanel {
+public class CreateScheduleView extends JPanel implements PropertyChangeListener, ActionListener {
 
     private final String viewName = "create schedule";
     private final CreateScheduleViewModel createScheduleViewModel;
 
+    private final JLabel errorField = new JLabel();
     private final JLabel title;
+
     private JButton[][] buttons;
+    private final JButton createSchedule;
+
+    private CreateScheduleController createScheduleController;
 
     public CreateScheduleView(CreateScheduleViewModel createScheduleViewModel) {
         this.createScheduleViewModel = createScheduleViewModel;
+        this.createScheduleViewModel.addPropertyChangeListener(this);
 
         title = new JLabel("Select your available time slots.");
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
         title.setFont(title.getFont().deriveFont(Font.BOLD, 16f));
-
+        createSchedule = new JButton("Create Schedule");
         buildLayout();
     }
 
@@ -40,5 +57,96 @@ public class CreateScheduleView extends JPanel {
         // Add rigid areas for spacing
         this.add(Box.createRigidArea(new Dimension(0, 10)));
         this.add(title);
+
+        JButton createSchedule = new JButton("Submit Availability");
+        createSchedule.setAlignmentX(Component.CENTER_ALIGNMENT);
+        this.add(Box.createRigidArea(new Dimension(0, 10)));
+        this.add(createSchedule);
+
+        JPanel buttonPanel = new JPanel(new GridLayout(7, 12, 1, 1));
+        buttonPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        buttons = new JButton[7][12];
+
+        for (int row = 0; row < 7; row++) {
+            for (int col = 0; col < 12; col++) {
+                JButton cell = new JButton();
+                cell.setPreferredSize(new Dimension(40, 30));
+                cell.setBorder(new LineBorder(Color.BLACK, 1));
+                cell.setMargin(new Insets(0, 0, 0, 0));
+                buttons[row][col] = cell;
+                buttonPanel.add(cell);
+            }
+        }
+
+        this.add(buttonPanel);
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        final CreateScheduleState state = (CreateScheduleState) evt.getNewValue();
+        setFields(state);
+
+        errorField.setText(state.getError());
+    }
+
+    /**
+     * Updates the input fields based on the given state.
+     *
+     * @param state the current state of the Create Schedule view
+     */
+    private void setFields(CreateScheduleState state) {
+        Color[][] schedule = state.getMasterSched();
+
+        for (int row = 0; row < 7; row++) {
+            for (int col = 0; col < 12; col++) {
+                if (buttons[row][col] != null) {
+                    buttons[row][col].setBackground(schedule[row][col]);
+                }
+            }
+        }
+
+        errorField.setText(state.getError());
+    }
+
+    /**
+     * Returns the name of the view.
+     *
+     * @return the name of the view
+     */
+    public String getViewName() {
+        return viewName;
+    }
+
+    /**
+     * Sets the Create Schedule controller and attaches listeners to the buttons.
+     *
+     * @param scheduleController the controller for handling Create Schedule actions
+     */
+    public void setCreateScheduleController(CreateScheduleController scheduleController) {
+        this.createScheduleController = scheduleController;
+        attachListeners();
+    }
+
+    /**
+     * Attach listeners to the Create Schedule button.
+     */
+    public void attachListeners() {
+        createSchedule.addActionListener(
+            new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent evt) {
+                    if (!evt.getSource().equals(createSchedule)) {
+                        return;
+                    }
+
+                    final CreateScheduleState currentState = createScheduleViewModel.getState();
+
+                    createScheduleController.execute(
+                                currentState.getMasterSched()
+                    );
+                }
+            }
+        );
     }
 }
