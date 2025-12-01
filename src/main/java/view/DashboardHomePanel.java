@@ -199,12 +199,10 @@ public class DashboardHomePanel extends JPanel {
         wrapper.setBorder(BorderFactory.createLineBorder(CARD_BORDER));
         wrapper.setPreferredSize(new Dimension(320, 0));
 
-        JLabel label = new JLabel("Your tasks");
-        label.setForeground(TEXT_PRIMARY);
-        label.setFont(label.getFont().deriveFont(Font.BOLD, 14f));
-        label.setBorder(new EmptyBorder(4, 4, 8, 4));
+        // header with label + refresh button
+        wrapper.add(buildTasksHeader(viewTasksView), BorderLayout.NORTH);
 
-        wrapper.add(label, BorderLayout.NORTH);
+        // actual tasks view
         wrapper.add(viewTasksView, BorderLayout.CENTER);
 
         JPanel outer = new JPanel(new BorderLayout());
@@ -217,6 +215,25 @@ public class DashboardHomePanel extends JPanel {
 
     /* ---------------- small helpers ---------------- */
 
+    private JComponent buildTasksHeader(ViewTasksView viewTasksView) {
+        JPanel header = new JPanel(new BorderLayout());
+        header.setOpaque(false);
+        header.setBorder(new EmptyBorder(4, 4, 8, 4));
+
+        JLabel label = new JLabel("Your tasks");
+        label.setForeground(TEXT_PRIMARY);
+        label.setFont(label.getFont().deriveFont(Font.BOLD, 14f));
+
+        JButton refresh = new JButton("Refresh");
+        styleSecondaryButton(refresh);
+        refresh.addActionListener(evt -> viewTasksView.execute());
+
+        header.add(label, BorderLayout.WEST);
+        header.add(refresh, BorderLayout.EAST);
+
+        return header;
+    }
+
     private void stylePrimaryButton(JButton button) {
         button.setFocusPainted(false);
         button.setBorderPainted(false);
@@ -225,6 +242,17 @@ public class DashboardHomePanel extends JPanel {
         button.setForeground(BUTTON_TEXT);
         button.setFont(button.getFont().deriveFont(Font.PLAIN, 13f));
         button.setBorder(new EmptyBorder(6, 14, 6, 14));
+        button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    }
+
+    private void styleSecondaryButton(JButton button) {
+        button.setFocusPainted(false);
+        button.setOpaque(true);
+        button.setBorder(BorderFactory.createLineBorder(CARD_BORDER));
+        button.setBackground(Color.WHITE);
+        button.setForeground(TEXT_PRIMARY);
+        button.setFont(button.getFont().deriveFont(Font.PLAIN, 12f));
+        button.setBorder(new EmptyBorder(4, 10, 4, 10));
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     }
 
