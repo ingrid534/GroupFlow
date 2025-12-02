@@ -1,8 +1,10 @@
 package view;
 
+import data_access.DBMeetingDataAccessObject;
 import interface_adapter.create_group.CreateGroupController;
 import interface_adapter.creategrouptasks.CreateGroupTasksController;
 import interface_adapter.creategrouptasks.CreateGroupTasksViewModel;
+import interface_adapter.createmeeting.CreateMeetingViewFactory;
 import interface_adapter.dashboard.DashboardViewModel;
 import interface_adapter.dashboard.LoggedInState;
 import interface_adapter.editgrouptask.EditGroupTaskController;
@@ -17,6 +19,8 @@ import interface_adapter.manage_members.view_members.ViewMembersControllerFactor
 import interface_adapter.manage_members.view_pending.ViewPendingControllerFactory;
 import interface_adapter.viewgrouptasks.ViewGroupTasksController;
 import interface_adapter.viewgrouptasks.ViewGroupTasksViewModel;
+import interface_adapter.createmeeting.CreateMeetingController;
+import interface_adapter.createmeeting.CreateMeetingViewModel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -42,9 +46,11 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     private ViewGroupTasksViewModel viewGroupTasksViewModel;
     private EditGroupTaskViewModel editGroupTasksViewModel;
     private CreateGroupTasksViewModel createGroupTasksViewModel;
+    private CreateMeetingViewFactory createMeetingViewFactory;
 
     // Views
     private ViewTasksView viewTasksView;
+    private CreateMeetingViewModel createMeetingViewModel;
 
     // Controllers
     private LogoutController logoutController;
@@ -53,6 +59,8 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     private ViewGroupTasksController viewGroupTasksController;
     private EditGroupTaskController editGroupTaskController;
     private CreateGroupTasksController createGroupTasksController;
+    private CreateMeetingController createMeetingController;
+
 
     // Header widgets
     private final JLabel usernameLabel = new JLabel();
@@ -74,6 +82,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     // Maps group IDs to their names
     private final java.util.Map<String, String> groupIdToName = new java.util.HashMap<>();
     private String currentUsername;
+    private DBMeetingDataAccessObject meetingDataAccessObject;
 
     public DashboardView(DashboardViewModel dashboardViewModel, ViewTasksView viewTasksView) {
         this.dashboardViewModel = Objects.requireNonNull(dashboardViewModel);
@@ -168,7 +177,6 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     private JComponent buildHeader() {
         JPanel header = new JPanel(new BorderLayout());
         header.setBorder(new EmptyBorder(6, 6, 6, 6));
-        // header.setBackground(Color.WHITE);
 
         JLabel title = new JLabel("Group Workspace");
         title.setFont(title.getFont().deriveFont(Font.BOLD, 16f));
@@ -253,7 +261,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
 
         tabs.addTab(HOME, placeholderPanel("Home panel for " + groupName));
         tabs.addTab("People", createPeopleTab(groupId));
-        tabs.addTab("Meets", placeholderPanel("Meetings tab for " + groupName));
+        tabs.addTab("Meets", createMeetingTab(groupId));
         tabs.addTab("Tasks", placeholderPanel("Tasks tab for " + groupName));
         tabs.addTab("Sched", new ScheduleTabView("Schedule tab for " + groupName));
         tabs.addTab("Optional", placeholderPanel("Optional tab for " + groupName));
@@ -306,6 +314,15 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
         area.setBorder(new EmptyBorder(20, 20, 20, 20));
         panel.add(area, BorderLayout.CENTER);
         return panel;
+    }
+
+    private CreateMeetingView createMeetingTab(String groupId) {
+        String groupName = groupIdToName.get(groupId);
+        if (groupName == null) {
+            groupName = groupId;
+        }
+
+        return createMeetingViewFactory.create(groupId, groupName);
     }
 
     // --- Public API for AppBuilder and Controllers --------------------------
@@ -481,6 +498,22 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
 
     public void setJoinGroupController(JoinGroupController joinGroupController) {
         this.joinGroupController = joinGroupController;
+    }
+
+    public void setCreateMeetingController(CreateMeetingController controller) {
+        this.createMeetingController = controller;
+    }
+
+    public void setCreateMeetingViewModel(CreateMeetingViewModel viewModel) {
+        this.createMeetingViewModel = viewModel;
+    }
+
+    public void setMeetingDataAccessObject(DBMeetingDataAccessObject meetingDataAccessObject) {
+        this.meetingDataAccessObject = meetingDataAccessObject;
+    }
+
+    public void setCreateMeetingViewFactory(CreateMeetingViewFactory factory) {
+        this.createMeetingViewFactory = factory;
     }
 
     public void setViewMembersControllerFactory(ViewMembersControllerFactory factory) {

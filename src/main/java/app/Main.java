@@ -32,6 +32,7 @@ public class Main {
                 .addViewMembersUseCase()
                 .addViewPendingUseCase()
                 .addGroupTasksUseCases()
+                .addCreateMeetingUseCase()
                 .addRemoveMemberUseCase()
                 .addRespondRequestUseCase()
                 .addUpdateRoleUseCase()

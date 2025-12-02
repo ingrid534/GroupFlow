@@ -239,6 +239,15 @@ public class Group {
         this.tasks.remove(taskID);
     }
 
+    /**
+     * Add the given Meeting to a group.
+     *
+     * @param taskID the task to add
+     */
+    public void addMeeting(String taskID) {
+        this.tasks.add(taskID);
+    }
+
     @Override
     public int hashCode() {
         return groupID.hashCode();

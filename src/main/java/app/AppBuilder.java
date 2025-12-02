@@ -11,6 +11,7 @@ import data_access.DBGroupDataAccessObject;
 import data_access.DBMembershipDataAccessObject;
 import data_access.DBUserDataAccessObject;
 import data_access.DBTaskDataAccessObject;
+import data_access.DBMeetingDataAccessObject;
 import entity.group.GroupFactory;
 import entity.membership.MembershipFactory;
 import entity.task.TaskFactory;
@@ -23,6 +24,7 @@ import interface_adapter.creategrouptasks.CreateGroupTasksController;
 import interface_adapter.creategrouptasks.CreateGroupTasksPresenter;
 import interface_adapter.creategrouptasks.CreateGroupTasksViewModel;
 import interface_adapter.create_schedule.CreateScheduleViewModel;
+import interface_adapter.createmeeting.CreateMeetingViewFactory;
 import interface_adapter.dashboard.DashboardViewModel;
 import interface_adapter.joingroup.JoinGroupController;
 import interface_adapter.joingroup.JoinGroupPresenter;
@@ -57,6 +59,9 @@ import interface_adapter.viewgrouptasks.ViewGroupTasksViewModel;
 import interface_adapter.viewtasks.ViewTasksController;
 import interface_adapter.viewtasks.ViewTasksPresenter;
 import interface_adapter.viewtasks.ViewTasksViewModel;
+import interface_adapter.createmeeting.CreateMeetingController;
+import interface_adapter.createmeeting.CreateMeetingPresenter;
+import interface_adapter.createmeeting.CreateMeetingViewModel;
 import use_case.change_password.ChangePasswordInputBoundary;
 import use_case.change_password.ChangePasswordInteractor;
 import use_case.change_password.ChangePasswordOutputBoundary;
@@ -84,6 +89,9 @@ import use_case.viewgrouptasks.ViewGroupTasksOutputBoundary;
 import use_case.viewtasks.ViewTasksInputBoundary;
 import use_case.viewtasks.ViewTasksInteractor;
 import use_case.viewtasks.ViewTasksOutputBoundary;
+import use_case.create_meeting.CreateMeetingOutputBoundary;
+import use_case.create_meeting.CreateMeetingInputBoundary;
+import use_case.create_meeting.CreateMeetingInteractor;
 import view.*;
 
 /**
@@ -130,6 +138,13 @@ public class AppBuilder {
                     dbName
             );
 
+    final DBMeetingDataAccessObject meetingDataAccessObject =
+            new DBMeetingDataAccessObject(
+                    new entity.meeting.MeetingFactory(),
+                    mongoDBConnectionString,
+                    dbName
+            );
+
     // DAO version using a shared external database
     // final DBUserDataAccessObject userDataAccessObject = new
     // DBUserDataAccessObject(userFactory);
@@ -157,6 +172,9 @@ public class AppBuilder {
     private JFrame application;
     private ViewTasksView viewTasksView;
     private ViewTasksViewModel viewTasksViewModel;
+    private CreateMeetingViewModel createMeetingViewModel;
+    private CreateMeetingController createMeetingController;
+
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
@@ -498,6 +516,22 @@ public class AppBuilder {
     }
 
     /**
+     * Adds create meeting use case to application.
+     * @return this builder
+     */
+    public AppBuilder addCreateMeetingUseCase() {
+        createMeetingViewModel = new CreateMeetingViewModel();
+
+        CreateMeetingViewFactory factory = new CreateMeetingViewFactory(
+                groupDataAccessObject,
+                meetingDataAccessObject
+        );
+        dashboardView.setCreateMeetingViewFactory(factory);
+
+        return this;
+    }
+
+    /**
      * Build the JFrame.
      *
      * @return The JFrame.
@@ -507,7 +541,6 @@ public class AppBuilder {
         application.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         application.setContentPane(cardPanel);
 
-        // when view changes, set preferred size for that view and pack
         viewManagerModel.addPropertyChangeListener(evt -> {
             if ("state".equals(evt.getPropertyName())) {
                 final String viewName = (String) evt.getNewValue();
@@ -516,7 +549,6 @@ public class AppBuilder {
                     application.setPreferredSize(d);
                 } else {
                     application.setPreferredSize(null);
-                    // fallback to view’s own preferred size
                 }
                 cardLayout.show(cardPanel, viewName);
                 application.pack();
@@ -524,12 +556,10 @@ public class AppBuilder {
             }
         });
 
-        // initial state
         final String initial = signupView.getViewName();
         viewManagerModel.setState(initial);
         viewManagerModel.firePropertyChange();
 
-        // initial preferred size and pack BEFORE showing
         final Dimension initSize = viewSizes.get(initial);
         if (initSize != null) {
             application.setPreferredSize(initSize);
@@ -538,7 +568,6 @@ public class AppBuilder {
         application.pack();
         application.setLocationRelativeTo(null);
 
-        // minimum size so tiny views don’t collapse
         application.setMinimumSize(new Dimension(400, 460));
 
         return application;
