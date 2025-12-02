@@ -33,7 +33,7 @@ public class CreateScheduleInteractor implements CreateScheduleInputBoundary {
         final User user = userDataAccessObject.get(userDataAccessObject.getCurrentUsername());
 
         // get id of current group
-        final String groupID = groupDataAccessObject.getCurrentGroupID();
+        final String groupID = createScheduleInputData.getGroupID();
 
         // save user schedule in db
         final boolean[][] availabilityGrid = createScheduleInputData.getAvailabilityGrid();

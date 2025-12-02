@@ -267,7 +267,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
         tabs.addTab("People", createPeopleTab(groupId));
         tabs.addTab("Meets", placeholderPanel("Meetings tab for " + groupName));
         tabs.addTab("Tasks", placeholderPanel("Tasks tab for " + groupName));
-        tabs.addTab("Sched", createScheduleTab("Schedule Tab for " + groupName));
+        tabs.addTab("Sched", createScheduleTab("Schedule Tab for " + groupName, groupId));
         tabs.addTab("Optional", placeholderPanel("Optional tab for " + groupName));
         // initialize selected color (default white is hard to see)
         tabs.setForegroundAt(0, new Color(0x1E88E5));
@@ -312,9 +312,10 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
         return view;
     } // createPeopleTab
 
-    private ScheduleTabView createScheduleTab(String groupName) {
+    private ScheduleTabView createScheduleTab(String groupName, String groupID) {
         ScheduleTabView scheduleTab = new ScheduleTabView("Schedule tab for " + groupName, new ScheduleTabViewModel());
-        CreateScheduleController controller = createScheduleControllerFactory.create(scheduleTab.getViewModel());
+        CreateScheduleController controller = 
+            createScheduleControllerFactory.create(scheduleTab.getViewModel(), groupID);
         scheduleTab.setCreateScheduleController(controller);
         return scheduleTab;
     }

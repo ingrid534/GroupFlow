@@ -42,9 +42,10 @@ public class CreateScheduleControllerFactory {
      * retrieve members for a specific group and update the People tab UI.
      *
      * @param viewModel the view model that will be updated with retrieved member data
+     * @param groupID the Id of the group to store schedule
      * @return a new RemoveMemberController wired to the appropriate interactor and presenter
      */
-    public CreateScheduleController create(ScheduleTabViewModel viewModel) {
+    public CreateScheduleController create(ScheduleTabViewModel viewModel, String groupID) {
 
         CreateScheduleOutputBoundary presenter =
                 new CreateSchedulePresenter(
@@ -65,7 +66,7 @@ public class CreateScheduleControllerFactory {
                         groupSchedulePresenter
                 );
 
-        return new CreateScheduleController(interactor);
+        return new CreateScheduleController(interactor, groupID);
     }
 }
 

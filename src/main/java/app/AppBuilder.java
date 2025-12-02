@@ -463,7 +463,9 @@ public class AppBuilder {
                         createScheduleViewModel, 
                         groupScheduleViewModel
                 );
+        
         dashboardView.setCreateScheduleControllerFactory(factory);
+        createScheduleView.hookCreateScheduleModalOpen(application);
         return this;
     }
 

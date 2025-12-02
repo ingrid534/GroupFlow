@@ -5,9 +5,11 @@ import use_case.create_schedule.CreateScheduleInputData;
 
 public class CreateScheduleController {
     private final CreateScheduleInputBoundary createScheduleInteractor;
+    private final String groupID;
 
-    public CreateScheduleController(CreateScheduleInputBoundary createScheduleInteractor) {
+    public CreateScheduleController(CreateScheduleInputBoundary createScheduleInteractor, String groupID) {
         this.createScheduleInteractor = createScheduleInteractor;
+        this.groupID = groupID;
     }
 
     /**
@@ -16,7 +18,7 @@ public class CreateScheduleController {
      */
     public void execute(boolean[][] availabilityGrid) {
         final CreateScheduleInputData createScheduleInputData = 
-            new CreateScheduleInputData(availabilityGrid);
+            new CreateScheduleInputData(groupID, availabilityGrid);
 
         createScheduleInteractor.execute(createScheduleInputData);
     }
