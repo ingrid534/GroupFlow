@@ -144,14 +144,6 @@ public class CreateScheduleView extends JPanel implements PropertyChangeListener
      * @param state the current state of the Create Schedule view
      */
     private void setFields(CreateScheduleState state) {
-        // TODO: move this to the GroupScheduleView?
-        // for (int row = 0; row < 7; row++) {
-        //     for (int col = 0; col < 12; col++) {
-        //         if (buttons[row][col] != null) {
-        //             buttons[row][col].setBackground(schedule[row][col]);
-        //         }
-        //     }
-        // }
 
         errorField.setText(state.getError());
     }
