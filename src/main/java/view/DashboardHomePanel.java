@@ -302,7 +302,7 @@ public class DashboardHomePanel extends JPanel {
         private final Image image;
 
         HeroGifPanel() {
-            java.net.URL url = DashboardHomePanel.class.getResource("/assets/home-icon.gif");
+            java.net.URL url = DashboardHomePanel.class.getResource("/assets/home-icon.png");
             if (url != null) {
                 image = new ImageIcon(url).getImage();
             } else {
@@ -347,7 +347,7 @@ public class DashboardHomePanel extends JPanel {
 
         @Override
         public Dimension getPreferredSize() {
-            return new Dimension(140, 140);
+            return new Dimension(850, 600);
         }
     }
 }
