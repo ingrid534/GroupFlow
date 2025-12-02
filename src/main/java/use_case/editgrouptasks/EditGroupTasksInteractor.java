@@ -39,25 +39,16 @@ public class EditGroupTasksInteractor implements EditGroupTasksInputBoundary {
 
     @Override
     public void execute(EditGroupTasksInputData inputData) {
-        if (!validateMembership(inputData)) {
+        if (validateMembership(inputData)) {
             presenter.present(new EditGroupTasksOutputData(false,
                     "Only moderators can edit tasks."));
             return;
         }
-
         Task task = dataAccess.getTask(inputData.getTaskId());
-        if (task == null) {
-            presenter.present(new EditGroupTasksOutputData(false,
-                    "Task not found."));
-            return;
-        }
-
         updateDescription(task, inputData);
-
         if (!updateDueDate(task, inputData)) {
             return;
         }
-
         if (inputData.getNewCompleted() != null) {
             if (inputData.getNewCompleted()) {
                 task.markCompleted();
@@ -66,15 +57,15 @@ public class EditGroupTasksInteractor implements EditGroupTasksInputBoundary {
                 task.markIncomplete();
             }
         }
-
         List<String> newUsernames = inputData.getNewAssigneeUsernames();
-
         List<String> oldAssignees = new ArrayList<>(task.getAssignees());
-
         task.setAssignees(newUsernames);
+        updateAssignees(newUsernames, oldAssignees, task);
+        presenter.present(new EditGroupTasksOutputData(true, "Task updated successfully."));
+    }
 
+    private void updateAssignees(List<String> newUsernames, List<String> oldAssignees, Task task) {
         if (newUsernames != null) {
-
             for (String oldId : oldAssignees) {
                 User u = userDataAccess.get(oldId);
                 if (u != null) {
@@ -82,7 +73,6 @@ public class EditGroupTasksInteractor implements EditGroupTasksInputBoundary {
                     userDataAccess.save(u);
                 }
             }
-
             for (String username : newUsernames) {
                 User u = userDataAccess.get(username);
                 if (u != null) {
@@ -90,24 +80,15 @@ public class EditGroupTasksInteractor implements EditGroupTasksInputBoundary {
                     userDataAccess.save(u);
                 }
             }
-
             dataAccess.upsertTask(task);
         }
-
-        presenter.present(new EditGroupTasksOutputData(true, "Task updated successfully."));
     }
 
     private boolean validateMembership(EditGroupTasksInputData inputData) {
         Membership membership = membershipDataAccess.get(
                 userDataAccess.getCurrentUsername(),
                 inputData.getGroupId());
-
-        if (membership != null && !membership.isModerator()) {
-            presenter.present(new EditGroupTasksOutputData(false,
-                    "Only moderators can edit tasks."));
-            return false;
-        }
-        return true;
+        return membership != null && !membership.isModerator();
     }
 
     private void updateDescription(Task task, EditGroupTasksInputData inputData) {

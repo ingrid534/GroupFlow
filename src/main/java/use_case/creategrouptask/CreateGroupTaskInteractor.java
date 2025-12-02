@@ -5,6 +5,7 @@ import entity.membership.Membership;
 import entity.task.Task;
 import entity.task.TaskFactory;
 import entity.user.User;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -49,26 +50,34 @@ public class CreateGroupTaskInteractor implements CreateGroupTaskInputBoundary {
 
     @Override
     public void execute(CreateGroupTaskInputData inputData) {
-        Membership membership = membershipDataAccess.get(
-                userDataAccess.getCurrentUsername(),
-                inputData.getGroupId());
-        if (membership != null && !membership.isModerator()) {
+        if (validateMembership(inputData)) {
             presenter.present(new CreateGroupTaskOutputData(false,
                     "Only moderators may create tasks in this group."));
             return;
         }
-
-        Group group = groupDataAccess.getGroup(inputData.getGroupId());
-        if (group == null) {
+        if (inputData.getDescription() == null || "".equals(inputData.getDescription())) {
             presenter.present(new CreateGroupTaskOutputData(false,
-                    "Group not found."));
+                    "Description cannot be empty."));
             return;
         }
-
         Task task;
-
         List<String> assignees = inputData.getAssignees();
+        task = createTask(inputData, assignees);
+        if (task == null) {
+            return;
+        }
+        dataAccess.upsertTask(task);
+        updateAssignees(assignees, task);
+        Group group = groupDataAccess.getGroup(inputData.getGroupId());
+        group.addTask(task.getID());
+        groupDataAccess.save(group);
+        presenter.present(new CreateGroupTaskOutputData(true,
+                "Task created successfully."));
+    }
 
+    @Nullable
+    private Task createTask(CreateGroupTaskInputData inputData, List<String> assignees) {
+        Task task;
         if (inputData.getDueDate() != null && !inputData.getDueDate().isEmpty()) {
             try {
                 LocalDateTime due = LocalDateTime.parse(inputData.getDueDate(),
@@ -78,17 +87,16 @@ public class CreateGroupTaskInteractor implements CreateGroupTaskInputBoundary {
                         false, assignees, due);
             } catch (DateTimeParseException exception) {
                 presenter.present(new CreateGroupTaskOutputData(false, "Invalid date."));
-                return;
+                return null;
             }
         } else {
             task = taskFactory.createWithoutDeadline("", inputData.getDescription(), inputData.getGroupId(),
                     false, assignees);
         }
+        return task;
+    }
 
-        // save task to get the mongo generated ID
-        dataAccess.upsertTask(task);
-
-        // 4. Optional: Assign users to the task
+    private void updateAssignees(List<String> assignees, Task task) {
         if (assignees != null) {
             for (String username : assignees) {
                 User u = userDataAccess.get(username);
@@ -98,13 +106,13 @@ public class CreateGroupTaskInteractor implements CreateGroupTaskInputBoundary {
                 }
             }
         }
+    }
 
-        group.addTask(task.getID());
-
-        groupDataAccess.save(group);
-
-        presenter.present(new CreateGroupTaskOutputData(true,
-                "Task created successfully."));
+    private boolean validateMembership(CreateGroupTaskInputData inputData) {
+        Membership membership = membershipDataAccess.get(
+                userDataAccess.getCurrentUsername(),
+                inputData.getGroupId());
+        return membership != null && !membership.isModerator();
     }
 
 }

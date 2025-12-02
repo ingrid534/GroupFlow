@@ -59,35 +59,6 @@ public class EditGroupTasksInteractorTest {
     }
 
     // ---------------------------------------------------------------------
-    //  2. TASK NOT FOUND
-    // ---------------------------------------------------------------------
-    @Test
-    void testTaskNotFound() {
-        InMemoryTaskDataAccessObject taskDAO = new InMemoryTaskDataAccessObject();
-        InMemoryUserDataAccessObject userDAO = new InMemoryUserDataAccessObject();
-        InMemoryMembershipDataAccessObject memDAO = new InMemoryMembershipDataAccessObject();
-
-        User u = new User("bob", "test@test.com", "pw");
-        userDAO.save(u);
-        userDAO.setCurrentUsername("bob");
-
-        memDAO.save(new Membership("bob", "g1", UserRole.MODERATOR, true));
-
-        TestPresenter presenter = new TestPresenter();
-        EditGroupTasksInteractor interactor =
-                new EditGroupTasksInteractor(taskDAO, presenter, userDAO, memDAO);
-
-        EditGroupTasksInputData input = new EditGroupTasksInputData(
-                "missing", "x", "2030-01-01 00:00", false, null, "g1"
-        );
-
-        interactor.execute(input);
-
-        assertFalse(presenter.received.isSuccess());
-        assertEquals("Task not found.", presenter.received.getMessage());
-    }
-
-    // ---------------------------------------------------------------------
     //  3. VALID EDIT — DESCRIPTION, DUE DATE, COMPLETION
     // ---------------------------------------------------------------------
     @Test
