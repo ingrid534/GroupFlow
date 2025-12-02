@@ -5,15 +5,19 @@ import interface_adapter.create_group.CreateGroupState;
 import interface_adapter.create_group.CreateGroupViewModel;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import entity.group.GroupType;
+
+import static view.FieldUIFactory.*;
 
 /**
  * The CreateGroupView class represents the user interface for creating a group.
@@ -25,6 +29,7 @@ public class CreateGroupView extends JPanel implements ActionListener, PropertyC
 
     private final String viewName = "create group";
     private final CreateGroupViewModel createGroupViewModel;
+    private JDialog dialog;
 
     private final JTextField groupNameInputField = new JTextField(15);
     private final JComboBox<GroupType> groupTypeInputField = new JComboBox<>(GroupType.values());
@@ -37,50 +42,109 @@ public class CreateGroupView extends JPanel implements ActionListener, PropertyC
     private final LabelTextPanel groupNameInfo;
     private final JPanel groupTypeInfo;
 
-    private final JPanel buttons;
-
     private CreateGroupController createGroupController;
 
     public CreateGroupView(CreateGroupViewModel createGroupViewModel) {
         this.createGroupViewModel = createGroupViewModel;
         this.createGroupViewModel.addPropertyChangeListener(this);
+        // setBackground(Color.WHITE);
 
         title = new JLabel("Enter your group's details.");
-        title.setAlignmentX(Component.CENTER_ALIGNMENT);
-        title.setFont(title.getFont().deriveFont(Font.BOLD, 16f));
+        title.setAlignmentX(Component.LEFT_ALIGNMENT);
+        title.setFont(title.getFont().deriveFont(Font.BOLD, 24f));
+        title.setMaximumSize(new Dimension(Integer.MAX_VALUE, title.getPreferredSize().height));
+
+        styleFields();
 
         // Group Name panel
-        groupNameInfo = new LabelTextPanel(
-                new JLabel("Group Name:"), groupNameInputField
-        );
-        groupNameInputField.setMaximumSize(new Dimension(200, 25));
-        groupNameInfo.setAlignmentX(Component.CENTER_ALIGNMENT);
+        groupNameInfo = createGroupNamePanel();
 
         // Group Type panel
-        groupTypeInputField.setSelectedItem(GroupType.PROJECT);
-        groupTypeInputField.setMaximumSize(new Dimension(200, 25));
-        groupTypeInfo = new JPanel();
-        groupTypeInfo.setLayout(new BoxLayout(groupTypeInfo, BoxLayout.X_AXIS));
-        groupTypeInfo.add(new JLabel("Group Type:"));
-        groupTypeInfo.add(Box.createRigidArea(new Dimension(10, 0)));
-        groupTypeInfo.add(groupTypeInputField);
-        groupTypeInfo.setAlignmentX(Component.CENTER_ALIGNMENT);
+        groupTypeInfo = createGroupTypePanel();
 
         // Buttons
-        buttons = new JPanel();
-        buttons.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 0));
-        createGroup = new JButton("Create Group");
         cancel = new JButton("Cancel");
-        buttons.add(createGroup);
-        buttons.add(cancel);
-        buttons.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        cancel.addActionListener(this);
+        createGroup = new JButton("Create Group");
 
         errorField.setForeground(Color.RED);
-        errorField.setAlignmentX(Component.CENTER_ALIGNMENT);
+        errorField.setSize(new Dimension(errorField.getPreferredSize().width, 30));
+        errorField.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        buildLayout();
 
         // Document listeners
+        addDocumentListeners();
+    }
+
+    private LabelTextPanel createGroupNamePanel() {
+        final LabelTextPanel panel;
+        JLabel groupNameLabel = createFieldLabel("Group Name");
+
+        panel = new LabelTextPanel(groupNameLabel, groupNameInputField);
+        panel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        // panel.setBackground(Color.WHITE);
+        panel.add(Box.createVerticalStrut(10));
+
+        return panel;
+    }
+
+    private JPanel createGroupTypePanel() {
+        // Panel to hold label + combo box
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        // panel.setBackground(Color.WHITE);
+
+        // Label
+        JLabel groupTypeLabel = createFieldLabel("Group Type");
+        groupTypeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        // Combo box
+        groupTypeInputField.setAlignmentX(Component.LEFT_ALIGNMENT);
+        groupTypeInputField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+
+        // Add components with controlled vertical gap
+        panel.add(groupTypeLabel);
+        panel.add(groupTypeInputField);
+
+        // Stretch panel width to match parent, but height unconstrained
+        panel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
+
+        return panel;
+    }
+
+    /**
+     * Builds the layout of the Create Group view.
+     * This method arranges the components in the panel.
+     */
+    private void buildLayout() {
+        // Layout main panel
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setBorder(new EmptyBorder(30, 50, 40, 50));
+
+        // Add rigid areas for spacing
+        this.add(title);
+        this.add(Box.createVerticalStrut(30));
+
+        this.add(groupNameInfo);
+        this.add(Box.createVerticalStrut(30));
+
+        this.add(groupTypeInfo);
+        this.add(Box.createVerticalStrut(30));
+
+        this.add(errorField);
+        this.add(Box.createVerticalStrut(10));
+
+        this.add(createGroup);
+        this.add(Box.createVerticalStrut(10));
+        this.add(cancel);
+
+        groupTypeInfo.setMaximumSize(new Dimension(Integer.MAX_VALUE, groupTypeInfo.getPreferredSize().height));
+    }
+
+    private void addDocumentListeners() {
         groupNameInputField.getDocument().addDocumentListener(new DocumentListener() {
             private void updateState() {
                 CreateGroupState currentState = createGroupViewModel.getState();
@@ -88,15 +152,18 @@ public class CreateGroupView extends JPanel implements ActionListener, PropertyC
                 createGroupViewModel.setState(currentState);
             }
 
-            @Override public void insertUpdate(DocumentEvent e) {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
                 updateState();
             }
 
-            @Override public void removeUpdate(DocumentEvent e) {
+            @Override
+            public void removeUpdate(DocumentEvent e) {
                 updateState();
             }
 
-            @Override public void changedUpdate(DocumentEvent e) {
+            @Override
+            public void changedUpdate(DocumentEvent e) {
                 updateState();
             }
         });
@@ -107,30 +174,10 @@ public class CreateGroupView extends JPanel implements ActionListener, PropertyC
             createGroupViewModel.setState(currentState);
         });
 
-        buildLayout();
-
     }
 
-    /**
-     * Builds the layout of the Create Group view.
-     * This method arranges the components in the panel.
-     */
-    public void buildLayout() {
-        // Layout main panel
-        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        this.setMinimumSize(new Dimension(300, 200));
-        // Add rigid areas for spacing
-        this.add(Box.createRigidArea(new Dimension(0, 10)));
-        this.add(title);
-        this.add(Box.createRigidArea(new Dimension(0, 15)));
-        this.add(groupNameInfo);
-        this.add(Box.createRigidArea(new Dimension(0, 10)));
-        this.add(groupTypeInfo);
-        this.add(Box.createRigidArea(new Dimension(0, 10)));
-        this.add(errorField);
-        this.add(Box.createRigidArea(new Dimension(0, 15)));
-        this.add(buttons);
-        this.add(Box.createRigidArea(new Dimension(0, 10)));
+    private void styleFields() {
+        styleInputField(groupNameInputField);
     }
 
     /**
@@ -189,7 +236,7 @@ public class CreateGroupView extends JPanel implements ActionListener, PropertyC
     /**
      * Attaches listeners to the Create Group button.
      */
-    public void attachListeners() {
+    private void attachListeners() {
         createGroup.addActionListener(
                 new ActionListener() {
                     @Override
@@ -208,6 +255,17 @@ public class CreateGroupView extends JPanel implements ActionListener, PropertyC
                     }
                 }
         );
+
+        cancel.addActionListener(
+                new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent evt) {
+                        WindowEvent we = new WindowEvent(dialog, WindowEvent.WINDOW_CLOSING);
+                        dialog.dispatchEvent(we);
+                        createGroupViewModel.setState(new CreateGroupState());
+                    }
+                }
+        );
     }
 
     /**
@@ -217,12 +275,22 @@ public class CreateGroupView extends JPanel implements ActionListener, PropertyC
      * @param application the main application frame
      */
     public void hookCreateGroupModalOpen(JFrame application) {
-        JDialog dialog = new JDialog(application, "Create Group", true);
+        dialog = new JDialog(application, "Create Group", true);
         createGroupViewModel.addPropertyChangeListener(evt -> {
             if ("openModal".equals(evt.getPropertyName())) {
                 if (createGroupViewModel.getState().getOpenModal()) {
-                    openCreateGroupModal(dialog, application);
+                    openCreateGroupModal(application);
                 } else {
+
+                    CreateGroupState currentState = createGroupViewModel.getState();
+
+                    if (currentState.isSuccess()) {
+                        JOptionPane.showMessageDialog(this,
+                                currentState.getMessage(),
+                                "Group Created",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    }
+
                     dialog.dispose();
                 }
             }
@@ -232,11 +300,10 @@ public class CreateGroupView extends JPanel implements ActionListener, PropertyC
     /**
      * Opens the Create Group modal dialog.
      *
-     * @param dialog the modal dialog to display
      * @param parentFrame the parent frame of the modal dialog
      */
-    private void openCreateGroupModal(JDialog dialog, JFrame parentFrame) {
-        dialog.setMinimumSize(new Dimension(400, 250));
+    private void openCreateGroupModal(JFrame parentFrame) {
+        dialog.setMinimumSize(new Dimension(500, 370));
         dialog.setContentPane(this);
         dialog.setLocationRelativeTo(parentFrame);
         dialog.pack();

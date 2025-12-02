@@ -64,7 +64,7 @@ public class ViewTasksInteractorTest {
         InMemoryUserDataAccessObject userDAO = new InMemoryUserDataAccessObject();
 
         userDAO.setCurrentUsername("alice");
-        userDAO.save(new User("alice", "pw"));
+        userDAO.save(new User("alice", "test@test.com", "pw"));
 
         TestPresenter presenter = new TestPresenter();
         ViewTasksInteractor interactor =
@@ -82,7 +82,7 @@ public class ViewTasksInteractorTest {
         InMemoryUserDataAccessObject userDAO = new InMemoryUserDataAccessObject();
 
         userDAO.setCurrentUsername("bob");
-        userDAO.save(new User("bob", "pw"));
+        userDAO.save(new User("bob", "bob@gmail.com", "pw"));
 
         Task completed = new Task("id1", "Completed Task", "g1", false, new ArrayList<>());
         completed.addAssignee("bob");
@@ -104,7 +104,7 @@ public class ViewTasksInteractorTest {
         InMemoryUserDataAccessObject userDAO = new InMemoryUserDataAccessObject();
 
         userDAO.setCurrentUsername("bob");
-        userDAO.save(new User("bob", "pw"));
+        userDAO.save(new User("bob", "test@test.com", "pw"));
 
         Task overdue = new Task("id2", "Overdue", "g1", false, new ArrayList<>(),
                 LocalDateTime.now().minusDays(3));
@@ -126,7 +126,7 @@ public class ViewTasksInteractorTest {
         InMemoryUserDataAccessObject userDAO = new InMemoryUserDataAccessObject();
 
         userDAO.setCurrentUsername("charlie");
-        userDAO.save(new User("charlie", "pw"));
+        userDAO.save(new User("charlie", "test@test.com", "pw"));
 
         Task t = new Task("id3", "No Date", "gX", false, new ArrayList<>());
         t.addAssignee("charlie");
@@ -157,7 +157,7 @@ public class ViewTasksInteractorTest {
         InMemoryUserDataAccessObject userDAO = new InMemoryUserDataAccessObject();
 
         userDAO.setCurrentUsername("dave");
-        userDAO.save(new User("dave", "pw"));
+        userDAO.save(new User("dave", "test@test.com","pw"));
 
         LocalDateTime future = LocalDateTime.now().plusDays(2);
 
@@ -194,7 +194,7 @@ public class ViewTasksInteractorTest {
         InMemoryUserDataAccessObject userDAO = new InMemoryUserDataAccessObject();
 
         userDAO.setCurrentUsername("eva");
-        userDAO.save(new User("eva", "pw"));
+        userDAO.save(new User("eva", "eva@gmail.com", "pw"));
 
         // Valid with date
         LocalDateTime f1 = LocalDateTime.now().plusDays(3);

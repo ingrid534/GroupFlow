@@ -11,6 +11,7 @@ import entity.membership.Membership;
 import entity.membership.MembershipFactory;
 import entity.user.UserRole;
 import use_case.create_group.CreateGroupDataAccessInterface;
+import use_case.join_group.JoinGroupDataAccessInterface;
 import use_case.create_schedule.CreateScheduleGroupDataAccessInterface;
 import use_case.creategrouptask.CreateGroupTaskGroupDataAccessInterface;
 import use_case.login.LoginGroupsDataAccessInterface;
@@ -33,9 +34,12 @@ import static com.mongodb.client.model.Updates.set;
  * of user records stored inside a MongoDB "users" collection.
  * </p>
  */
-public class DBGroupDataAccessObject implements CreateGroupDataAccessInterface,
+public class DBGroupDataAccessObject implements
+        CreateGroupDataAccessInterface,
         LoginGroupsDataAccessInterface,
-        CreateGroupTaskGroupDataAccessInterface, ViewGroupTasksGroupDataAccessInterface,
+        JoinGroupDataAccessInterface,
+        CreateGroupTaskGroupDataAccessInterface,
+        ViewGroupTasksGroupDataAccessInterface,
         CreateScheduleGroupDataAccessInterface {
 
     private static final String GROUP_NAME = "name";
@@ -121,7 +125,7 @@ public class DBGroupDataAccessObject implements CreateGroupDataAccessInterface,
         String code;
         do {
             code = generateRandomJoinCode();
-        } while (joinCodeExists(code));
+        } while (groupCodeExists(code));
         return code;
     }
 
@@ -134,7 +138,8 @@ public class DBGroupDataAccessObject implements CreateGroupDataAccessInterface,
         return sb.toString();
     }
 
-    private boolean joinCodeExists(String code) {
+    @Override
+    public boolean groupCodeExists(String code) {
         Document existing = groupsCollection
                 .find(eq(GROUP_CODE, code))
                 .projection(new Document("_id", 1))

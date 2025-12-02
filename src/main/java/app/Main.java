@@ -1,6 +1,8 @@
 package app;
 
-import javax.swing.JFrame;
+import com.formdev.flatlaf.FlatDarkLaf;
+
+import javax.swing.*;
 
 public class Main {
 
@@ -11,6 +13,9 @@ public class Main {
      */
     public static void main(String[] args) {
         final AppBuilder appBuilder = new AppBuilder();
+
+        FlatDarkLaf.setup();
+
         final JFrame application = appBuilder
                 .addLoginView()
                 .addSignupView()
@@ -18,11 +23,13 @@ public class Main {
                 .addDashboardView()
                 .addCreateScheduleView()
                 .addCreateGroupView()
+                .addJoinGroupView()
                 .addSignupUseCase()
                 .addLoginUseCase()
                 .addLogoutUseCase()
                 // .addChangePasswordUseCase()
                 .addCreateGroupUseCase()
+                .addJoinGroupUseCase()
                 .addViewMembersUseCase()
                 .addViewPendingUseCase()
                 .addGroupTasksUseCases()

@@ -13,6 +13,7 @@ import use_case.create_group.CreateGroupUserDataAccessInterface;
 import use_case.create_schedule.CreateScheduleUserDataAccessInterface;
 import use_case.creategrouptask.CreateGroupTaskUserDataAccessInterface;
 import use_case.editgrouptasks.EditGroupTasksUserDataAccessInterface;
+import use_case.join_group.JoinGroupUserDataAccessInterface;
 import use_case.login.LoginUserDataAccessInterface;
 import use_case.logout.LogoutUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
@@ -35,12 +36,14 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
         ChangePasswordUserDataAccessInterface,
         LogoutUserDataAccessInterface,
         CreateGroupUserDataAccessInterface,
+        JoinGroupUserDataAccessInterface,
         ViewTasksUserDataAccessInterface,
         CreateGroupTaskUserDataAccessInterface,
         EditGroupTasksUserDataAccessInterface,
         CreateScheduleUserDataAccessInterface {
 
     private static final String USERNAME = "username";
+    private static final String EMAIL = "email";
     private static final String PASSWORD = "password";
     private static final String SCHEDULE = "userSchedule";
 
@@ -81,13 +84,15 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
         }
 
         final String name = doc.getString(USERNAME);
+        final String email = doc.getString(EMAIL);
         final String password = doc.getString(PASSWORD);
 
         @SuppressWarnings("unchecked")
         List<List<Boolean>> userSchedule = (List<List<Boolean>>) doc.get("userSchedule");
     
         boolean[][] schedule = convertToArrayFromDB(userSchedule);
-        User user = userFactory.create(name, password);
+
+        User user = userFactory.create(name, email, password);
         user.setSchedule(schedule);
         return user;
     }
@@ -139,6 +144,7 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
 
         final Document newUser = new Document()
                 .append(USERNAME, user.getName())
+                .append(EMAIL, user.getEmail())
                 .append(PASSWORD, user.getPassword())
                 .append(SCHEDULE, dbSchedule);
 

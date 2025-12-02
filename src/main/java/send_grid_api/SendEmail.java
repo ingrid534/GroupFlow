@@ -56,8 +56,9 @@ public class SendEmail implements SendEmailInterface {
     private Mail createGroupInviteEmail(String recipient) {
         Email from = new Email(FROM_EMAIL);
         String subject = "New Group Invite";
+        String body = "A user has requested to join your group. Check your dashboard.";
         Email to = new Email(recipient);
-        Content content = new Content(CONTENT_TYPE, "You have been invited to a new group. Check your dashboard.");
+        Content content = new Content(CONTENT_TYPE, body);
 
         return new Mail(from, subject, to, content);
     }

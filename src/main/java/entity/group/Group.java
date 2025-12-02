@@ -61,7 +61,9 @@ public class Group {
         final List<String> users = new ArrayList<>();
 
         for (Membership m : memberships) {
-            users.add(m.getUsername());
+            if (m.isApproved()) {
+                users.add(m.getUsername());
+            }
         }
 
         return users;
@@ -172,12 +174,12 @@ public class Group {
     /**
      * Checks whether the given user is a member of this group.
      * 
-     * @param userID The user whose membership to check
+     * @param username The user whose membership to check
      * @return Whether the user with the given user ID is a member of this group.
      */
-    public Boolean isMember(String userID) {
+    public Boolean isMember(String username) {
         for (Membership m : memberships) {
-            if (userID.equals(m.getUsername())) {
+            if (username.equals(m.getUsername())) {
                 return true;
             }
         }

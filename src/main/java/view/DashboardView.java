@@ -8,6 +8,7 @@ import interface_adapter.dashboard.LoggedInState;
 import interface_adapter.editgrouptask.EditGroupTaskController;
 import interface_adapter.editgrouptask.EditGroupTaskViewModel;
 import interface_adapter.logout.LogoutController;
+import interface_adapter.joingroup.JoinGroupController;
 import interface_adapter.manage_members.PeopleTabViewModel;
 import interface_adapter.manage_members.remove_member.RemoveMemberControllerFactory;
 import interface_adapter.manage_members.respond_request.RespondRequestControllerFactory;
@@ -27,15 +28,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
 
 /**
- * Dashboard (formerly LoggedInView):.
- * - Left sidebar: user-specific groups
- * - Right area: per-group working area with tabs (placeholders for now)
- * - Header with username + logout button
- * - Change-password inline control
+ * Dashboard (formerly LoggedInView).
+ * - Left sidebar: user specific groups
+ * - Right area: per group working area with tabs
+ * - Header with username and logout button
  */
 public class DashboardView extends JPanel implements ActionListener, PropertyChangeListener {
 
@@ -52,6 +53,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     // Controllers
     private LogoutController logoutController;
     private CreateGroupController createGroupController;
+    private JoinGroupController joinGroupController;
     private CreateScheduleController createScheduleController;
     private ViewGroupTasksController viewGroupTasksController;
     private EditGroupTaskController editGroupTaskController;
@@ -60,7 +62,6 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     // Header widgets
     private final JLabel usernameLabel = new JLabel();
     private JButton logoutButton;
-    private JButton createGroup;
 
     // Main layout pieces
     // groupsModel stores group IDs plus "Home"
@@ -93,7 +94,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
 
         logoutButton.addActionListener(this);
 
-        // Body: sidebar + workspace
+        // Body: sidebar plus workspace
         add(buildBody(), BorderLayout.CENTER);
 
         // Sidebar behavior
@@ -131,8 +132,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
                     String name = groupIdToName.get(idOrHome);
                     if (name != null) {
                         displayText = name;
-                    }
-                    else {
+                    } else {
                         displayText = idOrHome;
                     }
                 }
@@ -174,7 +174,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     private JComponent buildHeader() {
         JPanel header = new JPanel(new BorderLayout());
         header.setBorder(new EmptyBorder(6, 6, 6, 6));
-        header.setBackground(new Color(247, 248, 250));
+        // header.setBackground(Color.WHITE);
 
         JLabel title = new JLabel("Group Workspace");
         title.setFont(title.getFont().deriveFont(Font.BOLD, 16f));
@@ -208,33 +208,31 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     }
 
     private JPanel buildHomePanel() {
-        JPanel p = new JPanel(new BorderLayout());
-        p.setBorder(new EmptyBorder(12, 12, 12, 12));
+        ActionListener createGroupListener = evt -> {
+            if (createGroupController != null) {
+                createGroupController.openCreateGroupModal();
+            }
+        };
 
-        if (viewTasksView != null) {
-            JPanel rightPanel = new JPanel(new BorderLayout());
-            rightPanel.setBorder(new EmptyBorder(0, 12, 0, 0));
-
-            JLabel tasks = new JLabel("Your Tasks:");
-            tasks.setBorder(new EmptyBorder(0, 0, 8, 0));
-            rightPanel.add(tasks, BorderLayout.NORTH);
-
-            rightPanel.add(viewTasksView, BorderLayout.CENTER);
-
-            p.add(rightPanel, BorderLayout.EAST);
-        }
-
-        p.add(new JLabel("Welcome! Select a group to view its workspace."), BorderLayout.NORTH);
-        createGroup = new JButton("Create Group");
-        p.add(createGroup);
-        createGroup.addActionListener(
-                evt -> {
-                    if (evt.getSource().equals(createGroup)) {
-                        createGroupController.openCreateGroupModal();
+        ActionListener joinGroupListener = evt -> {
+            if (joinGroupController != null) {
+                String code = JOptionPane.showInputDialog(
+                        this,
+                        "Enter Group ID:",
+                        "Join Group",
+                        JOptionPane.PLAIN_MESSAGE
+                );
+                if (code != null && !code.trim().isEmpty()) {
+                    try {
+                        joinGroupController.execute(code.trim());
+                    } catch (IOException ioException) {
+                        throw new RuntimeException(ioException);
                     }
                 }
-        );
-        return p;
+            }
+        };
+
+        return new DashboardHomePanel(viewTasksView, createGroupListener, joinGroupListener);
     }
 
     private JPanel createGroupPanel(String groupId) {
@@ -258,18 +256,17 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
                 if (i == tabs.getSelectedIndex()) {
                     tabs.setForegroundAt(i, new Color(0x1E88E5));
                 } else {
-                    tabs.setForegroundAt(i, Color.DARK_GRAY);
+                    tabs.setForegroundAt(i, Color.WHITE);
                 }
             }
         });
 
-        tabs.addTab(HOME, placeholderPanel("Home panel for " + groupName));
+        tabs.addTab(HOME, new GroupHomePanel(tabs, groupName));
         tabs.addTab("People", createPeopleTab(groupId));
         tabs.addTab("Meets", placeholderPanel("Meetings tab for " + groupName));
         tabs.addTab("Tasks", placeholderPanel("Tasks tab for " + groupName));
         tabs.addTab("Sched", createScheduleTab("Schedule Tab for " + groupName, groupId));
         tabs.addTab("Optional", placeholderPanel("Optional tab for " + groupName));
-        // initialize selected color (default white is hard to see)
         tabs.setForegroundAt(0, new Color(0x1E88E5));
 
         groupPanel.add(tabs, BorderLayout.CENTER);
@@ -310,6 +307,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
         }
 
         return view;
+    }
     } // createPeopleTab
 
     private ScheduleTabView createScheduleTab(String groupName, String groupID) {
@@ -380,7 +378,6 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
         java.util.List<Map.Entry<String, String>> entries =
                 new java.util.ArrayList<>(groups.entrySet());
 
-        // Sort by name, case-insensitive
         entries.sort((entry1, entry2) -> {
             String n1 = entry1.getValue();
             String n2 = entry2.getValue();
@@ -430,7 +427,6 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
             workArea.remove(c);
         }
 
-        // ensure each non-Home group has a panel
         for (int i = 0; i < groupsModel.size(); i++) {
             String key = groupsModel.get(i);
             if (HOME.equals(key)) {
@@ -465,14 +461,12 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
 
     // --- Events -------------------------------------------------------------
 
-    /** Logout button. */
     @Override
     public void actionPerformed(ActionEvent evt) {
         System.out.println("Click " + evt.getActionCommand());
         logoutController.execute();
     }
 
-    /** React to presenter updates. */
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if ("state".equals(evt.getPropertyName())) {
@@ -502,6 +496,10 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
 
     public void setCreateGroupController(CreateGroupController createGroupController) {
         this.createGroupController = createGroupController;
+    }
+
+    public void setJoinGroupController(JoinGroupController joinGroupController) {
+        this.joinGroupController = joinGroupController;
     }
 
     public void setCreateScheduleController(CreateScheduleController createScheduleController) {

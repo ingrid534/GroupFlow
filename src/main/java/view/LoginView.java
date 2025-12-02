@@ -5,78 +5,76 @@ import interface_adapter.login.LoginState;
 import interface_adapter.login.LoginViewModel;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+
+import static view.FieldUIFactory.*;
 
 /**
  * The View for when the user is logging into the program.
  */
 public class LoginView extends JPanel implements ActionListener, PropertyChangeListener {
-
     private final String viewName = "log in";
     private final LoginViewModel loginViewModel;
 
-    private final JTextField usernameInputField = new JTextField(15);
+    private final JTextField usernameInputField = new JTextField(20);
+
+    private final JPasswordField passwordInputField = new JPasswordField(20);
+
     private final JLabel usernameErrorField = new JLabel();
 
-    private final JPasswordField passwordInputField = new JPasswordField(15);
-    // private final JLabel passwordErrorField = new JLabel();
-
     private final JButton logIn;
-    private final JButton cancel;
     private final JButton toSignup;
     private LoginController loginController;
 
     public LoginView(LoginViewModel loginViewModel) {
-
         this.loginViewModel = loginViewModel;
         this.loginViewModel.addPropertyChangeListener(this);
 
-        final JLabel title = new JLabel("Login Screen");
-        title.setAlignmentX(Component.CENTER_ALIGNMENT);
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        // setBackground(Color.WHITE);
+        setBorder(new EmptyBorder(30, 50, 40, 50));
 
-        final LabelTextPanel usernameInfo = new LabelTextPanel(
-                new JLabel("Username"), usernameInputField);
-        final LabelTextPanel passwordInfo = new LabelTextPanel(
-                new JLabel("Password"), passwordInputField);
+        styleInputField(usernameInputField);
+        styleInputField(passwordInputField);
 
-        final JPanel buttons = new JPanel();
-        logIn = new JButton("log in");
-        buttons.add(logIn);
-        cancel = new JButton("cancel");
-        buttons.add(cancel);
+        logIn = new JButton("Login");
+        logIn.setAlignmentX(Component.LEFT_ALIGNMENT);
+
         toSignup = new JButton("Go to signup");
-        buttons.add(toSignup);
+        toSignup.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        logIn.addActionListener(
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent evt) {
-                        if (evt.getSource().equals(logIn)) {
-                            final LoginState currentState = loginViewModel.getState();
+        this.add(createTitleLabel());
+        this.add(Box.createVerticalStrut(30));
 
-                            loginController.execute(
-                                    currentState.getUsername(),
-                                    currentState.getPassword());
-                        }
-                    }
-                });
+        this.add(createFieldLabel("Username"));
+        this.add(usernameInputField);
+        this.add(Box.createVerticalStrut(20));
 
-        cancel.addActionListener(this);
+        this.add(createFieldLabel("Password"));
+        this.add(passwordInputField);
+        this.add(Box.createVerticalStrut(10));
 
-        toSignup.addActionListener(
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent evt) {
-                        loginController.switchToSignupView();
-                    }
-                });
+        this.add(usernameErrorField);
+        usernameErrorField.setForeground(Color.RED);
+        usernameErrorField.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        this.add(Box.createVerticalStrut(10));
+
+        this.add(logIn);
+        this.add(Box.createVerticalStrut(20));
+        this.add(toSignup);
+
+        actionListeners();
 
         usernameInputField.getDocument().addDocumentListener(new DocumentListener() {
-
             private void documentListenerHelper() {
                 final LoginState currentState = loginViewModel.getState();
                 currentState.setUsername(usernameInputField.getText());
@@ -102,7 +100,6 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         passwordInputField.getDocument().addDocumentListener(new DocumentListener() {
-
             private void documentListenerHelper() {
                 final LoginState currentState = loginViewModel.getState();
                 currentState.setPassword(new String(passwordInputField.getPassword()));
@@ -125,16 +122,41 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
             }
         });
 
-        this.add(title);
-        this.add(usernameInfo);
-        this.add(usernameErrorField);
-        this.add(passwordInfo);
-        this.add(buttons);
+    }
+
+    private void actionListeners() {
+        logIn.addActionListener(
+                new ActionListener() {
+                    public void actionPerformed(ActionEvent evt) {
+                        if (evt.getSource().equals(logIn)) {
+                            final LoginState currentState = loginViewModel.getState();
+                            loginController.execute(
+                                    currentState.getUsername(),
+                                    currentState.getPassword());
+                        }
+                    }
+                });
+
+        toSignup.addActionListener(
+                new ActionListener() {
+                    public void actionPerformed(ActionEvent evt) {
+                        loginController.switchToSignupView();
+                    }
+                });
+    }
+
+    private JLabel createTitleLabel() {
+        JLabel title = new JLabel("Log In");
+        title.setFont(new Font("SansSerif", Font.BOLD, 32));
+        title.setAlignmentX(Component.LEFT_ALIGNMENT);
+        // title.setForeground(Color.BLACK);
+
+        return title;
     }
 
     /**
      * React to a button click that results in evt.
-     * 
+     *
      * @param evt the ActionEvent to react to
      */
     public void actionPerformed(ActionEvent evt) {

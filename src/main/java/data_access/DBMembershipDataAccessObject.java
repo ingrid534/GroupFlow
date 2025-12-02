@@ -11,6 +11,7 @@ import entity.user.UserRole;
 import org.bson.Document;
 import use_case.create_group.CreateGroupMembershipDataAccessInterface;
 import use_case.create_schedule.CreateScheduleMembershipDataAccessInterface;
+import use_case.join_group.JoinGroupMembershipDataAccessInterface;
 import use_case.manage_members.remove_member.RemoveMemberDataAccessInterface;
 import use_case.manage_members.respond_request.RespondRequestDataAccessInterface;
 import use_case.manage_members.update_role.UpdateRoleDataAccessInterface;
@@ -30,12 +31,14 @@ import static com.mongodb.client.model.Filters.eq;
  * Uses {@link MembershipFactory} to create Membership instances when reading
  * documents from the database.
  * Assumes Membership has a constructor that matches the factory signature used
- * by MembershipFactory (for example create(userID, groupID, role, approved)).
+ * by MembershipFactory (for example create(username, groupID, role, approved)).
  */
-public class DBMembershipDataAccessObject implements CreateGroupMembershipDataAccessInterface,
+public class DBMembershipDataAccessObject implements
+        CreateGroupMembershipDataAccessInterface,
         ViewMembersMembershipDataAccessInterface,
         ViewPendingMembershipDataAccessInterface,
         CreateGroupTasksMembershipDataAccessInterface,
+        JoinGroupMembershipDataAccessInterface,
         EditGroupTasksMembershipDataAccessInterface,
         RemoveMemberDataAccessInterface,
         RespondRequestDataAccessInterface,
@@ -93,21 +96,20 @@ public class DBMembershipDataAccessObject implements CreateGroupMembershipDataAc
     }
 
     /**
-     * Retrieves a membership by user id and group id.
+     * Retrieves a membership by username and group id.
      *
-     * @param userID  The user id.
+     * @param username  The username.
      * @param groupID The group id.
-     * @return The Membership object if found.
-     * @throws RuntimeException If membership is not found.
+     * @return The Membership object if found and null if not.
      */
     @Override
-    public Membership get(String userID, String groupID) {
+    public Membership get(String username, String groupID) {
         final Document doc = membershipsCollection.find(
-                and(eq(USER_FIELD, userID), eq(GROUP_FIELD, groupID))
+                and(eq(USER_FIELD, username), eq(GROUP_FIELD, groupID))
         ).first();
 
         if (doc == null) {
-            throw new RuntimeException("Membership not found for user: " + userID + " group: " + groupID);
+            return null;
         }
 
         String user = doc.getString(USER_FIELD);
