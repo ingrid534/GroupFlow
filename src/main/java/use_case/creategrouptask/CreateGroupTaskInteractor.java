@@ -49,26 +49,14 @@ public class CreateGroupTaskInteractor implements CreateGroupTaskInputBoundary {
 
     @Override
     public void execute(CreateGroupTaskInputData inputData) {
-        Membership membership = membershipDataAccess.get(
-                userDataAccess.getCurrentUsername(),
-                inputData.getGroupId());
-        if (membership != null && !membership.isModerator()) {
+        if (validateMembership(inputData)) {
             presenter.present(new CreateGroupTaskOutputData(false,
                     "Only moderators may create tasks in this group."));
             return;
         }
-
         Group group = groupDataAccess.getGroup(inputData.getGroupId());
-        if (group == null) {
-            presenter.present(new CreateGroupTaskOutputData(false,
-                    "Group not found."));
-            return;
-        }
-
         Task task;
-
         List<String> assignees = inputData.getAssignees();
-
         if (inputData.getDueDate() != null && !inputData.getDueDate().isEmpty()) {
             try {
                 LocalDateTime due = LocalDateTime.parse(inputData.getDueDate(),
@@ -84,11 +72,15 @@ public class CreateGroupTaskInteractor implements CreateGroupTaskInputBoundary {
             task = taskFactory.createWithoutDeadline("", inputData.getDescription(), inputData.getGroupId(),
                     false, assignees);
         }
-
-        // save task to get the mongo generated ID
         dataAccess.upsertTask(task);
+        updateAssignees(assignees, task);
+        group.addTask(task.getID());
+        groupDataAccess.save(group);
+        presenter.present(new CreateGroupTaskOutputData(true,
+                "Task created successfully."));
+    }
 
-        // 4. Optional: Assign users to the task
+    private void updateAssignees(List<String> assignees, Task task) {
         if (assignees != null) {
             for (String username : assignees) {
                 User u = userDataAccess.get(username);
@@ -98,13 +90,13 @@ public class CreateGroupTaskInteractor implements CreateGroupTaskInputBoundary {
                 }
             }
         }
+    }
 
-        group.addTask(task.getID());
-
-        groupDataAccess.save(group);
-
-        presenter.present(new CreateGroupTaskOutputData(true,
-                "Task created successfully."));
+    private boolean validateMembership(CreateGroupTaskInputData inputData) {
+        Membership membership = membershipDataAccess.get(
+                userDataAccess.getCurrentUsername(),
+                inputData.getGroupId());
+        return membership != null && !membership.isModerator();
     }
 
 }

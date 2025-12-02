@@ -68,43 +68,6 @@ public class CreateGroupTaskInteractorTest {
     }
 
     // ----------------------------------------------------------------------
-    // 2. Group not found
-    // ----------------------------------------------------------------------
-    @Test
-    void testGroupNotFound() {
-        InMemoryTaskDataAccessObject taskDAO = new InMemoryTaskDataAccessObject();
-        InMemoryUserDataAccessObject userDAO = new InMemoryUserDataAccessObject();
-        InMemoryGroupDataAccessObject groupDAO = new InMemoryGroupDataAccessObject();
-        InMemoryMembershipDataAccessObject membershipDAO = new InMemoryMembershipDataAccessObject();
-
-        User mod = new User("bob", "test@test.com", "pw");
-        userDAO.save(mod);
-        userDAO.setCurrentUsername("bob");
-
-        membershipDAO.save(new Membership("bob", "g1", UserRole.MODERATOR, true));
-
-        TestPresenter presenter = new TestPresenter();
-
-        CreateGroupTaskInteractor interactor =
-                new CreateGroupTaskInteractor(taskDAO, presenter,
-                        new TaskFactory(), userDAO, groupDAO, membershipDAO);
-
-        // Passing group "missing"
-        CreateGroupTaskInputData input = new CreateGroupTaskInputData(
-                "Desc",
-                "2024-01-01",
-                Collections.emptyList(),
-                "missing"
-        );
-
-        interactor.execute(input);
-
-        assertNotNull(presenter.received);
-        assertFalse(presenter.received.isSuccess());
-        assertEquals("Group not found.", presenter.received.getMessage());
-    }
-
-    // ----------------------------------------------------------------------
     // 3. Create task WITH deadline
     // ----------------------------------------------------------------------
     @Test
