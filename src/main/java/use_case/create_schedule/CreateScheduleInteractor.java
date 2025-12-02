@@ -3,7 +3,7 @@ package use_case.create_schedule;
 import entity.group.Group;
 import entity.membership.Membership;
 import entity.user.User;
-import interface_adapter.view_group_schedule.GroupSchedulePresenter;
+import interface_adapter.schedule.view_schedule.ScheduleTabPresenter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,13 +13,13 @@ public class CreateScheduleInteractor implements CreateScheduleInputBoundary {
     private final CreateScheduleGroupDataAccessInterface groupDataAccessObject;
     private final CreateScheduleOutputBoundary createSchedulePresenter;
     private final CreateScheduleMembershipDataAccessInterface membershipDataAccessObject;
-    private final GroupSchedulePresenter groupSchedulePresenter;
+    private final ScheduleTabPresenter groupSchedulePresenter;
 
     public CreateScheduleInteractor(CreateScheduleUserDataAccessInterface userDataAccessObject,
                                     CreateScheduleGroupDataAccessInterface groupDataAccessObject,
                                     CreateScheduleOutputBoundary createScheduleOutputBoundary,
                                     CreateScheduleMembershipDataAccessInterface membershipDataAccessObject,
-                                    GroupSchedulePresenter groupSchedulePresenter) {
+                                    ScheduleTabPresenter groupSchedulePresenter) {
         this.userDataAccessObject = userDataAccessObject;
         this.groupDataAccessObject = groupDataAccessObject;
         this.createSchedulePresenter = createScheduleOutputBoundary;

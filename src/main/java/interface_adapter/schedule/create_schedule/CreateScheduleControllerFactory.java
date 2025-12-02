@@ -2,8 +2,7 @@ package interface_adapter.schedule.create_schedule;
 
 import interface_adapter.ViewManagerModel;
 import interface_adapter.schedule.view_schedule.ScheduleTabViewModel;
-import interface_adapter.view_group_schedule.GroupSchedulePresenter;
-import interface_adapter.view_group_schedule.GroupScheduleViewModel;
+import interface_adapter.schedule.view_schedule.ScheduleTabPresenter;
 import use_case.create_schedule.CreateScheduleGroupDataAccessInterface;
 import use_case.create_schedule.CreateScheduleInputBoundary;
 import use_case.create_schedule.CreateScheduleUserDataAccessInterface;
@@ -18,7 +17,7 @@ public class CreateScheduleControllerFactory {
     private final CreateScheduleMembershipDataAccessInterface membershipDao;
     private final ViewManagerModel viewManagerModel;
     private final CreateScheduleViewModel createScheduleViewModel;
-    private final GroupScheduleViewModel groupScheduleViewModel;
+    private final ScheduleTabViewModel groupScheduleViewModel;
 
     public CreateScheduleControllerFactory(
             CreateScheduleUserDataAccessInterface userDao,
@@ -26,7 +25,7 @@ public class CreateScheduleControllerFactory {
             CreateScheduleMembershipDataAccessInterface membershipDao,
             ViewManagerModel viewManagerModel,
             CreateScheduleViewModel createScheduleViewModel,
-            GroupScheduleViewModel groupScheduleViewModel
+            ScheduleTabViewModel groupScheduleViewModel
     ) {
         this.userDao = userDao;
         this.groupDao = groupDao;
@@ -53,8 +52,8 @@ public class CreateScheduleControllerFactory {
                         groupScheduleViewModel
                 );
 
-        GroupSchedulePresenter groupSchedulePresenter =
-                new GroupSchedulePresenter(viewManagerModel, groupScheduleViewModel);
+        ScheduleTabPresenter groupSchedulePresenter =
+                new ScheduleTabPresenter(groupScheduleViewModel);
 
         CreateScheduleInputBoundary interactor =
                 new CreateScheduleInteractor(

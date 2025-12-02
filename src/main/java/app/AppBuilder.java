@@ -51,12 +51,11 @@ import interface_adapter.manage_members.view_pending.ViewPendingControllerFactor
 import interface_adapter.schedule.create_schedule.CreateScheduleController;
 import interface_adapter.schedule.create_schedule.CreateScheduleControllerFactory;
 import interface_adapter.schedule.create_schedule.CreateScheduleViewModel;
+import interface_adapter.schedule.view_schedule.ScheduleTabPresenter;
 import interface_adapter.schedule.view_schedule.ScheduleTabViewModel;
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
-import interface_adapter.view_group_schedule.GroupSchedulePresenter;
-import interface_adapter.view_group_schedule.GroupScheduleViewModel;
 import interface_adapter.viewgrouptasks.ViewGroupTasksController;
 import interface_adapter.viewgrouptasks.ViewGroupTasksPresenter;
 import interface_adapter.viewgrouptasks.ViewGroupTasksViewModel;
@@ -107,7 +106,7 @@ public class AppBuilder {
     final PeopleTabViewModel peopleTabViewModel = new PeopleTabViewModel();
     ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
     CreateScheduleViewModel createScheduleViewModel = new CreateScheduleViewModel();
-    GroupScheduleViewModel groupScheduleViewModel = new GroupScheduleViewModel();
+    ScheduleTabViewModel groupScheduleViewModel = new ScheduleTabViewModel();
     final ScheduleTabViewModel scheduleTabViewModel = new ScheduleTabViewModel();
 
     private final java.util.Map<String, Dimension> viewSizes = new java.util.HashMap<>();
@@ -162,7 +161,7 @@ public class AppBuilder {
     private EditGroupTaskViewModel editGroupTaskViewModel;
     private CreateGroupTasksViewModel createGroupTasksViewModel;
     private CreateScheduleView createScheduleView;
-    private GroupSchedulePresenter groupSchedulePresenter;
+    private ScheduleTabPresenter groupSchedulePresenter;
 
     private JFrame application;
     private ViewTasksView viewTasksView;

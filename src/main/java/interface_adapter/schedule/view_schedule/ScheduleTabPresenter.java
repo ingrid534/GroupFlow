@@ -1,23 +1,20 @@
-package interface_adapter.view_group_schedule;
+package interface_adapter.schedule.view_schedule;
 
 import java.awt.Color;
 
 import interface_adapter.ViewManagerModel;
-// import interface_adapter.create_schedule.CreateScheduleState;
-import use_case.create_schedule.CreateScheduleOutputBoundary;
 import use_case.create_schedule.CreateScheduleOutputData;
+import use_case.create_schedule.ViewScheduleOutputBoundary;
 
-public class GroupSchedulePresenter implements CreateScheduleOutputBoundary{
-    private final ViewManagerModel viewManagerModel;
-    private final GroupScheduleViewModel groupScheduleViewModel;
+public class ScheduleTabPresenter implements ViewScheduleOutputBoundary {
+    private final ScheduleTabViewModel groupScheduleViewModel;
 
     static final Color NO_COLOR = new Color(255, 255, 255);
     static final Color LIGHT_GREEN = new Color(180, 255, 180);
     static final Color MED_GREEN = new Color(0, 150, 0);
     static final Color DARK_GREEN = new Color(0, 100, 0);
 
-    public GroupSchedulePresenter(ViewManagerModel viewManagerModel, GroupScheduleViewModel groupScheduleViewModel) {
-        this.viewManagerModel = viewManagerModel;
+    public ScheduleTabPresenter(ScheduleTabViewModel groupScheduleViewModel) {
         this.groupScheduleViewModel = groupScheduleViewModel;
     }
 
@@ -33,7 +30,7 @@ public class GroupSchedulePresenter implements CreateScheduleOutputBoundary{
             }
         }
 
-        GroupScheduleState state = groupScheduleViewModel.getState();
+        ScheduleTabState state = groupScheduleViewModel.getState();
         state.setMasterSchedule(colorSchedule);
         state.setGroupSize(groupSize);
 
@@ -66,7 +63,7 @@ public class GroupSchedulePresenter implements CreateScheduleOutputBoundary{
 
     @Override
     public void prepareFailView(String error) {
-        final GroupScheduleState state = groupScheduleViewModel.getState();
+        final ScheduleTabState state = groupScheduleViewModel.getState();
         state.setError(error);
 
         groupScheduleViewModel.setState(state);

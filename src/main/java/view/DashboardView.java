@@ -317,6 +317,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
         CreateScheduleController controller = 
             createScheduleControllerFactory.create(scheduleTab.getViewModel());
         scheduleTab.setCreateScheduleController(controller);
+        
         return scheduleTab;
     }
 

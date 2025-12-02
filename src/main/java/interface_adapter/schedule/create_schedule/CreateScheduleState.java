@@ -4,6 +4,7 @@ public class CreateScheduleState {
 
     private boolean[][] selectedSlots;
     private boolean openModal;
+    private String groupId;
     private String error = "";
 
     public CreateScheduleState() {
@@ -39,5 +40,13 @@ public class CreateScheduleState {
 
     public void setError(String error) {
         this.error = error;
+    }
+
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
     }
 }

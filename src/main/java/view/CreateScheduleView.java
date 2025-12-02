@@ -183,6 +183,7 @@ public class CreateScheduleView extends JPanel implements PropertyChangeListener
                 @Override
                 public void actionPerformed(ActionEvent evt) {
                     if (!evt.getSource().equals(createSchedule)) {
+                        System.out.println("create schedule button clicked");
                         return;
                     }
 
@@ -190,7 +191,8 @@ public class CreateScheduleView extends JPanel implements PropertyChangeListener
                     System.out.println("got to attach listener");
 
                     createScheduleController.execute(
-                                currentState.getSelectedSlots()
+                                currentState.getSelectedSlots(),
+                                currentState.getGroupId()
                     );
                     System.out.println("controller works");
                 }
