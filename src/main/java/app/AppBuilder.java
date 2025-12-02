@@ -444,6 +444,16 @@ public class AppBuilder {
     }
 
     /**
+     * Adds create schedule view.
+     * @return app builder
+     */
+    public AppBuilder addCreateScheduleView() {
+        createScheduleViewModel = new CreateScheduleViewModel();
+        createScheduleView = new CreateScheduleView(createScheduleViewModel);
+        return this;
+    }
+    
+    /**
      * Method to add the Create Group Use Case.
      *
      * @return App Builder

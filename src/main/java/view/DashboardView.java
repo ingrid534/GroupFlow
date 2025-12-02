@@ -1,6 +1,7 @@
 package view;
 
 import interface_adapter.create_group.CreateGroupController;
+import interface_adapter.create_schedule.CreateScheduleController;
 import interface_adapter.creategrouptasks.CreateGroupTasksController;
 import interface_adapter.creategrouptasks.CreateGroupTasksViewModel;
 import interface_adapter.dashboard.DashboardViewModel;
@@ -49,6 +50,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     // Controllers
     private LogoutController logoutController;
     private CreateGroupController createGroupController;
+    private CreateScheduleController createScheduleController;
     private ViewGroupTasksController viewGroupTasksController;
     private EditGroupTaskController editGroupTaskController;
     private CreateGroupTasksController createGroupTasksController;
@@ -262,6 +264,9 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
         tabs.addTab("People", createPeopleTab(groupId));
         tabs.addTab("Meets", placeholderPanel("Meetings tab for " + groupName));
         tabs.addTab("Tasks", placeholderPanel("Tasks tab for " + groupName));
+        // temporarily added it here
+        ScheduleTabView scheduleTab = new ScheduleTabView("Schedule tab for " + groupName);
+        scheduleTab.setCreateScheduleController(createScheduleController);
         tabs.addTab("Sched", new ScheduleTabView("Schedule tab for " + groupName));
         tabs.addTab("Optional", placeholderPanel("Optional tab for " + groupName));
         // initialize selected color (default white is hard to see)
@@ -489,6 +494,10 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
 
     public void setCreateGroupController(CreateGroupController createGroupController) {
         this.createGroupController = createGroupController;
+    }
+
+    public void setCreateScheduleController(CreateScheduleController createScheduleController) {
+        this.createScheduleController = createScheduleController;
     }
 
     public void setViewMembersControllerFactory(ViewMembersControllerFactory factory) {
