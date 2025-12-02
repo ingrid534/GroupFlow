@@ -80,4 +80,15 @@ public class CreateScheduleInteractor implements CreateScheduleInputBoundary {
     public void openCreateScheduleModal() {
         createSchedulePresenter.openCreateScheduleModal();
     }
+
+    @Override
+    public void loadSchedule(String groupID) {
+        final Group group = groupDataAccessObject.getGroup(groupID);
+        final int[][] masterSchedule = group.getMasterSchedule();
+        final int groupSize = group.getSize();
+        
+        final CreateScheduleOutputData outputData = 
+            new CreateScheduleOutputData(masterSchedule, groupSize);
+        groupSchedulePresenter.prepareSuccessView(outputData);
+    }
 }

@@ -183,18 +183,15 @@ public class CreateScheduleView extends JPanel implements PropertyChangeListener
                 @Override
                 public void actionPerformed(ActionEvent evt) {
                     if (!evt.getSource().equals(createSchedule)) {
-                        System.out.println("create schedule button clicked");
                         return;
                     }
 
                     final CreateScheduleState currentState = createScheduleViewModel.getState();
-                    System.out.println("got to attach listener");
 
                     createScheduleController.execute(
                                 currentState.getSelectedSlots(),
                                 currentState.getGroupId()
                     );
-                    System.out.println("controller works");
                 }
             }
         );

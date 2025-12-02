@@ -29,5 +29,13 @@ public class CreateScheduleController {
     public void openScheduleModal() {
         createScheduleInteractor.openCreateScheduleModal();
     }
+
+    /**
+     * Load the existing schedule for a group.
+     * @param groupID the group ID to load the schedule for
+     */
+    public void loadSchedule(String groupID) {
+        createScheduleInteractor.loadSchedule(groupID);
+    }
     
 }

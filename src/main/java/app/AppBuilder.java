@@ -298,6 +298,7 @@ public class AppBuilder {
         this.dashboardView.setEditGroupTasksViewModel(editGroupTaskViewModel);
         this.dashboardView.setViewGroupTasksViewModel(viewGroupTasksViewModel);
         this.dashboardView.setCreateScheduleViewModel(createScheduleViewModel);
+        this.dashboardView.setCreateScheduleView(createScheduleView);
         return this;
     }
 

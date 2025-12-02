@@ -53,7 +53,7 @@ public class CreateScheduleControllerFactory {
                 );
 
         ScheduleTabPresenter groupSchedulePresenter =
-                new ScheduleTabPresenter(groupScheduleViewModel);
+                new ScheduleTabPresenter(viewModel);
 
         CreateScheduleInputBoundary interactor =
                 new CreateScheduleInteractor(

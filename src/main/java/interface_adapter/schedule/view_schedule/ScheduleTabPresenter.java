@@ -2,7 +2,6 @@ package interface_adapter.schedule.view_schedule;
 
 import java.awt.Color;
 
-import interface_adapter.ViewManagerModel;
 import use_case.create_schedule.CreateScheduleOutputData;
 import use_case.create_schedule.ViewScheduleOutputBoundary;
 

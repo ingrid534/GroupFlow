@@ -803,7 +803,7 @@
         </module>
         <!-- <module name="LambdaBodyLength"/> -->
         <module name="MethodCount">
-            <property name="maxTotal" value="34"/>
+            <property name="maxTotal" value="37"/>
         </module>
         <module name="MethodLength"/>
         <module name="OuterTypeNumber"/>

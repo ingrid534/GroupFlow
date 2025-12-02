@@ -12,39 +12,31 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import interface_adapter.schedule.create_schedule.CreateScheduleController;
+import interface_adapter.schedule.create_schedule.CreateScheduleViewModel;
 import interface_adapter.schedule.view_schedule.ScheduleTabViewModel;
 
-public class ScheduleTabView extends JPanel {
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+public class ScheduleTabView extends JPanel implements PropertyChangeListener {
     private final JButton createSched = new JButton("Add Your Availability");
 
     private CreateScheduleController createScheduleController;
+    private CreateScheduleViewModel createScheduleViewModel;
     private ScheduleTabViewModel viewModel;
     private final String groupId;
+    private JPanel[][] gridCells;
+    private CreateScheduleView createScheduleView;
 
     public ScheduleTabView(String groupName, ScheduleTabViewModel viewModel, String groupId) {
         this.groupId = groupId;
         this.viewModel = viewModel;
+        this.viewModel.addPropertyChangeListener(this);
         setLayout(new BorderLayout());
         setBorder(new EmptyBorder(10, 10, 10, 10));
-
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         buildScheduleDisplay();
         addGroupSched(groupName);
-    }
-
-    /**
-     * Make the button where user can input availability.
-     */
-    public void addCreateSchedButton() {
-        createSched.setAlignmentY(Component.TOP_ALIGNMENT);
-        createSched.setMaximumSize(new Dimension(180, 20));
-        add(createSched);
-
-        createSched.addActionListener(evt -> {
-            if (createScheduleController != null) {
-                createScheduleController.openScheduleModal();
-            }
-        });
     }
 
     public ScheduleTabViewModel getViewModel() {
@@ -67,8 +59,15 @@ public class ScheduleTabView extends JPanel {
      * @param createScheduleController controller
      */
     public void setCreateScheduleController(CreateScheduleController createScheduleController) {
-        System.out.println("create schedule controller set");
         this.createScheduleController = createScheduleController;
+    }
+
+    public void setCreateScheduleViewModel(CreateScheduleViewModel createScheduleViewModel) {
+        this.createScheduleViewModel = createScheduleViewModel;
+    }
+
+    public void setCreateScheduleView(CreateScheduleView createScheduleView) {
+        this.createScheduleView = createScheduleView;
     }
 
     public String getGroupId() {
@@ -87,9 +86,13 @@ public class ScheduleTabView extends JPanel {
 
         createSched.setAlignmentX(Component.CENTER_ALIGNMENT);
         createSched.addActionListener(evt -> {
-            if (createScheduleController != null) {
-                // Set the groupId in the view model state before opening modal
-                viewModel.getState().setGroupId(groupId);
+            if (createScheduleController != null && createScheduleViewModel != null) {
+                // Set the correct controller on the modal before opening
+                if (createScheduleView != null) {
+                    createScheduleView.setCreateScheduleController(createScheduleController);
+                }
+                // Set the groupId right before opening the modal
+                createScheduleViewModel.getState().setGroupId(groupId);
                 createScheduleController.openScheduleModal();
             }
         });
@@ -126,6 +129,7 @@ public class ScheduleTabView extends JPanel {
     private void buildGrid(JPanel panel) {
         int start = 8;
         Color[][] slots = viewModel.getState().getMasterSchedule();
+        gridCells = new JPanel[12][7];
 
         for (int r = 0; r < 12; r++) {
             int hour = start + r;
@@ -138,9 +142,24 @@ public class ScheduleTabView extends JPanel {
                 cell.setPreferredSize(new Dimension(40, 30));
                 cell.setBorder(new LineBorder(Color.BLACK, 1));
                 cell.setBackground(slots[r][c]);
+                gridCells[r][c] = cell;
                 panel.add(cell);
 
+            }
+        }
+    }
 
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if ("schedule".equals(evt.getPropertyName())) {
+            Color[][] updatedSchedule = viewModel.getState().getMasterSchedule();
+            if (gridCells != null) {
+                for (int r = 0; r < 12; r++) {
+                    for (int c = 0; c < 7; c++) {
+                        gridCells[r][c].setBackground(updatedSchedule[r][c]);
+                    }
+                }
+                repaint();
             }
         }
     }
