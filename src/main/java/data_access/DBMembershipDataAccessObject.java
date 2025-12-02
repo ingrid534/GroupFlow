@@ -10,6 +10,7 @@ import entity.membership.MembershipFactory;
 import entity.user.UserRole;
 import org.bson.Document;
 import use_case.create_group.CreateGroupMembershipDataAccessInterface;
+import use_case.create_schedule.CreateScheduleMembershipDataAccessInterface;
 import use_case.join_group.JoinGroupMembershipDataAccessInterface;
 import use_case.manage_members.remove_member.RemoveMemberDataAccessInterface;
 import use_case.manage_members.respond_request.RespondRequestDataAccessInterface;
@@ -41,7 +42,8 @@ public class DBMembershipDataAccessObject implements
         EditGroupTasksMembershipDataAccessInterface,
         RemoveMemberDataAccessInterface,
         RespondRequestDataAccessInterface,
-        UpdateRoleDataAccessInterface {
+        UpdateRoleDataAccessInterface,
+        CreateScheduleMembershipDataAccessInterface {
 
     private static final String USER_FIELD = "user";
     private static final String GROUP_FIELD = "group";

@@ -13,4 +13,10 @@ public interface CreateScheduleInputBoundary {
      * Opens the modal for user to create a schedule.
      */
     void openCreateScheduleModal();
+
+    /**
+     * Loads the existing schedule for a group.
+     * @param groupID the group ID to load the schedule for
+     */
+    void loadSchedule(String groupID);
 }

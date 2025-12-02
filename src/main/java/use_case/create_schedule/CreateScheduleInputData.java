@@ -1,25 +1,19 @@
 package use_case.create_schedule;
 
 public class CreateScheduleInputData {
-    private final String userID;
     private final String groupID;
     private final boolean[][] availabilityGrid;
 
-    public CreateScheduleInputData(String userID, String groupID, boolean[][] availabilityGrid) {
-        this.userID = userID;
+    public CreateScheduleInputData(String groupID, boolean[][] availabilityGrid) {
         this.groupID = groupID;
         this.availabilityGrid = availabilityGrid;
     }
 
-    public String getUserID() {
-        return userID;
+    public boolean[][] getAvailabilityGrid() {
+        return availabilityGrid;
     }
 
     public String getGroupID() {
         return groupID;
-    }
-
-    public boolean[][] getAvailabilityGrid() {
-        return availabilityGrid;
     }
 }

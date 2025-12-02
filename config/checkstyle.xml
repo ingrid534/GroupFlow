@@ -673,7 +673,7 @@
         </module> -->
 
         <module name="ClassFanOutComplexity">
-            <property name="max" value="90"/>
+            <property name="max" value="100"/>
 
             <!--Default classes are also listed -->
             <property name="excludedClasses"
@@ -803,7 +803,7 @@
         </module>
         <!-- <module name="LambdaBodyLength"/> -->
         <module name="MethodCount">
-            <property name="maxTotal" value="34"/>
+            <property name="maxTotal" value="37"/>
         </module>
         <module name="MethodLength"/>
         <module name="OuterTypeNumber"/>

@@ -21,6 +21,7 @@ public class Main {
                 .addSignupView()
                 .addViewTasksUseCase()
                 .addDashboardView()
+                .addCreateScheduleView()
                 .addCreateGroupView()
                 .addJoinGroupView()
                 .addSignupUseCase()
@@ -35,7 +36,7 @@ public class Main {
                 .addRemoveMemberUseCase()
                 .addRespondRequestUseCase()
                 .addUpdateRoleUseCase()
-                .addCreateScheduleView()
+                .addCreateScheduleUseCase()
                 .build();
 
         application.pack();

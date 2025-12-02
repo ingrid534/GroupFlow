@@ -3,26 +3,28 @@ package use_case.create_schedule;
 import entity.group.Group;
 import entity.membership.Membership;
 import entity.user.User;
+import interface_adapter.schedule.view_schedule.ScheduleTabPresenter;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import data_access.DBMembershipDataAccessObject;
 
 public class CreateScheduleInteractor implements CreateScheduleInputBoundary {
     private final CreateScheduleUserDataAccessInterface userDataAccessObject;
     private final CreateScheduleGroupDataAccessInterface groupDataAccessObject;
     private final CreateScheduleOutputBoundary createSchedulePresenter;
-    private final DBMembershipDataAccessObject membershipDataAccessObject;
+    private final CreateScheduleMembershipDataAccessInterface membershipDataAccessObject;
+    private final ScheduleTabPresenter groupSchedulePresenter;
 
     public CreateScheduleInteractor(CreateScheduleUserDataAccessInterface userDataAccessObject,
                                     CreateScheduleGroupDataAccessInterface groupDataAccessObject,
                                     CreateScheduleOutputBoundary createScheduleOutputBoundary,
-                                    DBMembershipDataAccessObject membershipDataAccessObject) {
+                                    CreateScheduleMembershipDataAccessInterface membershipDataAccessObject,
+                                    ScheduleTabPresenter groupSchedulePresenter) {
         this.userDataAccessObject = userDataAccessObject;
         this.groupDataAccessObject = groupDataAccessObject;
         this.createSchedulePresenter = createScheduleOutputBoundary;
         this.membershipDataAccessObject = membershipDataAccessObject;
+        this.groupSchedulePresenter = groupSchedulePresenter;
 
     }
     
@@ -31,7 +33,7 @@ public class CreateScheduleInteractor implements CreateScheduleInputBoundary {
         final User user = userDataAccessObject.get(userDataAccessObject.getCurrentUsername());
 
         // get id of current group
-        final String groupID = groupDataAccessObject.getCurrentGroupID();
+        final String groupID = createScheduleInputData.getGroupID();
 
         // save user schedule in db
         final boolean[][] availabilityGrid = createScheduleInputData.getAvailabilityGrid();
@@ -51,7 +53,7 @@ public class CreateScheduleInteractor implements CreateScheduleInputBoundary {
         
         // update master sched with user schedule
         // add method to get user schedule in user entity
-        int[][] masterSchedule = new int[7][12];
+        int[][] masterSchedule = new int[12][7];
         for (User member: allUsers) {
             boolean[][] userSched = member.getSchedule();
 
@@ -65,15 +67,28 @@ public class CreateScheduleInteractor implements CreateScheduleInputBoundary {
             }
         }
 
+        group.setMasterSchedule(masterSchedule);
         groupDataAccessObject.saveMasterSchedule(group);
         final CreateScheduleOutputData createScheduleOutputData = 
             new CreateScheduleOutputData(masterSchedule, group.getSize());
         createSchedulePresenter.prepareSuccessView(createScheduleOutputData);
+        groupSchedulePresenter.prepareSuccessView(createScheduleOutputData);
 
     }
 
     @Override
     public void openCreateScheduleModal() {
         createSchedulePresenter.openCreateScheduleModal();
+    }
+
+    @Override
+    public void loadSchedule(String groupID) {
+        final Group group = groupDataAccessObject.getGroup(groupID);
+        final int[][] masterSchedule = group.getMasterSchedule();
+        final int groupSize = group.getSize();
+        
+        final CreateScheduleOutputData outputData = 
+            new CreateScheduleOutputData(masterSchedule, groupSize);
+        groupSchedulePresenter.prepareSuccessView(outputData);
     }
 }

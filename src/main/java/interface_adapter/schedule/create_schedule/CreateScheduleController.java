@@ -1,4 +1,4 @@
-package interface_adapter.create_schedule;
+package interface_adapter.schedule.create_schedule;
 
 import use_case.create_schedule.CreateScheduleInputBoundary;
 import use_case.create_schedule.CreateScheduleInputData;
@@ -12,13 +12,12 @@ public class CreateScheduleController {
 
     /**
      * Executes the Create Schedule use case.
-     * @param userID the user creating the schedule.
-     * @param groupID the group this user is creating the schedule in.
      * @param availabilityGrid the grid of the user's available time slots.
+     * @param groupID the group ID.
      */
-    public void execute(String userID, String groupID, boolean[][] availabilityGrid) {
+    public void execute(boolean[][] availabilityGrid, String groupID) {
         final CreateScheduleInputData createScheduleInputData = 
-            new CreateScheduleInputData(userID, groupID, availabilityGrid);
+            new CreateScheduleInputData(groupID, availabilityGrid);
 
         createScheduleInteractor.execute(createScheduleInputData);
     }
@@ -29,6 +28,14 @@ public class CreateScheduleController {
      */
     public void openScheduleModal() {
         createScheduleInteractor.openCreateScheduleModal();
+    }
+
+    /**
+     * Load the existing schedule for a group.
+     * @param groupID the group ID to load the schedule for
+     */
+    public void loadSchedule(String groupID) {
+        createScheduleInteractor.loadSchedule(groupID);
     }
     
 }

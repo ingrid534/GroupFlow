@@ -15,6 +15,10 @@ import interface_adapter.manage_members.respond_request.RespondRequestController
 import interface_adapter.manage_members.update_role.UpdateRoleControllerFactory;
 import interface_adapter.manage_members.view_members.ViewMembersControllerFactory;
 import interface_adapter.manage_members.view_pending.ViewPendingControllerFactory;
+import interface_adapter.schedule.create_schedule.CreateScheduleController;
+import interface_adapter.schedule.create_schedule.CreateScheduleControllerFactory;
+import interface_adapter.schedule.create_schedule.CreateScheduleViewModel;
+import interface_adapter.schedule.view_schedule.ScheduleTabViewModel;
 import interface_adapter.viewgrouptasks.ViewGroupTasksController;
 import interface_adapter.viewgrouptasks.ViewGroupTasksViewModel;
 
@@ -43,6 +47,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     private ViewGroupTasksViewModel viewGroupTasksViewModel;
     private EditGroupTaskViewModel editGroupTasksViewModel;
     private CreateGroupTasksViewModel createGroupTasksViewModel;
+    private CreateScheduleViewModel createScheduleViewModel;
 
     // Views
     private ViewTasksView viewTasksView;
@@ -51,6 +56,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     private LogoutController logoutController;
     private CreateGroupController createGroupController;
     private JoinGroupController joinGroupController;
+    private CreateScheduleController createScheduleController;
     private ViewGroupTasksController viewGroupTasksController;
     private EditGroupTaskController editGroupTaskController;
     private CreateGroupTasksController createGroupTasksController;
@@ -71,6 +77,8 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     private RemoveMemberControllerFactory removeMemberControllerFactory;
     private RespondRequestControllerFactory respondRequestControllerFactory;
     private UpdateRoleControllerFactory updateRoleControllerFactory;
+    private CreateScheduleControllerFactory createScheduleControllerFactory;
+    private CreateScheduleView createScheduleView;
 
     // Maps group IDs to their names
     private final java.util.Map<String, String> groupIdToName = new java.util.HashMap<>();
@@ -260,7 +268,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
         tabs.addTab("People", createPeopleTab(groupId));
         tabs.addTab("Meets", placeholderPanel("Meetings tab for " + groupName));
         tabs.addTab("Tasks", placeholderPanel("Tasks tab for " + groupName));
-        tabs.addTab("Sched", new ScheduleTabView("Schedule tab for " + groupName));
+        tabs.addTab("Sched", createScheduleTab("", groupId));
         tabs.addTab("Optional", placeholderPanel("Optional tab for " + groupName));
         tabs.setForegroundAt(0, new Color(0x1E88E5));
 
@@ -302,6 +310,21 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
         }
 
         return view;
+    }
+
+    private ScheduleTabView createScheduleTab(String groupName, String groupID) {
+        ScheduleTabViewModel vm = new ScheduleTabViewModel();
+        ScheduleTabView scheduleTab = 
+            new ScheduleTabView("", vm, groupID);
+        CreateScheduleController controller = 
+            createScheduleControllerFactory.create(scheduleTab.getViewModel());
+        scheduleTab.setCreateScheduleController(controller);
+        scheduleTab.setCreateScheduleViewModel(createScheduleViewModel);
+        scheduleTab.setCreateScheduleView(createScheduleView);
+        
+        controller.loadSchedule(groupID);
+        
+        return scheduleTab;
     }
 
     private JPanel placeholderPanel(String text) {
@@ -488,6 +511,10 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
         this.joinGroupController = joinGroupController;
     }
 
+    public void setCreateScheduleController(CreateScheduleController createScheduleController) {
+        this.createScheduleController = createScheduleController;
+    }
+
     public void setViewMembersControllerFactory(ViewMembersControllerFactory factory) {
         this.viewMembersControllerFactory = factory;
     }
@@ -530,6 +557,18 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
 
     public void setCreateGroupTasksViewModel(CreateGroupTasksViewModel viewModel) {
         this.createGroupTasksViewModel = viewModel;
+    }
+
+    public void setCreateScheduleViewModel(CreateScheduleViewModel viewModel) {
+        this.createScheduleViewModel = viewModel;
+    }
+
+    public void setCreateScheduleView(CreateScheduleView view) {
+        this.createScheduleView = view;
+    }
+
+    public void setCreateScheduleControllerFactory(CreateScheduleControllerFactory factory) {
+        this.createScheduleControllerFactory = factory;
     }
 
     private JPanel buildGroupTasksTab(String groupId) {
