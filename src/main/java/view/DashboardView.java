@@ -268,7 +268,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
         tabs.addTab("People", createPeopleTab(groupId));
         tabs.addTab("Meets", placeholderPanel("Meetings tab for " + groupName));
         tabs.addTab("Tasks", placeholderPanel("Tasks tab for " + groupName));
-        tabs.addTab("Sched", createScheduleTab("Schedule Tab for " + groupName, groupId));
+        tabs.addTab("Sched", createScheduleTab("", groupId));
         tabs.addTab("Optional", placeholderPanel("Optional tab for " + groupName));
         tabs.setForegroundAt(0, new Color(0x1E88E5));
 
@@ -315,7 +315,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     private ScheduleTabView createScheduleTab(String groupName, String groupID) {
         ScheduleTabViewModel vm = new ScheduleTabViewModel();
         ScheduleTabView scheduleTab = 
-            new ScheduleTabView("Schedule tab for " + groupName, vm, groupID);
+            new ScheduleTabView("", vm, groupID);
         CreateScheduleController controller = 
             createScheduleControllerFactory.create(scheduleTab.getViewModel());
         scheduleTab.setCreateScheduleController(controller);
