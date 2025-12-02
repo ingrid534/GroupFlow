@@ -205,6 +205,7 @@ public class CreateTaskView extends JDialog implements PropertyChangeListener {
                     state.getMessage(),
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
+            dispose();
         }
     }
 
