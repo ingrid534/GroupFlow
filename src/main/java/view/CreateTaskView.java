@@ -154,14 +154,6 @@ public class CreateTaskView extends JDialog implements PropertyChangeListener {
      * gathers form input and calls the controller.
      */
     private void onCreate() {
-        String description = descriptionField.getText().trim();
-        if (description.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                    "Description cannot be empty.",
-                    "Validation Error",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
-        }
 
         String due = dueDateField.getText().trim();
         if (due.isEmpty()) {
@@ -176,6 +168,7 @@ public class CreateTaskView extends JDialog implements PropertyChangeListener {
         }
 
         // Delegate to the use case via controller.
+        String description = descriptionField.getText().trim();
         createButton.setEnabled(false);
         controller.execute(description, due, selectedAssignees, groupId);
     }

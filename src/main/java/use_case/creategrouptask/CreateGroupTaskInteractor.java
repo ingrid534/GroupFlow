@@ -5,6 +5,7 @@ import entity.membership.Membership;
 import entity.task.Task;
 import entity.task.TaskFactory;
 import entity.user.User;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -54,8 +55,29 @@ public class CreateGroupTaskInteractor implements CreateGroupTaskInputBoundary {
                     "Only moderators may create tasks in this group."));
             return;
         }
+        if (inputData.getDescription() == null || "".equals(inputData.getDescription())) {
+            presenter.present(new CreateGroupTaskOutputData(false,
+                    "Description cannot be empty."));
+            return;
+        }
         Task task;
         List<String> assignees = inputData.getAssignees();
+        task = createTask(inputData, assignees);
+        if (task == null) {
+            return;
+        }
+        dataAccess.upsertTask(task);
+        updateAssignees(assignees, task);
+        Group group = groupDataAccess.getGroup(inputData.getGroupId());
+        group.addTask(task.getID());
+        groupDataAccess.save(group);
+        presenter.present(new CreateGroupTaskOutputData(true,
+                "Task created successfully."));
+    }
+
+    @Nullable
+    private Task createTask(CreateGroupTaskInputData inputData, List<String> assignees) {
+        Task task;
         if (inputData.getDueDate() != null && !inputData.getDueDate().isEmpty()) {
             try {
                 LocalDateTime due = LocalDateTime.parse(inputData.getDueDate(),
@@ -65,19 +87,13 @@ public class CreateGroupTaskInteractor implements CreateGroupTaskInputBoundary {
                         false, assignees, due);
             } catch (DateTimeParseException exception) {
                 presenter.present(new CreateGroupTaskOutputData(false, "Invalid date."));
-                return;
+                return null;
             }
         } else {
             task = taskFactory.createWithoutDeadline("", inputData.getDescription(), inputData.getGroupId(),
                     false, assignees);
         }
-        dataAccess.upsertTask(task);
-        updateAssignees(assignees, task);
-        Group group = groupDataAccess.getGroup(inputData.getGroupId());
-        group.addTask(task.getID());
-        groupDataAccess.save(group);
-        presenter.present(new CreateGroupTaskOutputData(true,
-                "Task created successfully."));
+        return task;
     }
 
     private void updateAssignees(List<String> assignees, Task task) {
