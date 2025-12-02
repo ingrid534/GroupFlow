@@ -112,7 +112,6 @@ public class CreateMeetingView extends JPanel implements ActionListener, Propert
             state.setMeetings(dtos);
             createMeetingViewModel.setState(state);
 
-            System.out.println("DEBUG: Loaded " + dtos.size() + " initial meetings for group: " + groupId);
         } catch (Exception e) {
             System.err.println("ERROR loading initial meetings: " + e.getMessage());
             e.printStackTrace();
@@ -301,8 +300,6 @@ public class CreateMeetingView extends JPanel implements ActionListener, Propert
                     text = "Meeting successfully created.";
                 }
 
-                System.out.println("DEBUG: Meeting creation successful, showing dialog");
-
                 JOptionPane.showMessageDialog(
                         this,
                         text,
@@ -314,8 +311,6 @@ public class CreateMeetingView extends JPanel implements ActionListener, Propert
                 dateInputField.setText("");
             }
         } else if ("meetings_updated".equals(prop)) {
-            // Handle meetings list update - refresh display from state
-            System.out.println("DEBUG: meetings_updated property fired, refreshing display");
             refreshMeetingsDisplay();
         }
     }

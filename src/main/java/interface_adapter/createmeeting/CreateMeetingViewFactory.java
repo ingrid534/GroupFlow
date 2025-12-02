@@ -64,8 +64,6 @@ public class CreateMeetingViewFactory {
 
         view.setCreateMeetingController(controller, groupId);
 
-        System.out.println("DEBUG: CreateMeetingView wired for group: " + groupId);
-
         return view;
     }
 }
