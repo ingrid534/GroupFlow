@@ -1,5 +1,6 @@
 package view;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -8,7 +9,6 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -16,6 +16,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 
 import interface_adapter.schedule.create_schedule.CreateScheduleController;
@@ -47,6 +48,7 @@ public class CreateScheduleView extends JPanel implements PropertyChangeListener
         title.setFont(title.getFont().deriveFont(Font.BOLD, 16f));
         createSchedule = new JButton("Create Schedule");
         buildLayout();
+        attachListeners();
     }
 
     /**
@@ -54,7 +56,7 @@ public class CreateScheduleView extends JPanel implements PropertyChangeListener
      */
     public void buildLayout() {
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        this.setMinimumSize(new Dimension(300, 200));
+        this.setMinimumSize(new Dimension(500, 500));
         // Add rigid areas for spacing
         this.add(Box.createRigidArea(new Dimension(0, 10)));
         this.add(title);
@@ -63,19 +65,52 @@ public class CreateScheduleView extends JPanel implements PropertyChangeListener
         this.add(Box.createRigidArea(new Dimension(0, 10)));
         this.add(createSchedule);
 
-        JPanel buttonPanel = new JPanel(new GridLayout(7, 12, 1, 1));
+        String[] days = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        JPanel topRow = addDaysLabel(days);
+        mainPanel.add(topRow, BorderLayout.NORTH);
+
+        JPanel buttonPanel = new JPanel(new GridLayout(12, 8, 1, 1));
         buttonPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        addButtonGrid(buttonPanel);
 
-        buttons = new JButton[7][12];
+        mainPanel.add(buttonPanel, BorderLayout.CENTER);
+        this.add(mainPanel);
+    }
 
-        for (int row = 0; row < 7; row++) {
-            for (int col = 0; col < 12; col++) {
+    /**
+     * Add the row with day labels.
+     * @param days the list of weekdays
+     * @return the JPanel top row with labels
+     */
+    private JPanel addDaysLabel(String[] days) {
+        JPanel result = new JPanel(new GridLayout(1, 8));
+        result.add(new JLabel(""));
+        for (String day : days) {
+            JLabel dayLabel = new JLabel(day, SwingConstants.CENTER);
+            dayLabel.setBorder(new LineBorder(Color.BLACK));
+            result.add(dayLabel);
+        }
+        return result;
+    }
+
+    private JPanel addButtonGrid(JPanel buttonPanel) {
+        buttons = new JButton[12][7];
+
+        for (int row = 0; row < 12; row++) {
+
+            int hour = 8 + row;
+            JLabel hourLabel = new JLabel(hour + ":00", SwingConstants.CENTER);
+            hourLabel.setBorder(new LineBorder(Color.BLACK));
+            buttonPanel.add(hourLabel);
+
+            for (int col = 0; col < 7; col++) {
                 JButton cell = new JButton();
+                Color originalColor = cell.getBackground();
                 cell.setPreferredSize(new Dimension(40, 30));
                 cell.setBorder(new LineBorder(Color.BLACK, 1));
                 cell.setMargin(new Insets(0, 0, 0, 0));
 
-                // when a user clicks a button, should toggle green/white
                 final int r = row;
                 final int c = col;
                 cell.addActionListener(evt -> {
@@ -84,7 +119,7 @@ public class CreateScheduleView extends JPanel implements PropertyChangeListener
                     if (slots[r][c]) {
                         cell.setBackground(Color.GREEN);
                     } else {
-                        cell.setBackground(Color.WHITE);
+                        cell.setBackground(originalColor);
                     }
                 });
 
@@ -92,8 +127,7 @@ public class CreateScheduleView extends JPanel implements PropertyChangeListener
                 buttonPanel.add(cell);
             }
         }
-
-        this.add(buttonPanel);
+        return buttonPanel;
     }
 
     @Override
@@ -138,7 +172,6 @@ public class CreateScheduleView extends JPanel implements PropertyChangeListener
      */
     public void setCreateScheduleController(CreateScheduleController scheduleController) {
         this.createScheduleController = scheduleController;
-        attachListeners();
     }
 
     /**
@@ -154,10 +187,12 @@ public class CreateScheduleView extends JPanel implements PropertyChangeListener
                     }
 
                     final CreateScheduleState currentState = createScheduleViewModel.getState();
+                    System.out.println("got to attach listener");
 
                     createScheduleController.execute(
                                 currentState.getSelectedSlots()
                     );
+                    System.out.println("controller works");
                 }
             }
         );

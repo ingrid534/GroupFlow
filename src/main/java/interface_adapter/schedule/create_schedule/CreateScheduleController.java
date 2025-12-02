@@ -5,18 +5,17 @@ import use_case.create_schedule.CreateScheduleInputData;
 
 public class CreateScheduleController {
     private final CreateScheduleInputBoundary createScheduleInteractor;
-    private final String groupID;
 
-    public CreateScheduleController(CreateScheduleInputBoundary createScheduleInteractor, String groupID) {
+    public CreateScheduleController(CreateScheduleInputBoundary createScheduleInteractor) {
         this.createScheduleInteractor = createScheduleInteractor;
-        this.groupID = groupID;
     }
 
     /**
      * Executes the Create Schedule use case.
      * @param availabilityGrid the grid of the user's available time slots.
+     * @param groupID the group ID.
      */
-    public void execute(boolean[][] availabilityGrid) {
+    public void execute(boolean[][] availabilityGrid, String groupID) {
         final CreateScheduleInputData createScheduleInputData = 
             new CreateScheduleInputData(groupID, availabilityGrid);
 

@@ -31,7 +31,6 @@ import send_grid_api.SendEmailInterface;
 import use_case.join_group.JoinGroupInputBoundary;
 import use_case.join_group.JoinGroupInteractor;
 import use_case.join_group.JoinGroupOutputBoundary;
-import view.JoinGroupView;
 import interface_adapter.editgrouptask.EditGroupTaskController;
 import interface_adapter.editgrouptask.EditGroupTaskPresenter;
 import interface_adapter.editgrouptask.EditGroupTaskViewModel;
@@ -49,8 +48,10 @@ import interface_adapter.manage_members.respond_request.RespondRequestController
 import interface_adapter.manage_members.update_role.UpdateRoleControllerFactory;
 import interface_adapter.manage_members.view_members.ViewMembersControllerFactory;
 import interface_adapter.manage_members.view_pending.ViewPendingControllerFactory;
+import interface_adapter.schedule.create_schedule.CreateScheduleController;
 import interface_adapter.schedule.create_schedule.CreateScheduleControllerFactory;
 import interface_adapter.schedule.create_schedule.CreateScheduleViewModel;
+import interface_adapter.schedule.view_schedule.ScheduleTabViewModel;
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
@@ -107,6 +108,7 @@ public class AppBuilder {
     ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
     CreateScheduleViewModel createScheduleViewModel = new CreateScheduleViewModel();
     GroupScheduleViewModel groupScheduleViewModel = new GroupScheduleViewModel();
+    final ScheduleTabViewModel scheduleTabViewModel = new ScheduleTabViewModel();
 
     private final java.util.Map<String, Dimension> viewSizes = new java.util.HashMap<>();
 
@@ -296,6 +298,7 @@ public class AppBuilder {
         this.dashboardView.setCreateGroupTasksViewModel(createGroupTasksViewModel);
         this.dashboardView.setEditGroupTasksViewModel(editGroupTaskViewModel);
         this.dashboardView.setViewGroupTasksViewModel(viewGroupTasksViewModel);
+        this.dashboardView.setCreateScheduleViewModel(createScheduleViewModel);
         return this;
     }
 
@@ -521,7 +524,11 @@ public class AppBuilder {
                         groupScheduleViewModel
                 );
         
+        CreateScheduleController modalController =
+                factory.create(scheduleTabViewModel);
+        
         dashboardView.setCreateScheduleControllerFactory(factory);
+        createScheduleView.setCreateScheduleController(modalController);
         createScheduleView.hookCreateScheduleModalOpen(application);
         return this;
     }

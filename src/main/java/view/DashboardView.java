@@ -17,6 +17,7 @@ import interface_adapter.manage_members.view_members.ViewMembersControllerFactor
 import interface_adapter.manage_members.view_pending.ViewPendingControllerFactory;
 import interface_adapter.schedule.create_schedule.CreateScheduleController;
 import interface_adapter.schedule.create_schedule.CreateScheduleControllerFactory;
+import interface_adapter.schedule.create_schedule.CreateScheduleViewModel;
 import interface_adapter.schedule.view_schedule.ScheduleTabViewModel;
 import interface_adapter.viewgrouptasks.ViewGroupTasksController;
 import interface_adapter.viewgrouptasks.ViewGroupTasksViewModel;
@@ -46,6 +47,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     private ViewGroupTasksViewModel viewGroupTasksViewModel;
     private EditGroupTaskViewModel editGroupTasksViewModel;
     private CreateGroupTasksViewModel createGroupTasksViewModel;
+    private CreateScheduleViewModel createScheduleViewModel;
 
     // Views
     private ViewTasksView viewTasksView;
@@ -308,12 +310,12 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
 
         return view;
     }
-    } // createPeopleTab
 
     private ScheduleTabView createScheduleTab(String groupName, String groupID) {
-        ScheduleTabView scheduleTab = new ScheduleTabView("Schedule tab for " + groupName, new ScheduleTabViewModel());
+        ScheduleTabView scheduleTab = 
+            new ScheduleTabView("Schedule tab for " + groupName, new ScheduleTabViewModel(), groupID);
         CreateScheduleController controller = 
-            createScheduleControllerFactory.create(scheduleTab.getViewModel(), groupID);
+            createScheduleControllerFactory.create(scheduleTab.getViewModel());
         scheduleTab.setCreateScheduleController(controller);
         return scheduleTab;
     }
@@ -548,6 +550,10 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
 
     public void setCreateGroupTasksViewModel(CreateGroupTasksViewModel viewModel) {
         this.createGroupTasksViewModel = viewModel;
+    }
+
+    public void setCreateScheduleViewModel(CreateScheduleViewModel viewModel) {
+        this.createScheduleViewModel = viewModel;
     }
 
     public void setCreateScheduleControllerFactory(CreateScheduleControllerFactory factory) {

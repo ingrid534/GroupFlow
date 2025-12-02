@@ -53,7 +53,7 @@ public class CreateScheduleInteractor implements CreateScheduleInputBoundary {
         
         // update master sched with user schedule
         // add method to get user schedule in user entity
-        int[][] masterSchedule = new int[7][12];
+        int[][] masterSchedule = new int[12][7];
         for (User member: allUsers) {
             boolean[][] userSched = member.getSchedule();
 

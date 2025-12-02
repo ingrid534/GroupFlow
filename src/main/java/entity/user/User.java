@@ -44,7 +44,7 @@ public class User {
         this.password = password;
         this.memberships = new ArrayList<>();
         this.tasks = new ArrayList<>();
-        this.schedule = new boolean[7][12];
+        this.schedule = new boolean[12][7];
     }
 
     public String getUserID() {

@@ -7,10 +7,10 @@ public class CreateScheduleState {
     private String error = "";
 
     public CreateScheduleState() {
-        this.selectedSlots = new boolean[7][12];
+        this.selectedSlots = new boolean[12][7];
 
-        for (int row = 0; row < 7; row++) {
-            for (int col = 0; col < 12; col++) {
+        for (int row = 0; row < 12; row++) {
+            for (int col = 0; col < 7; col++) {
                 selectedSlots[row][col] = false;
             }
         }
@@ -29,7 +29,7 @@ public class CreateScheduleState {
         return error;
     }
 
-    public void setMasterSchedule(boolean[][] newSelectedSlots) {
+    public void setSelectedSlots(boolean[][] newSelectedSlots) {
         this.selectedSlots = newSelectedSlots;
     } 
 

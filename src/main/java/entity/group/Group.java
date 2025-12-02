@@ -37,7 +37,7 @@ public class Group {
         this.groupType = groupType;
         this.memberships = new ArrayList<>();
         this.tasks = new ArrayList<>();
-        this.masterSchedule = new int[7][12];
+        this.masterSchedule = new int[12][7];
     }
 
     public String getGroupID() {
@@ -84,8 +84,6 @@ public class Group {
 
     /**
      * Method to get the moderator of this group.
-     * TODO: modify so it returns ALL the moderators
-     * 
      * @return The moderator of this group
      * @throws NoSuchElementException if the group has no moderator
      */
