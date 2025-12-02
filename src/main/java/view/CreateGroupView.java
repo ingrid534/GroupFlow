@@ -281,6 +281,16 @@ public class CreateGroupView extends JPanel implements ActionListener, PropertyC
                 if (createGroupViewModel.getState().getOpenModal()) {
                     openCreateGroupModal(application);
                 } else {
+
+                    CreateGroupState currentState = createGroupViewModel.getState();
+
+                    if (currentState.isSuccess()) {
+                        JOptionPane.showMessageDialog(this,
+                                currentState.getMessage(),
+                                "Group Created",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    }
+
                     dialog.dispose();
                 }
             }

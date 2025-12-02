@@ -23,6 +23,8 @@ public class CreateGroupPresenter implements CreateGroupOutputBoundary {
     @Override
     public void prepareSuccessView(CreateGroupOutputData response) {
         createGroupViewModel.getState().setOpenModal(false);
+        createGroupViewModel.getState().setSuccess(true);
+        createGroupViewModel.getState().setMessage("Group Created Successfully");
         createGroupViewModel.firePropertyChange("openModal");
 
         // clear everything from the state

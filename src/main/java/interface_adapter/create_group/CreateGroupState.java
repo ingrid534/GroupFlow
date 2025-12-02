@@ -11,6 +11,8 @@ public class CreateGroupState {
     private GroupType groupType;
     private boolean openModal;
     private String error = "";
+    private String successMessage = "";
+    private boolean isSuccess;
 
     public String getGroupName() {
         return groupName;
@@ -42,5 +44,21 @@ public class CreateGroupState {
 
     public void setError(String error) {
         this.error = error;
+    }
+
+    public String getMessage() {
+        return successMessage;
+    }
+
+    public void setMessage(String message) {
+        this.successMessage = message;
+    }
+
+    public boolean isSuccess() {
+        return isSuccess;
+    }
+
+    public void setSuccess(boolean success) {
+        isSuccess = success;
     }
 }
