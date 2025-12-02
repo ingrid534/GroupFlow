@@ -54,7 +54,6 @@ public class CreateGroupTaskInteractor implements CreateGroupTaskInputBoundary {
                     "Only moderators may create tasks in this group."));
             return;
         }
-        Group group = groupDataAccess.getGroup(inputData.getGroupId());
         Task task;
         List<String> assignees = inputData.getAssignees();
         if (inputData.getDueDate() != null && !inputData.getDueDate().isEmpty()) {
@@ -74,6 +73,7 @@ public class CreateGroupTaskInteractor implements CreateGroupTaskInputBoundary {
         }
         dataAccess.upsertTask(task);
         updateAssignees(assignees, task);
+        Group group = groupDataAccess.getGroup(inputData.getGroupId());
         group.addTask(task.getID());
         groupDataAccess.save(group);
         presenter.present(new CreateGroupTaskOutputData(true,
