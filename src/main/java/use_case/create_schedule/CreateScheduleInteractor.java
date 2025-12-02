@@ -8,19 +8,17 @@ import interface_adapter.view_group_schedule.GroupSchedulePresenter;
 import java.util.ArrayList;
 import java.util.List;
 
-import data_access.DBMembershipDataAccessObject;
-
 public class CreateScheduleInteractor implements CreateScheduleInputBoundary {
     private final CreateScheduleUserDataAccessInterface userDataAccessObject;
     private final CreateScheduleGroupDataAccessInterface groupDataAccessObject;
     private final CreateScheduleOutputBoundary createSchedulePresenter;
-    private final DBMembershipDataAccessObject membershipDataAccessObject;
+    private final CreateScheduleMembershipDataAccessInterface membershipDataAccessObject;
     private final GroupSchedulePresenter groupSchedulePresenter;
 
     public CreateScheduleInteractor(CreateScheduleUserDataAccessInterface userDataAccessObject,
                                     CreateScheduleGroupDataAccessInterface groupDataAccessObject,
                                     CreateScheduleOutputBoundary createScheduleOutputBoundary,
-                                    DBMembershipDataAccessObject membershipDataAccessObject,
+                                    CreateScheduleMembershipDataAccessInterface membershipDataAccessObject,
                                     GroupSchedulePresenter groupSchedulePresenter) {
         this.userDataAccessObject = userDataAccessObject;
         this.groupDataAccessObject = groupDataAccessObject;

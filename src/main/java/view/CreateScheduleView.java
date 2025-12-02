@@ -18,13 +18,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
+import interface_adapter.schedule.create_schedule.CreateScheduleController;
+import interface_adapter.schedule.create_schedule.CreateScheduleState;
+import interface_adapter.schedule.create_schedule.CreateScheduleViewModel;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-
-import interface_adapter.create_schedule.CreateScheduleController;
-import interface_adapter.create_schedule.CreateScheduleState;
-import interface_adapter.create_schedule.CreateScheduleViewModel;
-// trying to fix checkstyle
 
 public class CreateScheduleView extends JPanel implements PropertyChangeListener {
 

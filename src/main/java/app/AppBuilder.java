@@ -22,9 +22,6 @@ import interface_adapter.create_group.CreateGroupViewModel;
 import interface_adapter.creategrouptasks.CreateGroupTasksController;
 import interface_adapter.creategrouptasks.CreateGroupTasksPresenter;
 import interface_adapter.creategrouptasks.CreateGroupTasksViewModel;
-import interface_adapter.create_schedule.CreateScheduleController;
-import interface_adapter.create_schedule.CreateSchedulePresenter;
-import interface_adapter.create_schedule.CreateScheduleViewModel;
 import interface_adapter.dashboard.DashboardViewModel;
 import interface_adapter.editgrouptask.EditGroupTaskController;
 import interface_adapter.editgrouptask.EditGroupTaskPresenter;
@@ -43,6 +40,8 @@ import interface_adapter.manage_members.respond_request.RespondRequestController
 import interface_adapter.manage_members.update_role.UpdateRoleControllerFactory;
 import interface_adapter.manage_members.view_members.ViewMembersControllerFactory;
 import interface_adapter.manage_members.view_pending.ViewPendingControllerFactory;
+import interface_adapter.schedule.create_schedule.CreateScheduleControllerFactory;
+import interface_adapter.schedule.create_schedule.CreateScheduleViewModel;
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
@@ -60,9 +59,6 @@ import use_case.change_password.ChangePasswordOutputBoundary;
 import use_case.create_group.CreateGroupInputBoundary;
 import use_case.create_group.CreateGroupInteractor;
 import use_case.create_group.CreateGroupOutputBoundary;
-import use_case.create_schedule.CreateScheduleInputBoundary;
-import use_case.create_schedule.CreateScheduleOutputBoundary;
-import use_case.create_schedule.CreateScheduleInteractor;
 import use_case.creategrouptask.CreateGroupTaskInputBoundary;
 import use_case.creategrouptask.CreateGroupTaskInteractor;
 import use_case.creategrouptask.CreateGroupTaskOutputBoundary;
@@ -459,19 +455,15 @@ public class AppBuilder {
      * @return App Builder
      */
     public AppBuilder addCreateScheduleUseCase() {
-        final CreateScheduleOutputBoundary createScheduleOutputBoundary = 
-                new CreateSchedulePresenter(createScheduleViewModel, viewManagerModel, groupScheduleViewModel);
-        final CreateScheduleInputBoundary createScheduleInteractor = 
-                new CreateScheduleInteractor(userDataAccessObject, 
-                                        groupDataAccessObject, 
-                                        createScheduleOutputBoundary, 
-                                        membershipDataAccessObject, 
-                                        groupSchedulePresenter);
-
-        CreateScheduleController createScheduleController = new CreateScheduleController(createScheduleInteractor);
-        createScheduleView.setCreateScheduleController(createScheduleController);
-        createScheduleView.hookCreateScheduleModalOpen(application);
-
+        CreateScheduleControllerFactory factory = new CreateScheduleControllerFactory(
+                        userDataAccessObject, 
+                        groupDataAccessObject, 
+                        membershipDataAccessObject, 
+                        viewManagerModel, 
+                        createScheduleViewModel, 
+                        groupScheduleViewModel
+                );
+        dashboardView.setCreateScheduleControllerFactory(factory);
         return this;
     }
 

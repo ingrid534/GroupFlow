@@ -1,7 +1,6 @@
 package view;
 
 import interface_adapter.create_group.CreateGroupController;
-import interface_adapter.create_schedule.CreateScheduleController;
 import interface_adapter.creategrouptasks.CreateGroupTasksController;
 import interface_adapter.creategrouptasks.CreateGroupTasksViewModel;
 import interface_adapter.dashboard.DashboardViewModel;
@@ -15,6 +14,9 @@ import interface_adapter.manage_members.respond_request.RespondRequestController
 import interface_adapter.manage_members.update_role.UpdateRoleControllerFactory;
 import interface_adapter.manage_members.view_members.ViewMembersControllerFactory;
 import interface_adapter.manage_members.view_pending.ViewPendingControllerFactory;
+import interface_adapter.schedule.create_schedule.CreateScheduleController;
+import interface_adapter.schedule.create_schedule.CreateScheduleControllerFactory;
+import interface_adapter.schedule.view_schedule.ScheduleTabViewModel;
 import interface_adapter.viewgrouptasks.ViewGroupTasksController;
 import interface_adapter.viewgrouptasks.ViewGroupTasksViewModel;
 
@@ -72,6 +74,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
     private RemoveMemberControllerFactory removeMemberControllerFactory;
     private RespondRequestControllerFactory respondRequestControllerFactory;
     private UpdateRoleControllerFactory updateRoleControllerFactory;
+    private CreateScheduleControllerFactory createScheduleControllerFactory;
 
     // Maps group IDs to their names
     private final java.util.Map<String, String> groupIdToName = new java.util.HashMap<>();
@@ -264,10 +267,7 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
         tabs.addTab("People", createPeopleTab(groupId));
         tabs.addTab("Meets", placeholderPanel("Meetings tab for " + groupName));
         tabs.addTab("Tasks", placeholderPanel("Tasks tab for " + groupName));
-        // temporarily added it here
-        ScheduleTabView scheduleTab = new ScheduleTabView("Schedule tab for " + groupName);
-        scheduleTab.setCreateScheduleController(createScheduleController);
-        tabs.addTab("Sched", new ScheduleTabView("Schedule tab for " + groupName));
+        tabs.addTab("Sched", createScheduleTab("Schedule Tab for " + groupName));
         tabs.addTab("Optional", placeholderPanel("Optional tab for " + groupName));
         // initialize selected color (default white is hard to see)
         tabs.setForegroundAt(0, new Color(0x1E88E5));
@@ -311,6 +311,13 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
 
         return view;
     } // createPeopleTab
+
+    private ScheduleTabView createScheduleTab(String groupName) {
+        ScheduleTabView scheduleTab = new ScheduleTabView("Schedule tab for " + groupName, new ScheduleTabViewModel());
+        CreateScheduleController controller = createScheduleControllerFactory.create(scheduleTab.getViewModel());
+        scheduleTab.setCreateScheduleController(controller);
+        return scheduleTab;
+    }
 
     private JPanel placeholderPanel(String text) {
         JPanel panel = new JPanel(new BorderLayout());
@@ -542,6 +549,10 @@ public class DashboardView extends JPanel implements ActionListener, PropertyCha
 
     public void setCreateGroupTasksViewModel(CreateGroupTasksViewModel viewModel) {
         this.createGroupTasksViewModel = viewModel;
+    }
+
+    public void setCreateScheduleControllerFactory(CreateScheduleControllerFactory factory) {
+        this.createScheduleControllerFactory = factory;
     }
 
     private JPanel buildGroupTasksTab(String groupId) {

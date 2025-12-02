@@ -7,14 +7,17 @@ import java.awt.Dimension;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-import interface_adapter.create_schedule.CreateScheduleController;
+import interface_adapter.schedule.create_schedule.CreateScheduleController;
+import interface_adapter.schedule.view_schedule.ScheduleTabViewModel;
 
 public class ScheduleTabView extends JPanel {
     private final JButton createSched = new JButton("Add Your Availability");
 
     private CreateScheduleController createScheduleController;
+    private ScheduleTabViewModel viewModel;
 
-    public ScheduleTabView(String groupName) {
+    public ScheduleTabView(String groupName, ScheduleTabViewModel viewModel) {
+        this.viewModel = viewModel;
         setLayout(new BorderLayout());
         setBorder(new EmptyBorder(10, 10, 10, 10));
 
@@ -31,7 +34,15 @@ public class ScheduleTabView extends JPanel {
         createSched.setMaximumSize(new Dimension(180, 20));
         add(createSched);
 
-        createSched.addActionListener(evt -> createScheduleController.openScheduleModal());
+        createSched.addActionListener(evt -> {
+            if (createScheduleController != null) {
+                createScheduleController.openScheduleModal();
+            }
+        });
+    }
+
+    public ScheduleTabViewModel getViewModel() {
+        return viewModel;
     }
 
     /**

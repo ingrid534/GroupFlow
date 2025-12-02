@@ -1,4 +1,4 @@
-package interface_adapter.create_schedule;
+package interface_adapter.schedule.create_schedule;
 
 import interface_adapter.ViewModel;
 
