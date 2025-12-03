@@ -4,7 +4,7 @@
 
 ## Features
 - Create groups, invite members, and collaborate with meetings, tasks, and schedules to share amongst each other.
-- Sign up with email to recieve notifications of members requesting to join your group.
+- Sign up with email to receive notifications of members requesting to join your group.
 
 ## Installation
 - Create a copy of this repository by running `git clone https://github.com/ingrid534/GroupFlow.git`.
