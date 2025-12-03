@@ -23,7 +23,5 @@ public interface CreateGroupDataAccessInterface {
      * @param username the username whose group memberships are requested
      * @return a list of Group entities the user is a member of
      **/
-    default List<Group> getGroupsForUser(String username) {
-        return null;
-    }
+    List<Group> getGroupsForUser(String username);
 }

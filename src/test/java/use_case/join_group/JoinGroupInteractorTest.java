@@ -45,6 +45,7 @@ class JoinGroupInteractorTest {
         userDataAccess.save(myUser);
         userDataAccess.setCurrentUsername(myUser.getName());
 
+
         JoinGroupOutputBoundary successPresenter = new JoinGroupOutputBoundary() {
             @Override
             public void prepareSuccessView(JoinGroupOutputData outputData) {
@@ -75,6 +76,7 @@ class JoinGroupInteractorTest {
 
         User moderator = new User("moderator", "moderator@gmail.com", "pass");
         Group group = new Group("existing group to join", validCode, GroupType.STUDY);
+        group.setGroupId(validCode);
         Membership moderatorMembership = new Membership(moderator.getName(), group.getGroupID(), UserRole.MODERATOR, true);
 
         moderator.addMembership(moderatorMembership);

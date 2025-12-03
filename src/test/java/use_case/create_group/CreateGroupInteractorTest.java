@@ -33,6 +33,8 @@ class CreateGroupInteractorTest {
             public void prepareSuccessView(CreateGroupOutputData outputData) {
                 assertEquals("Andrew's Group", outputData.getGroupName());
                 assertEquals(GroupType.PROJECT, outputData.getGroupType());
+                assertFalse(outputData.getGroupID().isBlank());
+                assertTrue(outputData.getGroups().containsKey(outputData.getGroupID()));
             }
 
             @Override
@@ -61,6 +63,7 @@ class CreateGroupInteractorTest {
                         membershipFactory
                 );
 
+        interactor.openCreateGroupModal();
         interactor.execute(inputData);
     }
 

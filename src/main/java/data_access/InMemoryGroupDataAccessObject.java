@@ -8,6 +8,7 @@ import use_case.join_group.JoinGroupDataAccessInterface;
 import use_case.login.LoginGroupsDataAccessInterface;
 import use_case.viewgrouptasks.ViewGroupTasksGroupDataAccessInterface;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +24,9 @@ public class InMemoryGroupDataAccessObject implements
 
     private final Map<String, Group> groups = new HashMap<>();
     private String currentGroupID;
+    private static final String JOIN_CODE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private static final int JOIN_CODE_LENGTH = 6;
+    private final SecureRandom random = new SecureRandom();
 
     /**
      * Checks if the given groupCode exists.
@@ -53,6 +57,9 @@ public class InMemoryGroupDataAccessObject implements
      */
     @Override
     public void save(Group group) {
+        if (group.getGroupID().isBlank()) {
+            group.setGroupId(generateUniqueJoinCode());
+        }
         groups.put(group.getGroupID(), group);
     }
 
@@ -88,5 +95,22 @@ public class InMemoryGroupDataAccessObject implements
     @Override
     public void saveMasterSchedule(Group group) {
         groups.put(group.getGroupID(), group);
+    }
+
+    private String generateUniqueJoinCode() {
+        String code;
+        do {
+            code = generateRandomJoinCode();
+        } while (groupCodeExists(code));
+        return code;
+    }
+
+    private String generateRandomJoinCode() {
+        StringBuilder sb = new StringBuilder(JOIN_CODE_LENGTH);
+        for (int i = 0; i < JOIN_CODE_LENGTH; i++) {
+            int idx = random.nextInt(JOIN_CODE_CHARS.length());
+            sb.append(JOIN_CODE_CHARS.charAt(idx));
+        }
+        return sb.toString();
     }
 }

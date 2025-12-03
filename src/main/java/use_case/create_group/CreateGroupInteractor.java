@@ -57,6 +57,8 @@ public class CreateGroupInteractor implements CreateGroupInputBoundary {
                     group.getGroupID(), UserRole.MODERATOR, true);
 
             membershipDataAccessObject.save(membership);
+            groupCreator.addMembership(membership);
+            group.addMembership(membership);
             List<Group> newGroups = groupDataAccessObject.getGroupsForUser(groupCreator.getName());
             Map<String, String> newGroupHashMap = new HashMap<>();
             for (Group newGroup : newGroups) {
