@@ -2,6 +2,7 @@ package data_access;
 
 import use_case.change_password.ChangePasswordUserDataAccessInterface;
 import use_case.create_group.CreateGroupUserDataAccessInterface;
+import use_case.create_schedule.CreateScheduleUserDataAccessInterface;
 import use_case.creategrouptask.CreateGroupTaskUserDataAccessInterface;
 import use_case.editgrouptasks.EditGroupTasksUserDataAccessInterface;
 import use_case.join_group.JoinGroupUserDataAccessInterface;
@@ -28,7 +29,8 @@ public class InMemoryUserDataAccessObject implements SignupUserDataAccessInterfa
         LogoutUserDataAccessInterface,
         ViewTasksUserDataAccessInterface,
         CreateGroupTaskUserDataAccessInterface,
-        EditGroupTasksUserDataAccessInterface {
+        EditGroupTasksUserDataAccessInterface,
+        CreateScheduleUserDataAccessInterface {
 
     private final Map<String, User> users = new HashMap<>();
 
@@ -62,6 +64,12 @@ public class InMemoryUserDataAccessObject implements SignupUserDataAccessInterfa
     @Override
     public void changePassword(User user) {
         // Replace the old entry with the new password
+        users.put(user.getName(), user);
+    }
+
+    @Override
+    public void saveSchedule(User user) {
+        // Update the user with the new schedule
         users.put(user.getName(), user);
     }
 

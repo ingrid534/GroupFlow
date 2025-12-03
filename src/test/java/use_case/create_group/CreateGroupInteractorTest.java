@@ -28,7 +28,6 @@ class CreateGroupInteractorTest {
         userRepository.save(user);
         userRepository.setCurrentUsername(user.getName());
 
-
         CreateGroupOutputBoundary successPresenter = new CreateGroupOutputBoundary() {
             @Override
             public void prepareSuccessView(CreateGroupOutputData outputData) {
