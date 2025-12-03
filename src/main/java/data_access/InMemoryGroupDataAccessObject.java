@@ -28,7 +28,6 @@ public class InMemoryGroupDataAccessObject implements
     private static final int JOIN_CODE_LENGTH = 6;
     private final SecureRandom random = new SecureRandom();
 
-
     /**
      * Checks if the given groupCode exists.
      *
@@ -97,7 +96,6 @@ public class InMemoryGroupDataAccessObject implements
     public void saveMasterSchedule(Group group) {
         groups.put(group.getGroupID(), group);
     }
-
 
     private String generateUniqueJoinCode() {
         String code;
