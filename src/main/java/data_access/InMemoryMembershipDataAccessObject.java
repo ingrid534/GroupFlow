@@ -3,6 +3,7 @@ package data_access;
 import entity.membership.Membership;
 import entity.user.UserRole;
 import use_case.create_group.CreateGroupMembershipDataAccessInterface;
+import use_case.create_schedule.CreateScheduleMembershipDataAccessInterface;
 import use_case.creategrouptask.CreateGroupTasksMembershipDataAccessInterface;
 import use_case.editgrouptasks.EditGroupTasksMembershipDataAccessInterface;
 import use_case.join_group.JoinGroupMembershipDataAccessInterface;
@@ -26,7 +27,8 @@ public class InMemoryMembershipDataAccessObject implements
         EditGroupTasksMembershipDataAccessInterface,
         RemoveMemberDataAccessInterface,
         RespondRequestDataAccessInterface,
-        UpdateRoleDataAccessInterface {
+        UpdateRoleDataAccessInterface,
+        CreateScheduleMembershipDataAccessInterface {
 
     private final Map<Keys, Membership> memberships = new HashMap<>();
 

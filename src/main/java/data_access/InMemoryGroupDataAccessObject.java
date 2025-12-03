@@ -2,6 +2,7 @@ package data_access;
 
 import entity.group.Group;
 import use_case.create_group.CreateGroupDataAccessInterface;
+import use_case.create_schedule.CreateScheduleGroupDataAccessInterface;
 import use_case.creategrouptask.CreateGroupTaskGroupDataAccessInterface;
 import use_case.join_group.JoinGroupDataAccessInterface;
 import use_case.login.LoginGroupsDataAccessInterface;
@@ -17,9 +18,11 @@ public class InMemoryGroupDataAccessObject implements
         LoginGroupsDataAccessInterface,
         CreateGroupTaskGroupDataAccessInterface,
         ViewGroupTasksGroupDataAccessInterface,
-        JoinGroupDataAccessInterface {
+        JoinGroupDataAccessInterface,
+        CreateScheduleGroupDataAccessInterface {
 
     private final Map<String, Group> groups = new HashMap<>();
+    private String currentGroupID;
 
     /**
      * Checks if the given groupCode exists.
@@ -70,5 +73,20 @@ public class InMemoryGroupDataAccessObject implements
         }
 
         return groupsForUser;
+    }
+
+    @Override
+    public void setCurrentGroupID(String groupID) {
+        this.currentGroupID = groupID;
+    }
+
+    @Override
+    public String getCurrentGroupID() {
+        return currentGroupID;
+    }
+
+    @Override
+    public void saveMasterSchedule(Group group) {
+        groups.put(group.getGroupID(), group);
     }
 }
