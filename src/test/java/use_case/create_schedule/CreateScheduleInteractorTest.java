@@ -328,4 +328,52 @@ public class CreateScheduleInteractorTest {
         // Call loadSchedule - this should retrieve and present the existing schedule
         interactor.loadSchedule("5678");
     }
+
+    @Test
+    void testOpenCreateScheduleModal() {
+        // Create shared in-memory data store
+        InMemoryUserDataAccessObject userDataAccess = new InMemoryUserDataAccessObject();
+        InMemoryGroupDataAccessObject groupDataAccess = new InMemoryGroupDataAccessObject();
+        InMemoryMembershipDataAccessObject membershipDataAccess = new InMemoryMembershipDataAccessObject();
+
+        CreateScheduleUserDataAccessInterface userRepository = userDataAccess;
+        CreateScheduleGroupDataAccessInterface groupRepository = groupDataAccess;
+        CreateScheduleMembershipDataAccessInterface membershipRepository = membershipDataAccess;
+
+        // Track if presenter method was called
+        final boolean[] modalOpened = {false};
+
+        CreateScheduleOutputBoundary presenter = new CreateScheduleOutputBoundary() {
+            @Override
+            public void prepareSuccessView(CreateScheduleOutputData outputData) {
+            }
+
+            @Override
+            public void prepareFailView(String error) {
+            }
+
+            @Override
+            public void openCreateScheduleModal() {
+                modalOpened[0] = true;
+            }
+        };
+
+        // Create ViewModel and Presenter for UI updates
+        ScheduleTabViewModel scheduleTabViewModel = new ScheduleTabViewModel();
+        ScheduleTabPresenter groupSchedulePresenter = new ScheduleTabPresenter(scheduleTabViewModel);
+
+        CreateScheduleInteractor interactor = new CreateScheduleInteractor(
+            userRepository,
+            groupRepository,
+            presenter,
+            membershipRepository,
+            groupSchedulePresenter
+        );
+
+        // Call openCreateScheduleModal
+        interactor.openCreateScheduleModal();
+
+        // Verify presenter method was called
+        assertEquals(true, modalOpened[0]);
+    }
 }
