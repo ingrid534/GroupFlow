@@ -150,4 +150,86 @@ class JoinGroupInteractorTest {
 
         interactor.execute(inputData);
     }
+
+    @Test
+    void failureAlreadyMemberTest() throws IOException {
+        String code = "ABCDEF";
+
+        User user = new User("something", "smth@gmail.com", "pass");
+        Group group = new Group("group", code, GroupType.STUDY);
+
+        Membership existingMembership = new Membership(
+                user.getName(), code, UserRole.MEMBER, true
+        );
+        user.addMembership(existingMembership);
+        group.addMembership(existingMembership);
+
+        JoinGroupDataAccessInterface groupDataAccess = new InMemoryGroupDataAccessObject();
+        JoinGroupUserDataAccessInterface userDataAccess = new InMemoryUserDataAccessObject();
+        JoinGroupMembershipDataAccessInterface membershipDataAccess = new InMemoryMembershipDataAccessObject();
+        MembershipFactory membershipFactory = new MembershipFactory();
+        SendEmailInterface emailer = new InMemoryEmailer();
+
+        groupDataAccess.save(group);
+        userDataAccess.save(user);
+        userDataAccess.setCurrentUsername(user.getName());
+        membershipDataAccess.save(existingMembership);
+
+        JoinGroupOutputBoundary presenter = new JoinGroupOutputBoundary() {
+            @Override
+            public void prepareSuccessView(JoinGroupOutputData outputData) {
+                fail("Use case success is unexpected when user is already a member.");
+            }
+
+            @Override
+            public void prepareFailView(String errorMessage) {
+                assertEquals("You are already in this group!", errorMessage);
+            }
+        };
+
+        JoinGroupInputBoundary interactor = new JoinGroupInteractor(
+                presenter, groupDataAccess, userDataAccess, membershipDataAccess,
+                membershipFactory, emailer
+        );
+
+        interactor.execute(new JoinGroupInputData(code));
+    }
+
+    @Test
+    void failureNullGroupCodeTest() throws IOException {
+        JoinGroupInputData inputData = new JoinGroupInputData(null);
+
+        JoinGroupDataAccessInterface groupDataAccess = new InMemoryGroupDataAccessObject();
+        JoinGroupUserDataAccessInterface userDataAccess = new InMemoryUserDataAccessObject();
+        JoinGroupMembershipDataAccessInterface membershipDataAccess = new InMemoryMembershipDataAccessObject();
+        MembershipFactory membershipFactory = new MembershipFactory();
+        SendEmailInterface emailer = new InMemoryEmailer();
+
+        userDataAccess.setCurrentUsername("user");
+
+        JoinGroupOutputBoundary presenter = new JoinGroupOutputBoundary() {
+            @Override
+            public void prepareSuccessView(JoinGroupOutputData outputData) {
+                fail("Use case success is unexpected for a null group code.");
+            }
+
+            @Override
+            public void prepareFailView(String errorMessage) {
+                assertEquals("Group ID cannot be empty.", errorMessage);
+            }
+        };
+
+        JoinGroupInputBoundary interactor =
+                new JoinGroupInteractor(
+                        presenter,
+                        groupDataAccess,
+                        userDataAccess,
+                        membershipDataAccess,
+                        membershipFactory,
+                        emailer
+                );
+
+        interactor.execute(inputData);
+    }
+
 }
