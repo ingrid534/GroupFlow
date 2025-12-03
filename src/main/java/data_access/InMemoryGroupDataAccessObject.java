@@ -58,7 +58,9 @@ public class InMemoryGroupDataAccessObject implements
      */
     @Override
     public void save(Group group) {
-        group.setGroupId(generateUniqueJoinCode());
+        if (group.getGroupID().isBlank()) {
+            group.setGroupId(generateUniqueJoinCode());
+        }
         groups.put(group.getGroupID(), group);
     }
 
