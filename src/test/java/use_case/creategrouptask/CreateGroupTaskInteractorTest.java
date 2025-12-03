@@ -279,4 +279,107 @@ public class CreateGroupTaskInteractorTest {
         assertEquals("Invalid date.", presenter.received.getMessage());
     }
 
+    @Test
+    void testEmptyDescriptionTriggersError() {
+        InMemoryTaskDataAccessObject taskDAO = new InMemoryTaskDataAccessObject();
+        InMemoryUserDataAccessObject userDAO = new InMemoryUserDataAccessObject();
+        InMemoryGroupDataAccessObject groupDAO = new InMemoryGroupDataAccessObject();
+        InMemoryMembershipDataAccessObject membershipDAO = new InMemoryMembershipDataAccessObject();
+
+        // Moderator
+        User mod = new User("tom", "test@test.com", "pw");
+        userDAO.save(mod);
+        userDAO.setCurrentUsername("tom");
+        membershipDAO.save(new Membership("tom", "g1", UserRole.MODERATOR, true));
+
+        groupDAO.save(new Group("Grp", "g1", null));
+
+        TestPresenter presenter = new TestPresenter();
+
+        CreateGroupTaskInteractor interactor =
+                new CreateGroupTaskInteractor(taskDAO, presenter,
+                        new TaskFactory(), userDAO, groupDAO, membershipDAO);
+
+        // Empty description
+        CreateGroupTaskInputData input = new CreateGroupTaskInputData(
+                "",      // <-- EMPTY
+                null,
+                null,
+                "g1"
+        );
+
+        interactor.execute(input);
+
+        assertFalse(presenter.received.isSuccess());
+        assertEquals("Description cannot be empty.", presenter.received.getMessage());
+    }
+
+    @Test
+    void testNoMembershipRecordAllowsCreation() {
+        InMemoryTaskDataAccessObject taskDAO = new InMemoryTaskDataAccessObject();
+        InMemoryUserDataAccessObject userDAO = new InMemoryUserDataAccessObject();
+        InMemoryGroupDataAccessObject groupDAO = new InMemoryGroupDataAccessObject();
+        InMemoryMembershipDataAccessObject membershipDAO = new InMemoryMembershipDataAccessObject();
+
+        // User exists but NOT in membership DAO → membershipDataAccess.get() returns null
+        User user = new User("linda", "mail", "pw");
+        userDAO.save(user);
+        userDAO.setCurrentUsername("linda");
+
+        groupDAO.save(new Group("Grp", "g1", null));
+
+        TestPresenter presenter = new TestPresenter();
+
+        CreateGroupTaskInteractor interactor =
+                new CreateGroupTaskInteractor(taskDAO, presenter,
+                        new TaskFactory(), userDAO, groupDAO, membershipDAO);
+
+        CreateGroupTaskInputData input = new CreateGroupTaskInputData(
+                "Some desc",
+                null,
+                Collections.emptyList(),
+                "g1"
+        );
+
+        interactor.execute(input);
+
+        assertTrue(presenter.received.isSuccess());
+    }
+
+    @Test
+    void testNullDescriptionTriggersError() {
+        InMemoryTaskDataAccessObject taskDAO = new InMemoryTaskDataAccessObject();
+        InMemoryUserDataAccessObject userDAO = new InMemoryUserDataAccessObject();
+        InMemoryGroupDataAccessObject groupDAO = new InMemoryGroupDataAccessObject();
+        InMemoryMembershipDataAccessObject membershipDAO = new InMemoryMembershipDataAccessObject();
+
+        // Moderator setup
+        User mod = new User("sam", "test@test.com", "pw");
+        userDAO.save(mod);
+        userDAO.setCurrentUsername("sam");
+        membershipDAO.save(new Membership("sam", "g1", UserRole.MODERATOR, true));
+
+        // Group exists
+        groupDAO.save(new Group("Group", "g1", null));
+
+        TestPresenter presenter = new TestPresenter();
+
+        CreateGroupTaskInteractor interactor =
+                new CreateGroupTaskInteractor(taskDAO, presenter,
+                        new TaskFactory(), userDAO, groupDAO, membershipDAO);
+
+        // Description = null
+        CreateGroupTaskInputData input = new CreateGroupTaskInputData(
+                null,          // <-- THIS IS THE UNTESTED BRANCH
+                null,
+                null,
+                "g1"
+        );
+
+        interactor.execute(input);
+
+        assertNotNull(presenter.received);
+        assertFalse(presenter.received.isSuccess());
+        assertEquals("Description cannot be empty.", presenter.received.getMessage());
+    }
 }
